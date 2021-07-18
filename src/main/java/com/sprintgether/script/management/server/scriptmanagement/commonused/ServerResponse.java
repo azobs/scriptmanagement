@@ -1,6 +1,5 @@
-package com.sprintgether.script.management.server.scriptmanagement;
+package com.sprintgether.script.management.server.scriptmanagement.commonused;
 
-import com.sprintgether.script.management.server.scriptmanagement.EnumResponseType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,6 +10,7 @@ import lombok.NoArgsConstructor;
 public class ServerResponse<T> {
     String errorMessage;
     String moreDetails;
-    EnumResponseType responseType;
+    //100 when no treatment has been done, 200 for good response, 400 for bad response, 500 for exception
+    int responseCode;
     T associatedObject;
 }
