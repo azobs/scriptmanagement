@@ -7,9 +7,13 @@ import com.sprintgether.script.management.server.scriptmanagement.exception.user
 import com.sprintgether.script.management.server.scriptmanagement.exception.user.UserNotFoundException;
 import com.sprintgether.script.management.server.scriptmanagement.model.user.User;
 import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+@Service
+@Transactional
 public class UserServiceImpl implements UserService {
 
     UserRepository userRepository;
@@ -41,8 +45,7 @@ public class UserServiceImpl implements UserService {
 
         ServerResponse<User> srUserExist = this.findUserByUsername(username);
         if(srUserExist.getResponseCode()==ResponseCode.USER_FOUND){
-            //Ceci signifie qu'il y deja dans la BD un user avec le meme username
-            throw new DuplicateUserException("The username specified is already taken. Please change it");
+            throw new DuplicateUserException("The specified username is already taken. Please change it");
         }
         Pbkdf2PasswordEncoder p=new Pbkdf2PasswordEncoder();
         p.setAlgorithm(Pbkdf2PasswordEncoder.SecretKeyFactoryAlgorithm.PBKDF2WithHmacSHA512);
@@ -60,14 +63,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ServerResponse<User> updatePassword(String username, String newPassword) throws UserNotFoundException, DuplicateUserException {
+    public ServerResponse<User> updatePassword(String username,
+                                               String newPassword) throws UserNotFoundException {
         ServerResponse<User> serverResponse = new ServerResponse<>();
         serverResponse.setResponseCode(ResponseCode.USER_NOT_UPDATED);
         serverResponse.setAssociatedObject(null);
 
         ServerResponse<User> srUserExist = this.findUserByUsername(username);
         if(srUserExist.getResponseCode()==ResponseCode.USER_NOT_FOUND){
-            //Ceci signifie qu'il y deja dans la BD un user avec le meme username
             throw new UserNotFoundException("The username specified is not found. Please check it");
         }
         if(srUserExist.getResponseCode()==ResponseCode.USER_FOUND){
@@ -75,9 +78,10 @@ public class UserServiceImpl implements UserService {
             Pbkdf2PasswordEncoder p=new Pbkdf2PasswordEncoder();
             p.setAlgorithm(Pbkdf2PasswordEncoder.SecretKeyFactoryAlgorithm.PBKDF2WithHmacSHA512);
             userFound.setPassword(p.encode(newPassword));
-            userRepository.save(userFound);
+            User userUpdated = userRepository.save(userFound);
+
             serverResponse.setResponseCode(ResponseCode.USER_UPDATED);
-            serverResponse.setAssociatedObject(userFound);
+            serverResponse.setAssociatedObject(userUpdated);
         }
         return serverResponse;
     }
