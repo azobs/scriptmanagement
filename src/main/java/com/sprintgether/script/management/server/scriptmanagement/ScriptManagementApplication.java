@@ -46,7 +46,7 @@ public class ScriptManagementApplication {
                              ParagraphRepository paragraphRepository){
         return args->{
             ////Test de creation de la collection Role
-            Role role=new Role(
+            /*Role role=new Role(
                     "HOD",
                     "Role associe a un chef de departement"
             );
@@ -58,9 +58,9 @@ public class ScriptManagementApplication {
             }
             else{
                 roleRepository.save(role);
-            }
+            }*/
             ////Test de creation de la collection User
-            User user=new User(
+            /*User user=new User(
                     "cedric",
                     "cedric",
                     true
@@ -75,9 +75,9 @@ public class ScriptManagementApplication {
                 List<Role> listofRole = roleRepository.findAll();
                 newUser.setListofRole(listofRole);
                 userRepository.save(newUser);
-            }
+            }*/
             ////Test de creation de la collection Token
-            Optional<User> userExist = userRepository.findUserByUsername(
+            /*Optional<User> userExist = userRepository.findUserByUsername(
                     "cedric");
             if(userExist.isPresent()) {
                 Token token = new Token(
@@ -95,10 +95,10 @@ public class ScriptManagementApplication {
                 else{
                     tokenRepository.save(token);
                 }
-            }
+            }*/
             ////Test de creation de la collection Staff
             //On a deja plus haut le userExist qui sera associe au staff
-            if(userExist.isPresent()) {
+            /*if(userExist.isPresent()) {
                 Staff staff = new Staff(
                         "azobs",
                         "dced",
@@ -118,9 +118,9 @@ public class ScriptManagementApplication {
                 else{
                     staffRepository.save(staff);
                 }
-            }
+            }*/
             ////Test de creation de la collection Institution
-            Institution institution = new Institution(
+            /*Institution institution = new Institution(
                     "Institut Universitaire du Golfe de Guinee",
                     "IUG",
                     "blabla",
@@ -136,9 +136,9 @@ public class ScriptManagementApplication {
             }
             else{
                 institutionRepository.save(institution);
-            }
+            }*/
             ////Test de creation de la collection School
-            Optional<Institution> institutionExist = institutionRepository.findInstitutionByName(
+            /*Optional<Institution> institutionExist = institutionRepository.findInstitutionByName(
                     "Institut Universitaire du Golfe de Guinee"
             );
             if(institutionExist.isPresent()){
@@ -153,10 +153,10 @@ public class ScriptManagementApplication {
                                             schoolParam.split(" ")[2],
                                             institutionExist.get()
                                     );
-                                    /*
+                                    *//*
                                     It is not possible to have 2 schools with the same name
                                     and acronyme in the same institution.
-                                     */
+                                     *//*
                                     AtomicInteger canCreated = new AtomicInteger();
                                     institutionExist.get().getListofSchool().forEach(
                                             sc -> {
@@ -169,19 +169,19 @@ public class ScriptManagementApplication {
                                     );
                                     if(canCreated.intValue()==0){
                                         School savedSchool = schoolRepository.save(school);
-                                        /*
+                                        *//*
                                         The school created must be added to the school list
                                         of the institution
-                                         */
+                                         *//*
                                         institutionExist.get().getListofSchool().add(savedSchool);
                                         institutionRepository.save(institutionExist.get());
                                     }
                                 }
                         );
-            }
+            }*/
 
             ////Test de creation de la collection Department
-            Optional<School> schoolExist = schoolRepository.findSchoolByName(
+            /*Optional<School> schoolExist = schoolRepository.findSchoolByName(
                     "SEAS"
             );
             Optional<Staff> staffExist = staffRepository.findStaffByEmail(
@@ -201,10 +201,10 @@ public class ScriptManagementApplication {
                                     schoolExist.get(),
                                     staffExist.get()
                             );
-                            /*
+                            *//*
                             It is not possible to have 2 department with the same name
                             and acronyme in the same school.
-                             */
+                             *//*
                             AtomicInteger canCreated = new AtomicInteger();
                             schoolExist.get().getListofDepartment().forEach(dept->{
                                     if(dept.getName().equals(department.getName()) ||
@@ -216,17 +216,17 @@ public class ScriptManagementApplication {
                             );
                             if(canCreated.intValue()==0){
                                 Department savedDept = departmentRepository.save(department);
-                                /*
+                                *//*
                                 The created department must be added to the school department list
-                                 */
+                                 *//*
                                 schoolExist.get().getListofDepartment().add(savedDept);
                                 schoolRepository.save(schoolExist.get());
                             }
                         }
                 );
-            }
+            }*/
             ////Test de creation de Option dans un departement
-            Optional<Department> deptExist = departmentRepository.findDepartmentByName(
+            /*Optional<Department> deptExist = departmentRepository.findDepartmentByName(
                     "HND_Industrial"
             );
             if(deptExist.isPresent()){
@@ -239,10 +239,10 @@ public class ScriptManagementApplication {
                                     optionParam.split(" ")[2],
                                     deptExist.get()
                             );
-                            /*
+                            *//*
                             We cannot have 2 options with the same name in the
                             same department
-                             */
+                             *//*
                             AtomicInteger canCreated = new AtomicInteger();
                             deptExist.get().getListofOption().forEach(opt->{
                                         if(opt.getName().equals(option.getName()) ||
@@ -254,17 +254,17 @@ public class ScriptManagementApplication {
                             );
                             if(canCreated.intValue()==0){
                                 Option savedOption = optionRepository.save(option);
-                                /*
+                                *//*
                                 We must add this new option to the department
                                 option list
-                                 */
+                                 *//*
                                 deptExist.get().getListofOption().add(savedOption);
                                 departmentRepository.save(deptExist.get());
                             }
                         });
-            }
+            }*/
             ////Test de creation de level dans une Option
-            Optional<Option> optExist = optionRepository.findOptionByName(
+            /*Optional<Option> optExist = optionRepository.findOptionByName(
                     "Software_Engineering"
             );
 
@@ -278,10 +278,10 @@ public class ScriptManagementApplication {
                                     optExist.get(),
                                     staffExist.get()
                             );
-                            /*
+                            *//*
                             We cannot have 2 levels with the same name in the
                             same option
-                             */
+                             *//*
                             AtomicInteger canCreated = new AtomicInteger();
                             optExist.get().getListofLevel().forEach(lev->{
                                         if(lev.getName().equals(level.getName()) ||
@@ -293,21 +293,21 @@ public class ScriptManagementApplication {
                             );
                             if(canCreated.intValue()==0){
                                 Level savedlevel = levelRepository.save(level);
-                                /*
+                                *//*
                                 We must add this new level to the option
                                 level list
-                                 */
+                                 *//*
                                 optExist.get().getListofLevel().add(savedlevel);
                                 optionRepository.save(optExist.get());
                             }
                         });
-            }
+            }*/
 
 
 
 
             ////Test de creation de Course
-            Optional<Level> levelExist = levelRepository.findLevelByName(
+           /* Optional<Level> levelExist = levelRepository.findLevelByName(
                     "Level1"
             );
             if(levelExist.isPresent()){
@@ -323,10 +323,10 @@ public class ScriptManagementApplication {
                                             levelExist.get(),
                                             lecturerList
                                     );
-                                    /*
-                                    We cannot have 02 course with the same title
+                                    *//*
+                                    We cannot have 02 courses with the same title
                                     in the same level
-                                     */
+                                     *//*
                                     AtomicInteger canCreated = new AtomicInteger();
                                     levelExist.get().getListofCourse().forEach(c->{
                                                 if(c.getTitle().equals(course.getTitle()) ||
@@ -334,23 +334,24 @@ public class ScriptManagementApplication {
                                                     System.out.println(c+" already exist in DB");
                                                     canCreated.set(1);
                                                 }
+                                        //System.out.println("course title ="+course.getTitle()+"course code = "+course.getCourseCode());
                                             }
                                     );
                                     if(canCreated.intValue()==0){
                                         Course savedCourse  = courseRepository.save(course);
 
-                                        /*We must add this new Course to the level
-                                        course list*/
+                                        *//*We must add this new Course to the level
+                                        course list*//*
 
                                         levelExist.get().getListofCourse().add(savedCourse);
                                         levelRepository.save(levelExist.get());
                                     }
                                 }
                         );
-            }
+            }*/
 
             ////Test de creation de CourseOutline
-            Course courseExist = courseRepository.findAll().size()>0?
+           /* Course courseExist = courseRepository.findAll().size()>0?
                     courseRepository.findAll().get(0):null;
             if(courseExist!=null){
                 CourseOutline courseOutline = new CourseOutline(
@@ -371,7 +372,7 @@ public class ScriptManagementApplication {
                             );
                             moduleRepository.save(module);
                         });
-            }
+            }*/
             ////test de creation de Chapter
             ////Test de creation de Section
             ////Test de creation de SubSection
