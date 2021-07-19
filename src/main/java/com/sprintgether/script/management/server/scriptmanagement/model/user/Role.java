@@ -14,11 +14,13 @@ public class Role {
     String id;
     @Indexed(unique = true)
     String roleName;
+    String roleAlias;
     String roleDescription;
 
     public Role(String roleName, String roleDescription) {
         this.roleName = roleName;
         this.roleDescription = roleDescription;
+        this.roleAlias = roleName;
     }
 
     @Override

@@ -4,7 +4,9 @@ import com.sprintgether.script.management.server.scriptmanagement.commonused.Res
 import com.sprintgether.script.management.server.scriptmanagement.commonused.ServerResponse;
 import com.sprintgether.script.management.server.scriptmanagement.dao.user.UserRepository;
 import com.sprintgether.script.management.server.scriptmanagement.exception.user.DuplicateUserException;
+import com.sprintgether.script.management.server.scriptmanagement.exception.user.RoleNotFoundException;
 import com.sprintgether.script.management.server.scriptmanagement.exception.user.UserNotFoundException;
+import com.sprintgether.script.management.server.scriptmanagement.model.user.Role;
 import com.sprintgether.script.management.server.scriptmanagement.model.user.User;
 import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,9 +19,12 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     UserRepository userRepository;
+    RoleService roleService;
 
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, RoleService roleService) {
+
         this.userRepository = userRepository;
+        this.roleService = roleService;
     }
 
     @Override
@@ -58,6 +63,7 @@ public class UserServiceImpl implements UserService {
          */
         User userSaved = userRepository.save(userASaved);
         serverResponse.setResponseCode(ResponseCode.USER_CREATED);
+        serverResponse.setErrorMessage("The user has been successfully created");
         serverResponse.setAssociatedObject(userSaved);
         return serverResponse;
     }
@@ -80,6 +86,58 @@ public class UserServiceImpl implements UserService {
             userFound.setPassword(p.encode(newPassword));
             User userUpdated = userRepository.save(userFound);
 
+            serverResponse.setErrorMessage("Password Updated successfully");
+            serverResponse.setResponseCode(ResponseCode.USER_UPDATED);
+            serverResponse.setAssociatedObject(userUpdated);
+        }
+        return serverResponse;
+    }
+
+    @Override
+    public ServerResponse<User> addRoleToUser(String username, String roleName) throws RoleNotFoundException, UserNotFoundException {
+        ServerResponse<User> srUser = new ServerResponse<>();
+        srUser.setResponseCode(ResponseCode.USER_NOT_UPDATED);
+        /****
+         * Searching for the user object
+         */
+        ServerResponse<User> srUser1 = this.findUserByUsername(username);
+        ServerResponse<Role> srRole = roleService.findByRoleName(roleName);
+        if(srUser1.getResponseCode() == ResponseCode.USER_FOUND
+                && srRole.getResponseCode() == ResponseCode.ROLE_FOUND){
+            User user = srUser1.getAssociatedObject();
+            Role role = srRole.getAssociatedObject();
+            user.getListofRole().add(role);
+            User userUpdated = userRepository.save(user);
+            srUser.setErrorMessage("Role specified by the "+roleName+" has been successfully added to "+username);
+            srUser.setResponseCode(ResponseCode.USER_UPDATED);
+            srUser.setAssociatedObject(userUpdated);
+        }
+        else{
+            if(srUser1.getResponseCode() == ResponseCode.USER_NOT_FOUND){
+                throw new UserNotFoundException("The username specified does not match any user");
+            }
+            if(srRole.getResponseCode() == ResponseCode.ROLE_NOT_FOUND){
+                throw new UserNotFoundException("The roleName specified does not match any Role");
+            }
+        }
+        return srUser;
+    }
+
+    @Override
+    public ServerResponse<User> activateUser(String username, boolean active) throws UserNotFoundException {
+        ServerResponse<User> serverResponse = new ServerResponse<>();
+        serverResponse.setResponseCode(ResponseCode.USER_NOT_UPDATED);
+        serverResponse.setAssociatedObject(null);
+        ServerResponse<User> srUserExist = this.findUserByUsername(username);
+        if(srUserExist.getResponseCode()==ResponseCode.USER_NOT_FOUND){
+            throw new UserNotFoundException("The username specified is not found. Please check it");
+        }
+        if(srUserExist.getResponseCode()==ResponseCode.USER_FOUND){
+            User userFound = srUserExist.getAssociatedObject();
+            userFound.setActive(active);
+            User userUpdated = userRepository.save(userFound);
+
+            serverResponse.setErrorMessage("Account activation set successfully to "+active);
             serverResponse.setResponseCode(ResponseCode.USER_UPDATED);
             serverResponse.setAssociatedObject(userUpdated);
         }

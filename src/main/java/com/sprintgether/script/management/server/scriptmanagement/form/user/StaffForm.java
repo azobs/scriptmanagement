@@ -41,12 +41,13 @@ public class StaffForm {
     @NotNull(message = "The staff username cannot be null")
     @NotBlank(message = "The staff username cannot be blank caracter")
     @NotEmpty(message = "The staff username cannot be empty")
-    @Size(min=2, max=50, message="The staff username must have at least 2 caracters and at most 50")
+    @Size(min=2, max=50, message="The staff username must have at least 2 caracteres and at most 50")
     String username;
     @NotNull(message = "The staff password cannot be null")
     @NotBlank(message = "The staff password cannot be blank caracter")
     @NotEmpty(message = "The staff password cannot be empty")
     @Size(min=2, max=50, message="The staff password must have at least 2 caracters and at most 50")
     String password;
+    boolean active = false;
 
 }
