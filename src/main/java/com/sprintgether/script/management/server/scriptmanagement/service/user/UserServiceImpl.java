@@ -4,6 +4,7 @@ import com.sprintgether.script.management.server.scriptmanagement.commonused.Res
 import com.sprintgether.script.management.server.scriptmanagement.commonused.ServerResponse;
 import com.sprintgether.script.management.server.scriptmanagement.dao.user.UserRepository;
 import com.sprintgether.script.management.server.scriptmanagement.exception.user.DuplicateUserException;
+import com.sprintgether.script.management.server.scriptmanagement.exception.user.RoleNotExistForUserException;
 import com.sprintgether.script.management.server.scriptmanagement.exception.user.RoleNotFoundException;
 import com.sprintgether.script.management.server.scriptmanagement.exception.user.UserNotFoundException;
 import com.sprintgether.script.management.server.scriptmanagement.model.user.Role;
@@ -120,6 +121,38 @@ public class UserServiceImpl implements UserService {
                 throw new UserNotFoundException("The roleName specified does not match any Role");
             }
         }
+        return srUser;
+    }
+
+    @Override
+    public ServerResponse<User> removeRoleToUser(String username, String roleName)
+            throws RoleNotExistForUserException, UserNotFoundException {
+        ServerResponse<User> srUser = new ServerResponse<>();
+        ServerResponse<User> srUser1 = this.findUserByUsername(username);
+        ServerResponse<Role> srRole = roleService.findByRoleName(roleName);
+        if(srUser1.getResponseCode() == ResponseCode.USER_NOT_FOUND){
+            throw new UserNotFoundException("The username specified does not match any user");
+        }
+
+        Role roleToRemove = null;
+        if(srUser1.getResponseCode() == ResponseCode.USER_FOUND){
+            User userConcerned = srUser1.getAssociatedObject();
+            for (Role role : userConcerned.getListofRole()){
+                if(role.getRoleName().equalsIgnoreCase(roleName)){
+                    roleToRemove = role;
+                }
+            }
+            if(roleToRemove == null){
+                throw new RoleNotExistForUserException("The role specified don't belonging to the user");
+            }
+            userConcerned.getListofRole().remove(roleToRemove);
+            User userUpdated = userRepository.save(userConcerned);
+            srUser.setErrorMessage("Role specified by the "+roleName+" has been successfully removed to "+username);
+            srUser.setResponseCode(ResponseCode.USER_UPDATED);
+            srUser.setAssociatedObject(userUpdated);
+        }
+
+
         return srUser;
     }
 

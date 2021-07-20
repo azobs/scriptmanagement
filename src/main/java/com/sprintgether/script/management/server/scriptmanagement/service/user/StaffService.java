@@ -1,10 +1,7 @@
 package com.sprintgether.script.management.server.scriptmanagement.service.user;
 
 import com.sprintgether.script.management.server.scriptmanagement.commonused.ServerResponse;
-import com.sprintgether.script.management.server.scriptmanagement.exception.user.DuplicateStaffException;
-import com.sprintgether.script.management.server.scriptmanagement.exception.user.RoleNotFoundException;
-import com.sprintgether.script.management.server.scriptmanagement.exception.user.StaffNotFoundException;
-import com.sprintgether.script.management.server.scriptmanagement.exception.user.UserNotFoundException;
+import com.sprintgether.script.management.server.scriptmanagement.exception.user.*;
 import com.sprintgether.script.management.server.scriptmanagement.model.user.Staff;
 import com.sprintgether.script.management.server.scriptmanagement.model.user.User;
 import org.springframework.data.domain.Page;
@@ -30,6 +27,8 @@ public interface StaffService {
     ServerResponse<Staff> updateStaffPassword(String email, String newPassword) throws StaffNotFoundException;
     ServerResponse<Staff> activateStaff(String email, boolean active) throws StaffNotFoundException;
     ServerResponse<Staff> addRoleToStaff(String email, String roleName) throws RoleNotFoundException, StaffNotFoundException;
+    ServerResponse<Staff> removeRoleToStaff(String email, String roleName) throws RoleNotExistForUserException
+            , StaffNotFoundException;
     ServerResponse<Staff> deleteStaff(String email) throws StaffNotFoundException;
 
 }

@@ -71,7 +71,7 @@ public class InstitutionServiceImpl implements InstitutionService{
     }
 
     @Override
-    public ServerResponse<Institution> savedInstitution(String name, String acronym, String description,
+    public ServerResponse<Institution> saveInstitution(String name, String acronym, String description,
                                                         String location, String address,
                                                         String logoInstitution) throws DuplicateInstitutionException {
         ServerResponse<Institution> srInst = new ServerResponse<>();
@@ -103,7 +103,12 @@ public class InstitutionServiceImpl implements InstitutionService{
     }
 
     @Override
-    public ServerResponse<Institution> updatedInstitution(String name, String acronym, String description,
+    public Institution saveInstitution(Institution institution) {
+        return this.institutionRepository.save(institution);
+    }
+
+    @Override
+    public ServerResponse<Institution> updateInstitution(String name, String acronym, String description,
                                                           String location, String address,
                                                           String logoInstitution) throws InstitutionNotFoundException {
         ServerResponse<Institution> srInst = new ServerResponse<>();
@@ -130,10 +135,6 @@ public class InstitutionServiceImpl implements InstitutionService{
         return srInst;
     }
 
-    @Override
-    public ServerResponse<Institution> addSchoolToInstitution(String institutionName, String schoolName) {
-        return null;
-    }
 
     @Override
     public ServerResponse<Institution> deleteInstitution(String name) {

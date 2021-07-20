@@ -15,10 +15,10 @@ public interface InstitutionService {
     ServerResponse<List<Institution>> findAllInstitution();
     ServerResponse<Page<Institution>> findAllInstitution(String keyword, Pageable pageable);
     ServerResponse<Page<Institution>> findAllInstitution(Pageable pageable);
-    ServerResponse<Institution> savedInstitution(String name, String acronym, String description,
+    ServerResponse<Institution> saveInstitution(String name, String acronym, String description,
                                                  String location, String address, String logoInstitution) throws DuplicateInstitutionException;
-    ServerResponse<Institution> updatedInstitution(String name, String acronym, String description,
+    Institution saveInstitution(Institution institution);
+    ServerResponse<Institution> updateInstitution(String name, String acronym, String description,
                                                  String location, String address, String logoInstitution) throws InstitutionNotFoundException;
-    ServerResponse<Institution> addSchoolToInstitution(String institutionName, String schoolName);
     ServerResponse<Institution> deleteInstitution(String name);
 }

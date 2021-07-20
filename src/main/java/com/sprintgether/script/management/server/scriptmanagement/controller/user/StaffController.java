@@ -3,13 +3,12 @@ package com.sprintgether.script.management.server.scriptmanagement.controller.us
 import com.sprintgether.script.management.server.scriptmanagement.commonused.ResponseCode;
 import com.sprintgether.script.management.server.scriptmanagement.commonused.ServerResponse;
 import com.sprintgether.script.management.server.scriptmanagement.exception.user.DuplicateStaffException;
+import com.sprintgether.script.management.server.scriptmanagement.exception.user.RoleNotExistForUserException;
 import com.sprintgether.script.management.server.scriptmanagement.exception.user.RoleNotFoundException;
 import com.sprintgether.script.management.server.scriptmanagement.exception.user.StaffNotFoundException;
-import com.sprintgether.script.management.server.scriptmanagement.form.School.InstitutionFormList;
 import com.sprintgether.script.management.server.scriptmanagement.form.user.StaffForm;
 import com.sprintgether.script.management.server.scriptmanagement.form.user.StaffFormList;
 import com.sprintgether.script.management.server.scriptmanagement.form.user.StaffRoleForm;
-import com.sprintgether.script.management.server.scriptmanagement.model.school.Institution;
 import com.sprintgether.script.management.server.scriptmanagement.model.user.Staff;
 import com.sprintgether.script.management.server.scriptmanagement.service.user.StaffService;
 import com.sprintgether.script.management.server.scriptmanagement.service.user.UserService;
@@ -86,7 +85,7 @@ public class StaffController {
             for (FieldError error : errorList) {
                 return new ServerResponse<Page<Staff>>(error.getDefaultMessage(),
                         "Some form entry are not well filled in the staffForm for save",
-                        ResponseCode.ERROR_RESPONSE,
+                        ResponseCode.ERROR_IN_FORM_FILLED,
                         null);
             }
         }
@@ -126,7 +125,7 @@ public class StaffController {
             for (FieldError error : errorList) {
                 return new ServerResponse<List<Staff>>(error.getDefaultMessage(),
                         "Some form entry are not well filled in the staffForm for save",
-                        ResponseCode.ERROR_RESPONSE,
+                        ResponseCode.ERROR_IN_FORM_FILLED,
                         null);
             }
         }
@@ -149,7 +148,7 @@ public class StaffController {
             for (FieldError error : errorList) {
                 return new ServerResponse<Staff>(error.getDefaultMessage(),
                         "Some form entry are not well filled in the staffForm for save",
-                        ResponseCode.ERROR_RESPONSE,
+                        ResponseCode.ERROR_IN_FORM_FILLED,
                         null);
             }
         }
@@ -184,7 +183,7 @@ public class StaffController {
             for (FieldError error : errorList) {
                 return new ServerResponse<Staff>(error.getDefaultMessage(),
                         "Some form entry are not well filled in the staffForm for udpate",
-                        ResponseCode.ERROR_RESPONSE,
+                        ResponseCode.ERROR_IN_FORM_FILLED,
                         null);
             }
         }
@@ -216,7 +215,7 @@ public class StaffController {
             for (FieldError error : errorList) {
                 return new ServerResponse<Staff>(error.getDefaultMessage(),
                         "Some form entry are not well filled for staffType update",
-                        ResponseCode.ERROR_RESPONSE,
+                        ResponseCode.ERROR_IN_FORM_FILLED,
                         null);
             }
         }
@@ -247,7 +246,7 @@ public class StaffController {
             for (FieldError error : errorList) {
                 return new ServerResponse<Staff>(error.getDefaultMessage(),
                         "Some form entry are not well filled for Password update",
-                        ResponseCode.ERROR_RESPONSE,
+                        ResponseCode.ERROR_IN_FORM_FILLED,
                         null);
             }
         }
@@ -279,7 +278,7 @@ public class StaffController {
             for (FieldError error : errorList) {
                 return new ServerResponse<Staff>(error.getDefaultMessage(),
                         "Some form entry are not well filled for Password update",
-                        ResponseCode.ERROR_RESPONSE,
+                        ResponseCode.ERROR_IN_FORM_FILLED,
                         null);
             }
         }
@@ -299,8 +298,8 @@ public class StaffController {
         return srStaff;
     }
 
-    @PostMapping(path = "/staffAddRole")
-    public ServerResponse<Staff> postRoleToStaff(@Valid @RequestBody StaffRoleForm staffRoleForm,
+    @PostMapping(path = "/roleAddedToStaff")
+    public ServerResponse<Staff> postRoleAddedToStaff(@Valid @RequestBody StaffRoleForm staffRoleForm,
                                                   BindingResult bindingResult) {
         ServerResponse<Staff> srStaff = new ServerResponse("", "", ResponseCode.BAD_REQUEST, null);
 
@@ -310,7 +309,7 @@ public class StaffController {
             for (FieldError error : errorList) {
                 return new ServerResponse<Staff>(error.getDefaultMessage(),
                         "Some form entry are not well filled for Password update",
-                        ResponseCode.ERROR_RESPONSE,
+                        ResponseCode.ERROR_IN_FORM_FILLED,
                         null);
             }
         }
@@ -325,6 +324,38 @@ public class StaffController {
         } catch (StaffNotFoundException e) {
             //e.printStackTrace();
             srStaff.setErrorMessage("The email specified does not match any Staff");
+            srStaff.setMoreDetails(e.getMessage());
+        }
+
+        return srStaff;
+    }
+
+    @PostMapping(path = "/roleRemovedStaff")
+    public ServerResponse<Staff> postRoleRemovedStaff(@Valid @RequestBody StaffRoleForm staffRoleForm,
+                                                 BindingResult bindingResult) {
+        ServerResponse<Staff> srStaff = new ServerResponse("", "", ResponseCode.BAD_REQUEST, null);
+
+        if (bindingResult.hasErrors()) {
+            //System.out.println(bindingResult.toString());
+            List<FieldError> errorList = bindingResult.getFieldErrors();
+            for (FieldError error : errorList) {
+                return new ServerResponse<Staff>(error.getDefaultMessage(),
+                        "Some form entry are not well filled for Password update",
+                        ResponseCode.ERROR_IN_FORM_FILLED,
+                        null);
+            }
+        }
+
+        try {
+            srStaff = this.staffService.removeRoleToStaff(staffRoleForm.getEmail(), staffRoleForm.getRoleName());
+            srStaff.setErrorMessage("The role "+staffRoleForm.getRoleName()+" has been successfully added to "+staffRoleForm.getEmail());
+        } catch (StaffNotFoundException e) {
+            //e.printStackTrace();
+            srStaff.setErrorMessage("The email specified does not match any Staff");
+            srStaff.setMoreDetails(e.getMessage());
+        } catch (RoleNotExistForUserException e) {
+            //e.printStackTrace();
+            srStaff.setErrorMessage("The role specified don't belonging to Staff specified");
             srStaff.setMoreDetails(e.getMessage());
         }
 

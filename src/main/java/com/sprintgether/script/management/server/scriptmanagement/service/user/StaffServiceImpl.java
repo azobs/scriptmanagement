@@ -10,10 +10,13 @@ import com.sprintgether.script.management.server.scriptmanagement.model.user.Rol
 import com.sprintgether.script.management.server.scriptmanagement.model.user.Staff;
 import com.sprintgether.script.management.server.scriptmanagement.model.user.User;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -333,6 +336,32 @@ public class StaffServiceImpl implements StaffService{
             try {
                 ServerResponse<User> srUser = this.userService.addRoleToUser(
                         staff.getUserAssociated().getUsername(), role.getRoleName());
+                srStaff = this.findStaffByEmail(email);
+            } catch (UserNotFoundException e) {
+                //e.printStackTrace();
+                srStaff.setResponseCode(ResponseCode.STAFF_NOT_UPDATE);
+                srStaff.setErrorMessage("There is no USER object associated with the Staff");
+                srStaff.setMoreDetails(e.getMessage());
+            }
+        }
+
+        return srStaff;
+    }
+
+    @Override
+    public ServerResponse<Staff> removeRoleToStaff(String email, String roleName) throws RoleNotExistForUserException, StaffNotFoundException {
+        ServerResponse<Staff> srStaff = new ServerResponse<>();
+
+        ServerResponse<Staff> srStaff1 = this.findStaffByEmail(email);
+        if(srStaff1.getResponseCode()==ResponseCode.STAFF_NOT_FOUND){
+            throw new StaffNotFoundException("The email specified does not match any Staff object");
+        }
+
+        if(srStaff1.getResponseCode() ==  ResponseCode.STAFF_FOUND){
+            Staff staff = srStaff1.getAssociatedObject();
+            try {
+                ServerResponse<User> srUser = this.userService.removeRoleToUser(
+                        staff.getUserAssociated().getUsername(), roleName);
                 srStaff = this.findStaffByEmail(email);
             } catch (UserNotFoundException e) {
                 //e.printStackTrace();

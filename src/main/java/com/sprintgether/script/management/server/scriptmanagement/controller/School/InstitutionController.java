@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "/sm/school/institution")
+@RequestMapping(path = "/sm/school")
 public class InstitutionController {
     InstitutionService institutionService;
 
@@ -54,7 +54,7 @@ public class InstitutionController {
             for (FieldError error : errorList) {
                 return new ServerResponse<Page<Institution>>(error.getDefaultMessage(),
                         "Some form entry are not well filled in the institutionForm for save",
-                        ResponseCode.ERROR_RESPONSE,
+                        ResponseCode.ERROR_IN_FORM_FILLED,
                         null);
             }
         }
@@ -72,8 +72,8 @@ public class InstitutionController {
     }
 
     @GetMapping(path = "/institution")
-    public ServerResponse<Institution> getInstitution(@Valid @RequestBody String name){
-        return institutionService.findInstitutionByName(name);
+    public ServerResponse<Institution> getInstitution(@Valid @RequestBody InstitutionFormList institutionFormList){
+        return institutionService.findInstitutionByName(institutionFormList.getName());
     }
 
     @GetMapping(path = "/institutionList")
@@ -82,8 +82,8 @@ public class InstitutionController {
         return institutionService.findAllInstitution();
     }
 
-    @PostMapping(path = "/savedInstitution")
-    public ServerResponse<Institution> postSavedInstitution(@Valid @RequestBody InstitutionForm institutionForm,
+    @PostMapping(path = "/institutionSaved")
+    public ServerResponse<Institution> postInstitutionSaved(@Valid @RequestBody InstitutionForm institutionForm,
                                                 BindingResult bindingResult) {
         ServerResponse<Institution> srInstitution = new ServerResponse("", "", ResponseCode.BAD_REQUEST, null);
 
@@ -93,13 +93,13 @@ public class InstitutionController {
             for (FieldError error : errorList) {
                 return new ServerResponse<Institution>(error.getDefaultMessage(),
                         "Some form entry are not well filled in the staffForm for save",
-                        ResponseCode.ERROR_RESPONSE,
+                        ResponseCode.ERROR_IN_FORM_FILLED,
                         null);
             }
         }
 
         try {
-            srInstitution = institutionService.savedInstitution(institutionForm.getName(),
+            srInstitution = institutionService.saveInstitution(institutionForm.getName(),
                     institutionForm.getAcronym(), institutionForm.getDescription(),
                     institutionForm.getLocation(), institutionForm.getAddress(),
                     institutionForm.getLogoInstitution());
@@ -115,8 +115,8 @@ public class InstitutionController {
         return srInstitution;
     }
 
-    @PutMapping(path = "/updatedInstitution")
-    public ServerResponse<Institution> putUpdateInstitution(@Valid @RequestBody InstitutionForm institutionForm,
+    @PutMapping(path = "/institutionUpdated")
+    public ServerResponse<Institution> putInstitutionUpdated(@Valid @RequestBody InstitutionForm institutionForm,
                                                 BindingResult bindingResult) {
         ServerResponse<Institution> srInstitution = new ServerResponse("", "", ResponseCode.BAD_REQUEST, null);
 
@@ -126,13 +126,13 @@ public class InstitutionController {
             for (FieldError error : errorList) {
                 return new ServerResponse<Institution>(error.getDefaultMessage(),
                         "Some form entry are not well filled in the staffForm for udpate",
-                        ResponseCode.ERROR_RESPONSE,
+                        ResponseCode.ERROR_IN_FORM_FILLED,
                         null);
             }
         }
 
         try {
-            srInstitution = institutionService.updatedInstitution(institutionForm.getName(), institutionForm.getAcronym(), institutionForm.getDescription(), institutionForm.getLocation(), institutionForm.getAddress(), institutionForm.getLogoInstitution());
+            srInstitution = institutionService.updateInstitution(institutionForm.getName(), institutionForm.getAcronym(), institutionForm.getDescription(), institutionForm.getLocation(), institutionForm.getAddress(), institutionForm.getLogoInstitution());
             srInstitution.setErrorMessage("The institution has been successfully updated");
         } catch (InstitutionNotFoundException e) {
             //e.printStackTrace();

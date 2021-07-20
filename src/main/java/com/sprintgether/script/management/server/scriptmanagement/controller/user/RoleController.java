@@ -40,7 +40,7 @@ public class RoleController {
             for (FieldError error : errorList) {
                 return new ServerResponse<Role>(error.getDefaultMessage(),
                         "Some form entry are not well filled in the staffForm for save",
-                        ResponseCode.ERROR_RESPONSE,
+                        ResponseCode.ERROR_IN_FORM_FILLED,
                         null);
             }
         }
@@ -72,7 +72,7 @@ public class RoleController {
             for (FieldError error : errorList) {
                 return new ServerResponse<Role>(error.getDefaultMessage(),
                         "Some form entry are not well filled for staffType update",
-                        ResponseCode.ERROR_RESPONSE,
+                        ResponseCode.ERROR_IN_FORM_FILLED,
                         null);
             }
         }
