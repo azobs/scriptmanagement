@@ -1,7 +1,6 @@
 package com.sprintgether.script.management.server.scriptmanagement.form.user;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 public class StaffFormList {
@@ -21,8 +20,11 @@ public class StaffFormList {
      */
     String staffType;
 
+    String email;
+    String keyword;
+
     public StaffFormList() {
-        this.PageSize = 1;
+        this.PageSize = 10;
         this.pageNumber = 0;
         this.sortBy1 = "EMAIL";
         this.direction1 = "ASC";
@@ -33,5 +35,7 @@ public class StaffFormList {
         this.sortBy4 = "USERNAME";
         this.direction4 = "ASC";
         this.staffType = "ALL";
+        this.email = "";
+        this.keyword = "";
     }
 }

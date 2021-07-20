@@ -4,6 +4,7 @@ import com.sprintgether.script.management.server.scriptmanagement.commonused.Res
 import com.sprintgether.script.management.server.scriptmanagement.commonused.ServerResponse;
 import com.sprintgether.script.management.server.scriptmanagement.dao.user.StaffRepository;
 import com.sprintgether.script.management.server.scriptmanagement.exception.user.*;
+import com.sprintgether.script.management.server.scriptmanagement.model.school.Institution;
 import com.sprintgether.script.management.server.scriptmanagement.model.user.EnumStaffType;
 import com.sprintgether.script.management.server.scriptmanagement.model.user.Role;
 import com.sprintgether.script.management.server.scriptmanagement.model.user.Staff;
@@ -35,6 +36,7 @@ public class StaffServiceImpl implements StaffService{
     public ServerResponse<Staff> findStaffByEmail(String email) {
         ServerResponse<Staff> serverResponse = new ServerResponse<>();
         Optional<Staff> optionalStaff = staffRepository.findStaffByEmail(email);
+        //System.out.println("dans le service email = "+email);
         if(optionalStaff.isPresent()){
             serverResponse.setErrorMessage("The staff research method has been successfull made");
             serverResponse.setResponseCode(ResponseCode.STAFF_FOUND);
@@ -58,6 +60,16 @@ public class StaffServiceImpl implements StaffService{
         srlistStaff.setResponseCode(ResponseCode.NORMAL_RESPONSE);
         srlistStaff.setAssociatedObject(pageofStaff);
         return srlistStaff;
+    }
+
+    @Override
+    public ServerResponse<Page<Staff>> findAllStaff(String keyword, Pageable pageable) {
+        ServerResponse<Page<Staff>> srPageStaff = new ServerResponse<>();
+        Page<Staff> pageofStaff = staffRepository.findByFirstNameContaining(keyword, pageable);
+        srPageStaff.setErrorMessage("The page of staff has been made");
+        srPageStaff.setResponseCode(ResponseCode.NORMAL_RESPONSE);
+        srPageStaff.setAssociatedObject(pageofStaff);
+        return srPageStaff;
     }
 
     @Override

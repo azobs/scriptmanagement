@@ -5,9 +5,11 @@ import com.sprintgether.script.management.server.scriptmanagement.commonused.Ser
 import com.sprintgether.script.management.server.scriptmanagement.exception.user.DuplicateStaffException;
 import com.sprintgether.script.management.server.scriptmanagement.exception.user.RoleNotFoundException;
 import com.sprintgether.script.management.server.scriptmanagement.exception.user.StaffNotFoundException;
+import com.sprintgether.script.management.server.scriptmanagement.form.School.InstitutionFormList;
 import com.sprintgether.script.management.server.scriptmanagement.form.user.StaffForm;
 import com.sprintgether.script.management.server.scriptmanagement.form.user.StaffFormList;
 import com.sprintgether.script.management.server.scriptmanagement.form.user.StaffRoleForm;
+import com.sprintgether.script.management.server.scriptmanagement.model.school.Institution;
 import com.sprintgether.script.management.server.scriptmanagement.model.user.Staff;
 import com.sprintgether.script.management.server.scriptmanagement.service.user.StaffService;
 import com.sprintgether.script.management.server.scriptmanagement.service.user.UserService;
@@ -25,7 +27,7 @@ import java.util.Comparator;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "/sm/user/staff")
+@RequestMapping(path = "/sm/user")
 public class StaffController {
 
     UserService userService;
@@ -69,6 +71,12 @@ public class StaffController {
         return sort;
     }
 
+    @GetMapping(path = "/staff")
+    public ServerResponse<Staff> getStaff(@Valid @RequestBody StaffFormList staffFormList){
+        //System.out.println("email "+staffFormList.getEmail());
+        return staffService.findStaffByEmail(staffFormList.getEmail());
+    }
+
     @GetMapping(path = "/staffPage")
     public ServerResponse<Page<Staff>> getStaffPage(@Valid @RequestBody StaffFormList staffFormList,
                                                     BindingResult bindingResult){
@@ -84,6 +92,13 @@ public class StaffController {
         }
         //System.out.println("staffFormList "+staffFormList.toString());
         Pageable sort = this.getStaffPageable(staffFormList);
+
+        if(!staffFormList.getKeyword().equalsIgnoreCase("")){
+            /***
+             * We must make research by keyword
+             */
+            return staffService.findAllStaff(staffFormList.getKeyword(), sort);
+        }
 
         if(staffFormList.getStaffType().equalsIgnoreCase("ALL")){
             return staffService.findAllStaff(sort);
@@ -123,8 +138,8 @@ public class StaffController {
         return staffService.findStaffByStaffType(staffFormList.getStaffType());
     }
 
-    @PostMapping(path = "/savedStaff")
-    public ServerResponse<Staff> postSavedStaff(@Valid @RequestBody StaffForm staffForm,
+    @PostMapping(path = "/staffSaved")
+    public ServerResponse<Staff> postStaffSaved(@Valid @RequestBody StaffForm staffForm,
                                          BindingResult bindingResult){
         ServerResponse<Staff> srStaff =  new ServerResponse("","",ResponseCode.BAD_REQUEST, null);
 
@@ -158,8 +173,8 @@ public class StaffController {
     }
 
 
-    @PutMapping(path = "/updatedStaff")
-    public ServerResponse<Staff> putUpdateStaff(@Valid @RequestBody StaffForm staffForm,
+    @PutMapping(path = "/staffUpdated")
+    public ServerResponse<Staff> putStaffUpdated(@Valid @RequestBody StaffForm staffForm,
                                          BindingResult bindingResult) {
         ServerResponse<Staff> srStaff = new ServerResponse("", "", ResponseCode.BAD_REQUEST, null);
 
@@ -174,9 +189,9 @@ public class StaffController {
             }
         }
 
-        System.out.println("Just before enter in the try block code");
+        //System.out.println("Just before enter in the try block code");
         try{
-            System.out.println("Tne execution of the code in the try block just started like this");
+            //System.out.println("Tne execution of the code in the try block just started like this");
             srStaff = staffService.updateStaff(staffForm.getEmail(), staffForm.getFirstName(),
                     staffForm.getLastName(), staffForm.getAddress(), staffForm.getDescription());
             srStaff.setErrorMessage("The staff has been succefully updated");
@@ -190,8 +205,8 @@ public class StaffController {
         return srStaff;
     }
 
-    @PutMapping(path = "/updatedStaffType")
-    public ServerResponse<Staff> putUpdateStaffType(@Valid @RequestBody StaffForm staffForm,
+    @PutMapping(path = "/staffTypeUpdated")
+    public ServerResponse<Staff> putStaffTypeUpdated(@Valid @RequestBody StaffForm staffForm,
                                          BindingResult bindingResult) {
         ServerResponse<Staff> srStaff = new ServerResponse("", "", ResponseCode.BAD_REQUEST, null);
 
@@ -221,8 +236,8 @@ public class StaffController {
         return srStaff;
     }
 
-    @PutMapping(path = "/updatedStaffPassword")
-    public ServerResponse<Staff> putUpdateStaffPassword(@Valid @RequestBody StaffForm staffForm,
+    @PutMapping(path = "/staffPasswordUpdated")
+    public ServerResponse<Staff> putStaffPasswordUpdated(@Valid @RequestBody StaffForm staffForm,
                                          BindingResult bindingResult) {
         ServerResponse<Staff> srStaff = new ServerResponse("", "", ResponseCode.BAD_REQUEST, null);
 
@@ -253,8 +268,8 @@ public class StaffController {
     }
 
 
-    @PutMapping(path = "/activateStaff")
-    public ServerResponse<Staff> putActivateStaff(@Valid @RequestBody StaffForm staffForm,
+    @PutMapping(path = "/staffActivated")
+    public ServerResponse<Staff> putStaffActivated(@Valid @RequestBody StaffForm staffForm,
                                                         BindingResult bindingResult) {
         ServerResponse<Staff> srStaff = new ServerResponse("", "", ResponseCode.BAD_REQUEST, null);
 
@@ -284,7 +299,7 @@ public class StaffController {
         return srStaff;
     }
 
-    @PostMapping(path = "/addRoleToStaff")
+    @PostMapping(path = "/staffAddRole")
     public ServerResponse<Staff> postRoleToStaff(@Valid @RequestBody StaffRoleForm staffRoleForm,
                                                   BindingResult bindingResult) {
         ServerResponse<Staff> srStaff = new ServerResponse("", "", ResponseCode.BAD_REQUEST, null);

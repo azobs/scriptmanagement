@@ -31,6 +31,15 @@ public  class ResponseCode {
     public static final int ROLE_UPDATED = 220;
     public static final int ROLE_NOT_DELETED = 221;
     public static final int ROLE_DELETED = 222;
+    //Concerning User objet
+    public static final int INSTITUTION_NOT_FOUND = 223;
+    public static final int INSTITUTION_FOUND = 224;
+    public static final int INSTITUTION_NOT_CREATED = 225;
+    public static final int INSTITUTION_CREATED = 226;
+    public static final int INSTITUTION_NOT_UPDATED = 227;
+    public static final int INSTITUTION_UPDATED = 228;
+    public static final int INSTITUTION_NOT_DELETED = 229;
+    public static final int INSTITUTION_DELETED = 230;
     //Common used value
     public static final int ERROR_RESPONSE = 400;
     public static final int EXCEPTION_SAVED_USER = 500;
@@ -40,4 +49,6 @@ public  class ResponseCode {
     public static final int EXCEPTION_UPDATED_STAFF = 504;
     public static final int EXCEPTION_SAVED_ROLE = 505;
     public static final int EXCEPTION_UPDATED_ROLE = 506;
+    public static final int EXCEPTION_SAVED_INSTITUTION = 507;
+    public static final int EXCEPTION_UPDATED_INSTITUTION = 508;
 }

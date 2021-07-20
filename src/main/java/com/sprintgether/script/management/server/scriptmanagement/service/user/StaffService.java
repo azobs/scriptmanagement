@@ -17,6 +17,7 @@ public interface StaffService {
 
     ServerResponse<Staff> findStaffByEmail(String email);
     ServerResponse<Page<Staff>> findAllStaff(Pageable pageable);
+    ServerResponse<Page<Staff>> findAllStaff(String keyword, Pageable pageable);
     ServerResponse<Page<Staff>> findStaffByStaffType(String staffType, Pageable pageable);
     ServerResponse<List<Staff>> findAllStaff();
     ServerResponse<List<Staff>> findStaffByStaffType(String staffType);
