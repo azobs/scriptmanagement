@@ -4,6 +4,7 @@ import com.sprintgether.script.management.server.scriptmanagement.commonused.Ser
 import com.sprintgether.script.management.server.scriptmanagement.exception.school.DuplicateInstitutionException;
 import com.sprintgether.script.management.server.scriptmanagement.exception.school.InstitutionNotFoundException;
 import com.sprintgether.script.management.server.scriptmanagement.model.school.Institution;
+import com.sprintgether.script.management.server.scriptmanagement.model.school.School;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

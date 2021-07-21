@@ -6,6 +6,7 @@ import com.sprintgether.script.management.server.scriptmanagement.dao.school.Ins
 import com.sprintgether.script.management.server.scriptmanagement.exception.school.DuplicateInstitutionException;
 import com.sprintgether.script.management.server.scriptmanagement.exception.school.InstitutionNotFoundException;
 import com.sprintgether.script.management.server.scriptmanagement.model.school.Institution;
+import com.sprintgether.script.management.server.scriptmanagement.model.school.School;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -39,6 +40,8 @@ public class InstitutionServiceImpl implements InstitutionService{
         }
         return srInstitution;
     }
+
+
 
     @Override
     public ServerResponse<List<Institution>> findAllInstitution() {

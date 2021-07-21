@@ -1,5 +1,6 @@
 package com.sprintgether.script.management.server.scriptmanagement.model.school;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sprintgether.script.management.server.scriptmanagement.model.user.Staff;
 import lombok.*;
 import org.springframework.data.annotation.Id;
@@ -12,7 +13,7 @@ import java.util.List;
 @Document
 @Getter
 @Setter
-@ToString(exclude = "listofOption")
+@ToString
 @NoArgsConstructor
 public class Department {
     @Id
@@ -24,8 +25,6 @@ public class Department {
     School ownerSchool;
     @DBRef
     Staff hod;
-    @DBRef
-    List<Option> listofOption = new ArrayList<Option>();
 
     public Department(String name, String acronym, String description,
                       School ownerSchool, Staff hod) {

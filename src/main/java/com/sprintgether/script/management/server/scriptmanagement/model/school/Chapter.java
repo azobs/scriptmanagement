@@ -1,5 +1,6 @@
 package com.sprintgether.script.management.server.scriptmanagement.model.school;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -11,7 +12,7 @@ import java.util.List;
 @Document
 @Getter
 @Setter
-@ToString(exclude = "listofSection")
+@ToString
 @NoArgsConstructor
 public class Chapter {
     @Id
@@ -20,8 +21,6 @@ public class Chapter {
     int chapterOrder;
     @DBRef
     Module ownerModule;
-    @DBRef
-    List<Section> listofSection = new ArrayList<Section>();
 
     public Chapter(String title, int chapterOrder, Module ownerModule) {
         this.title = title;

@@ -1,5 +1,6 @@
 package com.sprintgether.script.management.server.scriptmanagement.model.school;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -12,7 +13,6 @@ import java.util.List;
 @Document
 @Getter
 @Setter
-@ToString(exclude = "listofDepartment")
 @NoArgsConstructor
 public class School {
     @Id
@@ -26,8 +26,6 @@ public class School {
     Institution ownerInstitution;
     @DBRef
     Institution parentInstitution;
-    @DBRef
-    List<Department> listofDepartment = new ArrayList<Department>();
 
     public School(String name, String acronym, String description,
                   Institution ownerInstitution) {

@@ -1,5 +1,6 @@
 package com.sprintgether.script.management.server.scriptmanagement.model.school;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -12,7 +13,7 @@ import java.util.List;
 @Document
 @Getter
 @Setter
-@ToString(exclude = "listofLevel")
+@ToString
 @NoArgsConstructor
 public class Option {
     @Id
@@ -23,8 +24,6 @@ public class Option {
     String description;
     @DBRef
     Department ownerDepartment;
-    @DBRef
-    List<Level> listofLevel = new ArrayList<Level>();
 
     public Option(String name, String acronym, String description, Department ownerDepartment) {
         this.name = name;

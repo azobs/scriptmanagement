@@ -7,6 +7,7 @@ import com.sprintgether.script.management.server.scriptmanagement.exception.scho
 import com.sprintgether.script.management.server.scriptmanagement.form.School.InstitutionForm;
 import com.sprintgether.script.management.server.scriptmanagement.form.School.InstitutionFormList;
 import com.sprintgether.script.management.server.scriptmanagement.model.school.Institution;
+import com.sprintgether.script.management.server.scriptmanagement.model.school.School;
 import com.sprintgether.script.management.server.scriptmanagement.service.school.InstitutionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @RestController
@@ -79,7 +82,18 @@ public class InstitutionController {
     @GetMapping(path = "/institutionList")
     public ServerResponse<List<Institution>> getInstitutionList(){
 
-        return institutionService.findAllInstitution();
+        ServerResponse<List<Institution>> srListInst = institutionService.findAllInstitution();
+        List<Institution> listofInst = srListInst.getAssociatedObject();
+        Collections.sort(listofInst, new Comparator<Institution>() {
+            @Override
+            public int compare(Institution o1, Institution o2) {
+                if(o1.getName().compareToIgnoreCase(o2.getName())<0) return -1;
+                if(o1.getName().compareToIgnoreCase(o2.getName())>0) return 1;
+                return 0;
+            }
+        });
+        srListInst.setAssociatedObject(listofInst);
+        return srListInst;
     }
 
     @PostMapping(path = "/institutionSaved")

@@ -189,61 +189,6 @@ public class SchoolServiceImpl implements SchoolService{
         return srSchool;
     }
 
-    @Override
-    public ServerResponse<Institution> addSchoolToInstitution(String institutionName, String schoolName) throws InstitutionNotFoundException, SchoolNotFoundException {
-        ServerResponse<Institution> srInstUpdate = new ServerResponse<>();
-
-        ServerResponse<Institution> srConcernedInst = institutionService.findInstitutionByName(institutionName);
-        if(srConcernedInst.getResponseCode() == ResponseCode.INSTITUTION_NOT_FOUND){
-            throw new InstitutionNotFoundException("The institution specified has not been found in the system");
-        }
-
-        ServerResponse<School> srConcernedSchool = this.findSchoolByName(schoolName);
-        if(srConcernedSchool.getResponseCode() == ResponseCode.SCHOOL_NOT_FOUND){
-            throw new SchoolNotFoundException("The school specified has not been found in the system");
-        }
-
-        if(srConcernedInst.getResponseCode() == ResponseCode.INSTITUTION_FOUND &&
-                srConcernedSchool.getResponseCode() == ResponseCode.SCHOOL_FOUND){
-            Institution institutionConcerned = srConcernedInst.getAssociatedObject();
-            institutionConcerned.getListofSchool().add(srConcernedSchool.getAssociatedObject());
-            Institution instUpdate = institutionService.saveInstitution(institutionConcerned);
-            srInstUpdate.setResponseCode(ResponseCode.INSTITUTION_UPDATED);
-            srInstUpdate.setErrorMessage("The school specified has been added successfully to the institution");
-            srInstUpdate.setAssociatedObject(instUpdate);
-        }
-        return srInstUpdate;
-    }
-
-    @Override
-    public ServerResponse<Institution> removeSchoolToInstitution(String institutionName, String schoolName) throws InstitutionNotFoundException, SchoolNotExistInInstitutionException {
-        ServerResponse<Institution> srInstUpdate = new ServerResponse<>();
-
-        ServerResponse<Institution> srConcernedInst = institutionService.findInstitutionByName(institutionName);
-        if(srConcernedInst.getResponseCode() == ResponseCode.INSTITUTION_NOT_FOUND){
-            throw new InstitutionNotFoundException("The institution specified has not been found in the system");
-        }
-
-        if(srConcernedInst.getResponseCode() == ResponseCode.INSTITUTION_FOUND){
-            Institution institutionConcerned = srConcernedInst.getAssociatedObject();
-            School schoolToRemove = null;
-            for(School school : institutionConcerned.getListofSchool()){
-                if(school.getName().equalsIgnoreCase(schoolName)){
-                    schoolToRemove = school;
-                }
-            }
-            if(schoolToRemove == null){
-                throw new SchoolNotExistInInstitutionException("The school specified does not belonging " +
-                        "to the institution specified");
-            }
-            institutionConcerned.getListofSchool().remove(schoolToRemove);
-            Institution instUpdate = institutionService.saveInstitution(institutionConcerned);
-            srInstUpdate.setResponseCode(ResponseCode.INSTITUTION_UPDATED);
-            srInstUpdate.setErrorMessage("The school specified has been added successfully to the institution");
-            srInstUpdate.setAssociatedObject(instUpdate);
-        }
-        return srInstUpdate;
-    }
 
     @Override
     public ServerResponse<School> deleteSchool(String name) throws SchoolNotFoundException {

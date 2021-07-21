@@ -3,10 +3,9 @@ package com.sprintgether.script.management.server.scriptmanagement.service.user;
 import com.sprintgether.script.management.server.scriptmanagement.commonused.ResponseCode;
 import com.sprintgether.script.management.server.scriptmanagement.commonused.ServerResponse;
 import com.sprintgether.script.management.server.scriptmanagement.dao.user.UserRepository;
-import com.sprintgether.script.management.server.scriptmanagement.exception.user.DuplicateUserException;
-import com.sprintgether.script.management.server.scriptmanagement.exception.user.RoleNotExistForUserException;
-import com.sprintgether.script.management.server.scriptmanagement.exception.user.RoleNotFoundException;
-import com.sprintgether.script.management.server.scriptmanagement.exception.user.UserNotFoundException;
+import com.sprintgether.script.management.server.scriptmanagement.exception.school.SchoolExistInInstitutionException;
+import com.sprintgether.script.management.server.scriptmanagement.exception.user.*;
+import com.sprintgether.script.management.server.scriptmanagement.model.school.School;
 import com.sprintgether.script.management.server.scriptmanagement.model.user.Role;
 import com.sprintgether.script.management.server.scriptmanagement.model.user.User;
 import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
@@ -95,7 +94,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ServerResponse<User> addRoleToUser(String username, String roleName) throws RoleNotFoundException, UserNotFoundException {
+    public ServerResponse<User> addRoleToUser(String username, String roleName)
+            throws RoleNotFoundException, RoleExistForUserException, UserNotFoundException {
         ServerResponse<User> srUser = new ServerResponse<>();
         srUser.setResponseCode(ResponseCode.USER_NOT_UPDATED);
         /****
@@ -105,7 +105,18 @@ public class UserServiceImpl implements UserService {
         ServerResponse<Role> srRole = roleService.findByRoleName(roleName);
         if(srUser1.getResponseCode() == ResponseCode.USER_FOUND
                 && srRole.getResponseCode() == ResponseCode.ROLE_FOUND){
+
             User user = srUser1.getAssociatedObject();
+            Role roleExist = null;
+            for(Role role1 : user.getListofRole()){
+                if(role1.getRoleName().equalsIgnoreCase(roleName)){
+                    roleExist = role1;
+                }
+            }
+            if(roleExist != null){
+                throw new RoleExistForUserException("The role specified already belonging " +
+                        "to the user specified");
+            }
             Role role = srRole.getAssociatedObject();
             user.getListofRole().add(role);
             User userUpdated = userRepository.save(user);
@@ -118,7 +129,7 @@ public class UserServiceImpl implements UserService {
                 throw new UserNotFoundException("The username specified does not match any user");
             }
             if(srRole.getResponseCode() == ResponseCode.ROLE_NOT_FOUND){
-                throw new UserNotFoundException("The roleName specified does not match any Role");
+                throw new RoleNotFoundException("The roleName specified does not match any Role");
             }
         }
         return srUser;

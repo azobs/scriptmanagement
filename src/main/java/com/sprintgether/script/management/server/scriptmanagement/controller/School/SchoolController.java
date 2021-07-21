@@ -3,14 +3,11 @@ package com.sprintgether.script.management.server.scriptmanagement.controller.Sc
 import com.sprintgether.script.management.server.scriptmanagement.commonused.ResponseCode;
 import com.sprintgether.script.management.server.scriptmanagement.commonused.ServerResponse;
 import com.sprintgether.script.management.server.scriptmanagement.exception.school.*;
-import com.sprintgether.script.management.server.scriptmanagement.form.School.InstitutionForm;
 import com.sprintgether.script.management.server.scriptmanagement.form.School.InstitutionSchoolForm;
 import com.sprintgether.script.management.server.scriptmanagement.form.School.SchoolForm;
 import com.sprintgether.script.management.server.scriptmanagement.form.School.SchoolFormList;
-import com.sprintgether.script.management.server.scriptmanagement.form.user.StaffRoleForm;
 import com.sprintgether.script.management.server.scriptmanagement.model.school.Institution;
 import com.sprintgether.script.management.server.scriptmanagement.model.school.School;
-import com.sprintgether.script.management.server.scriptmanagement.model.user.Staff;
 import com.sprintgether.script.management.server.scriptmanagement.service.school.SchoolService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @RestController
@@ -75,15 +74,82 @@ public class SchoolController {
         return schoolService.findAllSchool(sort);
     }
 
+    @GetMapping(path = "/schoolPageOfInstitution")
+    public ServerResponse<Page<School>> getSchoolPageOfInstitution(@Valid @RequestBody SchoolFormList schoolFormList,
+                                                      BindingResult bindingResult){
+        if (bindingResult.hasErrors()) {
+            //System.out.println(bindingResult.toString());
+            List<FieldError> errorList = bindingResult.getFieldErrors();
+            for (FieldError error : errorList) {
+                return new ServerResponse<Page<School>>(error.getDefaultMessage(),
+                        "Some form entry are not well filled in the institutionForm for save",
+                        ResponseCode.ERROR_IN_FORM_FILLED,
+                        null);
+            }
+        }
+        //System.out.println("staffFormList "+staffFormList.toString());
+        Pageable sort = this.getSchoolPageable(schoolFormList);
+
+        String instName = schoolFormList.getInstName();
+        ServerResponse<Page<School>> srSchoolPage = new ServerResponse<Page<School>>();
+        try {
+            srSchoolPage = schoolService.findSchoolOfInstitution(instName, sort);
+        } catch (InstitutionNotFoundException e) {
+            //e.printStackTrace();
+            srSchoolPage.setErrorMessage("The specified institution name does not match any institution");
+            srSchoolPage.setMoreDetails(e.getMessage());
+            srSchoolPage.setResponseCode(ResponseCode.EXCEPTION_INSTITUTION_NAME);
+        }
+        return srSchoolPage;
+    }
+
+    @GetMapping(path = "/schoolListOfInstitution")
+    public ServerResponse<List<School>> getSchoolListOfInstitution(@Valid @RequestBody SchoolFormList schoolFormList,
+                                                                   BindingResult bindingResult){
+        if (bindingResult.hasErrors()) {
+            //System.out.println(bindingResult.toString());
+            List<FieldError> errorList = bindingResult.getFieldErrors();
+            for (FieldError error : errorList) {
+                return new ServerResponse<List<School>>(error.getDefaultMessage(),
+                        "Some form entry are not well filled in the institutionForm for save",
+                        ResponseCode.ERROR_IN_FORM_FILLED,
+                        null);
+            }
+        }
+
+        String instName = schoolFormList.getInstName();
+        ServerResponse<List<School>> srSchoolList = new ServerResponse<List<School>>();
+        try {
+            srSchoolList = schoolService.findSchoolOfInstitution(instName);
+        } catch (InstitutionNotFoundException e) {
+            //e.printStackTrace();
+            srSchoolList.setErrorMessage("The specified institution name does not match any institution");
+            srSchoolList.setMoreDetails(e.getMessage());
+            srSchoolList.setResponseCode(ResponseCode.EXCEPTION_INSTITUTION_NAME);
+        }
+        return srSchoolList;
+    }
+
     @GetMapping(path = "/school")
     public ServerResponse<School> getSchool(@Valid @RequestBody SchoolFormList schoolFormList){
-        return schoolService.findSchoolByName(schoolFormList.getName());
+        return schoolService.findSchoolByName(schoolFormList.getSchoolName());
     }
 
     @GetMapping(path = "/schoolList")
     public ServerResponse<List<School>> getSchoolList(){
-
-        return schoolService.findAllSchool();
+        ServerResponse<List<School>> srListSchool = new ServerResponse<>();
+        srListSchool = schoolService.findAllSchool();
+        List<School> listofSchool = srListSchool.getAssociatedObject();
+         Collections.sort(listofSchool, new Comparator<School>() {
+            @Override
+            public int compare(School o1, School o2) {
+                if(o1.getName().compareToIgnoreCase(o2.getName())<0) return -1;
+                if(o1.getName().compareToIgnoreCase(o2.getName())>0) return 1;
+                return 0;
+            }
+        });
+         srListSchool.setAssociatedObject(listofSchool);
+        return srListSchool;
     }
 
     @PostMapping(path = "/schoolSaved")
@@ -147,77 +213,6 @@ public class SchoolController {
         }
 
         return srSchool;
-    }
-
-    @PostMapping(path = "/schoolAddedToInstitution")
-    public ServerResponse<Institution> postSchoolAddedToInstitution(@Valid @RequestBody InstitutionSchoolForm institutionSchoolForm,
-                                                                    BindingResult bindingResult) {
-        ServerResponse<Institution> srInst = new ServerResponse("", "", ResponseCode.BAD_REQUEST, null);
-
-        if (bindingResult.hasErrors()) {
-            //System.out.println(bindingResult.toString());
-            List<FieldError> errorList = bindingResult.getFieldErrors();
-            for (FieldError error : errorList) {
-                return new ServerResponse<Institution>(error.getDefaultMessage(),
-                        "Some form entry are not well filled for Password update",
-                        ResponseCode.ERROR_IN_FORM_FILLED,
-                        null);
-            }
-        }
-
-        try {
-            srInst = schoolService.addSchoolToInstitution(institutionSchoolForm.getInstitutionName(), institutionSchoolForm.getSchoolName());
-            srInst.setErrorMessage("The school specified by "+institutionSchoolForm.getSchoolName()+
-                    " has been successfully added in the institution specified by "+institutionSchoolForm.getInstitutionName());
-        } catch (InstitutionNotFoundException e) {
-            //e.printStackTrace();
-            srInst.setErrorMessage("The institution name specified does not match any institution in the system");
-            srInst.setMoreDetails(e.getMessage());
-            srInst.setResponseCode(ResponseCode.EXCEPTION_UPDATED_INSTITUTION);
-        } catch (SchoolNotFoundException e) {
-            //e.printStackTrace();
-            srInst.setErrorMessage("The school name specified does not match any school in the system");
-            srInst.setMoreDetails(e.getMessage());
-            srInst.setResponseCode(ResponseCode.EXCEPTION_UPDATED_INSTITUTION);
-        }
-
-
-        return srInst;
-    }
-
-    @PostMapping(path = "/schoolRemovedToInstitution")
-    public ServerResponse<Institution> postSchoolRemovedToInstitution(@Valid @RequestBody InstitutionSchoolForm institutionSchoolForm,
-                                                                    BindingResult bindingResult) {
-        ServerResponse<Institution> srInst = new ServerResponse("", "", ResponseCode.BAD_REQUEST, null);
-
-        if (bindingResult.hasErrors()) {
-            //System.out.println(bindingResult.toString());
-            List<FieldError> errorList = bindingResult.getFieldErrors();
-            for (FieldError error : errorList) {
-                return new ServerResponse<Institution>(error.getDefaultMessage(),
-                        "Some form entry are not well filled for Password update",
-                        ResponseCode.ERROR_IN_FORM_FILLED,
-                        null);
-            }
-        }
-
-        try {
-            srInst = schoolService.removeSchoolToInstitution(institutionSchoolForm.getInstitutionName(), institutionSchoolForm.getSchoolName());
-            srInst.setErrorMessage("The school specified by "+institutionSchoolForm.getSchoolName()+
-                    " has been successfully removed in the institution specified by "+institutionSchoolForm.getInstitutionName());
-        } catch (InstitutionNotFoundException e) {
-            //e.printStackTrace();
-            srInst.setErrorMessage("The institution name specified does not match any institution in the system");
-            srInst.setMoreDetails(e.getMessage());
-            srInst.setResponseCode(ResponseCode.EXCEPTION_UPDATED_INSTITUTION);
-        } catch (SchoolNotExistInInstitutionException e) {
-            //e.printStackTrace();
-            srInst.setErrorMessage("The school name specified does not match any school in the system");
-            srInst.setMoreDetails(e.getMessage());
-            srInst.setResponseCode(ResponseCode.EXCEPTION_UPDATED_INSTITUTION);
-        }
-
-        return srInst;
     }
 
 

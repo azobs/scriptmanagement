@@ -1,5 +1,6 @@
 package com.sprintgether.script.management.server.scriptmanagement.model.school;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -11,7 +12,7 @@ import java.util.List;
 @Document
 @Getter
 @Setter
-@ToString(exclude = "listofParagraph")
+@ToString
 @NoArgsConstructor
 public class SubSection {
     @Id
@@ -20,8 +21,6 @@ public class SubSection {
     int subSectionOrder;
     @DBRef
     Section ownerSection;
-    @DBRef
-    List<Paragraph> listofParagraph =  new ArrayList<Paragraph>();
 
     public SubSection(String title, int subSectionOrder, Section ownerSection) {
         this.title = title;
@@ -44,7 +43,6 @@ public class SubSection {
                 "id='" + id + '\'' +
                 ", title='" + title + '\'' +
                 ", ownerSection=" + ownerSection +
-                ", listofParagraph=" + listofParagraph +
                 '}';
     }
 }

@@ -1,5 +1,6 @@
 package com.sprintgether.script.management.server.scriptmanagement.model.school;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sprintgether.script.management.server.scriptmanagement.model.user.Staff;
 import lombok.*;
 import org.springframework.data.annotation.Id;
@@ -13,7 +14,7 @@ import java.util.List;
 @Document
 @Getter
 @Setter
-@ToString(exclude = "listofCourse")
+@ToString
 @NoArgsConstructor
 public class Level {
     @Id
@@ -24,8 +25,6 @@ public class Level {
     Option ownerOption;
     @DBRef
     Staff classPrefect;
-    @DBRef
-    List<Course> listofCourse = new ArrayList<Course>();
 
     public Level(String name, String acronym, Option ownerOption,
                  Staff classPrefect) {

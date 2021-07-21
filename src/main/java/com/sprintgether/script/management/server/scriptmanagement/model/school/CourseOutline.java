@@ -1,5 +1,6 @@
 package com.sprintgether.script.management.server.scriptmanagement.model.school;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -11,7 +12,7 @@ import java.util.List;
 @Document
 @Getter
 @Setter
-@ToString(exclude = "listofModule")
+@ToString
 @NoArgsConstructor
 public class CourseOutline {
     @Id
@@ -19,8 +20,6 @@ public class CourseOutline {
     String title;
     @DBRef
     Course ownerCourse;
-    @DBRef
-    List<Module> listofModule = new ArrayList<Module>();
 
     public CourseOutline(String title) {
         this.title = title;

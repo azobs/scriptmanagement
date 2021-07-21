@@ -11,7 +11,8 @@ public class SchoolFormList {
     String sortBy2;
     String direction2;
 
-    String name;
+    String schoolName;
+    String instName;
     String keyword;
     public SchoolFormList() {
         this.pageNumber = 0;
@@ -20,7 +21,8 @@ public class SchoolFormList {
         this.sortBy1 = "NAME";
         this.direction2 = "ASC";
         this.sortBy2 = "ACRONYM";
-        this.name = "";
+        this.schoolName = "";
+        this.instName = "";
         this.keyword = "";
     }
 }

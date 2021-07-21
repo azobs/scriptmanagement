@@ -66,7 +66,8 @@ public class StaffController {
         orderList.add(order2);
         orderList.add(order3);
         orderList.add(order4);
-        Pageable sort = PageRequest.of(staffFormList.getPageNumber(), staffFormList.getPageSize(), Sort.by(orderList));
+        Pageable sort = PageRequest.of(staffFormList.getPageNumber(), staffFormList.getPageSize(),
+                Sort.by(orderList));
         return sort;
     }
 
@@ -287,7 +288,8 @@ public class StaffController {
         try{
             //System.out.println("Tne execution of the code in the try block just started like this");
             srStaff = staffService.activateStaff(staffForm.getEmail(),staffForm.isActive());
-            srStaff.setErrorMessage("The account related to "+staffForm.getEmail()+" has been activated");
+            String s = staffForm.isActive()?"activated":"desactivated";
+            srStaff.setErrorMessage("The account related to "+staffForm.getEmail()+" has been " + s);
         }
         catch (StaffNotFoundException e){
             srStaff.setResponseCode(ResponseCode.EXCEPTION_UPDATED_STAFF);
@@ -330,8 +332,8 @@ public class StaffController {
         return srStaff;
     }
 
-    @PostMapping(path = "/roleRemovedStaff")
-    public ServerResponse<Staff> postRoleRemovedStaff(@Valid @RequestBody StaffRoleForm staffRoleForm,
+    @PostMapping(path = "/roleRemovedToStaff")
+    public ServerResponse<Staff> postRoleRemovedToStaff(@Valid @RequestBody StaffRoleForm staffRoleForm,
                                                  BindingResult bindingResult) {
         ServerResponse<Staff> srStaff = new ServerResponse("", "", ResponseCode.BAD_REQUEST, null);
 
@@ -348,7 +350,7 @@ public class StaffController {
 
         try {
             srStaff = this.staffService.removeRoleToStaff(staffRoleForm.getEmail(), staffRoleForm.getRoleName());
-            srStaff.setErrorMessage("The role "+staffRoleForm.getRoleName()+" has been successfully added to "+staffRoleForm.getEmail());
+            srStaff.setErrorMessage("The role "+staffRoleForm.getRoleName()+" has been successfully removed to "+staffRoleForm.getEmail());
         } catch (StaffNotFoundException e) {
             //e.printStackTrace();
             srStaff.setErrorMessage("The email specified does not match any Staff");

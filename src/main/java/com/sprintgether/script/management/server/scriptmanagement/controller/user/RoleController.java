@@ -15,7 +15,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "/sm/user/role")
+@RequestMapping(path = "/sm/user")
 public class RoleController {
     RoleService roleService;
 
@@ -29,8 +29,8 @@ public class RoleController {
         return roleService.findAllRole();
     }
 
-    @PostMapping(path = "/savedRole")
-    public ServerResponse<Role> postSavedRole(@Valid @RequestBody RoleForm roleForm,
+    @PostMapping(path = "/roleSaved")
+    public ServerResponse<Role> postRoleSaved(@Valid @RequestBody RoleForm roleForm,
                                                 BindingResult bindingResult){
         ServerResponse<Role> srRole =  new ServerResponse("","",ResponseCode.BAD_REQUEST, null);
 
@@ -61,8 +61,8 @@ public class RoleController {
         return srRole;
     }
 
-    @PutMapping(path = "/updatedRole")
-    public ServerResponse<Role> putUpdateRole(@Valid @RequestBody RoleForm roleForm,
+    @PutMapping(path = "/roleUpdated")
+    public ServerResponse<Role> putRoleUpdated(@Valid @RequestBody RoleForm roleForm,
                                                     BindingResult bindingResult) {
         ServerResponse<Role> srRole = new ServerResponse("", "", ResponseCode.BAD_REQUEST, null);
 

@@ -1,5 +1,6 @@
 package com.sprintgether.script.management.server.scriptmanagement.model.school;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -13,7 +14,7 @@ import java.util.List;
 @Document
 @Getter
 @Setter
-@ToString(exclude = "listofChapter")
+@ToString
 public class Module {
     @Id
     String id;
@@ -21,8 +22,6 @@ public class Module {
     String title;
     @DBRef
     CourseOutline ownerCourseOutline;
-    @DBRef
-    List<Chapter> listofChapter = new ArrayList<Chapter>();
 
     public Module(String title, int moduleOrder, CourseOutline ownerCourseOutline) {
         this.title = title;

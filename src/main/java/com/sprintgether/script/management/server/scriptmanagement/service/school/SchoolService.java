@@ -23,7 +23,6 @@ public interface SchoolService {
     ServerResponse<School> updateSchool(String name, String acronym, String description,
                                         String logoSchool, String ownerInstitutionName,
                                         String parentInstitutionName) throws SchoolNotFoundException;
-    ServerResponse<Institution> addSchoolToInstitution(String institutionName, String schoolName) throws InstitutionNotFoundException, SchoolNotFoundException;
-    ServerResponse<Institution> removeSchoolToInstitution(String institutionName, String schoolName) throws InstitutionNotFoundException, SchoolNotExistInInstitutionException;
+
     ServerResponse<School> deleteSchool(String name) throws SchoolNotFoundException;
 }

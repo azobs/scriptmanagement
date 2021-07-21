@@ -64,6 +64,7 @@ public  class ResponseCode {
     public static final int EXCEPTION_UPDATED_INSTITUTION = 608;
     public static final int EXCEPTION_SAVED_SCHOOL = 609;
     public static final int EXCEPTION_UPDATED_SCHOOL = 610;
+    public static final int EXCEPTION_INSTITUTION_NAME = 611;
 
     public static final int ERROR_IN_FORM_FILLED = 800;
 }

@@ -76,18 +76,13 @@ public class Question {
     @DBRef
     Content content;
 
-    /*****************
-     * A question must have a list of answer. At least one.
-     */
-    @DBRef
-    List<Answer> listofAnswer = new ArrayList<>();
 
 
     public Question(EnumQuestionType questionType, EnumLevelofDifficulty levelofDifficulty,
                     Staff ownerQuestion, Course concernedCourse, Module concernedModule,
                     Chapter concernedChapter, Section concernedSection, SubSection concernedSubSection,
                     Paragraph concernedParagraph, List<Proposition> listofProposition,
-                    List<Indication> listofIndication, Content content, List<Answer> listofAnswer) {
+                    List<Indication> listofIndication, Content content) {
         this.questionType = questionType;
         this.levelofDifficulty = levelofDifficulty;
         this.ownerQuestion = ownerQuestion;
@@ -100,7 +95,6 @@ public class Question {
         this.listofProposition = listofProposition;
         this.listofIndication = listofIndication;
         this.content = content;
-        this.listofAnswer = listofAnswer;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.sprintgether.script.management.server.scriptmanagement.form.user;
 
+import com.sprintgether.script.management.server.scriptmanagement.model.user.EnumStaffType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,10 +14,12 @@ public class StaffForm {
     @NotBlank(message = "The staff name cannot be blank caracter")
     @NotEmpty(message = "The staff name cannot be empty")
     @Size(min=2, max=50, message="The staff name must have at least 2 caracters and at most 50")
-    String firstName;
+    String firstName = "firstName";
     String lastName;
     @NotNull(message = "The staff type cannot be null")
-    String staffType;
+    String staffType = EnumStaffType.LECTURER.name();
+    @NotNull(message = "The staff email cannot be null")
+    @NotBlank(message = "The staff email cannot be blank caracter")
     @Email(message = "Check the email enter and ensure that the email structure is respected")
     String email;
     String phoneNumber;
@@ -34,7 +37,7 @@ public class StaffForm {
     @NotBlank(message = "The staff password cannot be blank caracter")
     @NotEmpty(message = "The staff password cannot be empty")
     @Size(min=2, max=50, message="The staff password must have at least 2 caracters and at most 50")
-    String password;
+    String password = "1234";
     boolean active = false;
 
 }

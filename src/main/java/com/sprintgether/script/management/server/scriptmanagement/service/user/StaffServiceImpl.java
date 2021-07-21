@@ -342,6 +342,11 @@ public class StaffServiceImpl implements StaffService{
                 srStaff.setResponseCode(ResponseCode.STAFF_NOT_UPDATE);
                 srStaff.setErrorMessage("There is no USER object associated with the Staff");
                 srStaff.setMoreDetails(e.getMessage());
+            } catch (RoleExistForUserException e) {
+                //e.printStackTrace();
+                srStaff.setResponseCode(ResponseCode.STAFF_NOT_UPDATE);
+                srStaff.setErrorMessage("The role specified already belonging to the Staff");
+                srStaff.setMoreDetails(e.getMessage());
             }
         }
 
@@ -349,7 +354,8 @@ public class StaffServiceImpl implements StaffService{
     }
 
     @Override
-    public ServerResponse<Staff> removeRoleToStaff(String email, String roleName) throws RoleNotExistForUserException, StaffNotFoundException {
+    public ServerResponse<Staff> removeRoleToStaff(String email, String roleName)
+            throws RoleNotExistForUserException, StaffNotFoundException {
         ServerResponse<Staff> srStaff = new ServerResponse<>();
 
         ServerResponse<Staff> srStaff1 = this.findStaffByEmail(email);
