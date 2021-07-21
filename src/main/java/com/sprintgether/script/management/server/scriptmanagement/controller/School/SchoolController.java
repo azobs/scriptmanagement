@@ -3,10 +3,8 @@ package com.sprintgether.script.management.server.scriptmanagement.controller.Sc
 import com.sprintgether.script.management.server.scriptmanagement.commonused.ResponseCode;
 import com.sprintgether.script.management.server.scriptmanagement.commonused.ServerResponse;
 import com.sprintgether.script.management.server.scriptmanagement.exception.school.*;
-import com.sprintgether.script.management.server.scriptmanagement.form.School.InstitutionSchoolForm;
 import com.sprintgether.script.management.server.scriptmanagement.form.School.SchoolForm;
 import com.sprintgether.script.management.server.scriptmanagement.form.School.SchoolFormList;
-import com.sprintgether.script.management.server.scriptmanagement.model.school.Institution;
 import com.sprintgether.script.management.server.scriptmanagement.model.school.School;
 import com.sprintgether.script.management.server.scriptmanagement.service.school.SchoolService;
 import org.springframework.data.domain.Page;

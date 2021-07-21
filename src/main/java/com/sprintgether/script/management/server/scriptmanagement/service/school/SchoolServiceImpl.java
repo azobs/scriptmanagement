@@ -99,7 +99,7 @@ public class SchoolServiceImpl implements SchoolService{
         ServerResponse<Institution> srInst = institutionService.findInstitutionByName(instName);
         if(srInst.getResponseCode() == ResponseCode.INSTITUTION_FOUND){
             Institution ownerInst = srInst.getAssociatedObject();
-            List<School> listofSchool = ownerInst.getListofSchool();
+            List<School> listofSchool = schoolRepository.findAllByOwnerInstitution(ownerInst);
             Collections.sort(listofSchool, new Comparator<School>() {
                 @Override
                 public int compare(School o1, School o2) {
