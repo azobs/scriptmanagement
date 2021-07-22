@@ -52,6 +52,31 @@ public  class ResponseCode {
     public static final int SCHOOL_UPDATED = 140;
     public static final int SCHOOL_NOT_DELETED = 141;
     public static final int SCHOOL_DELETED = 142;
+    //Concerning Department objet
+    public static final int DEPARTMENT_NOT_FOUND = 143;
+    public static final int DEPARTMENT_FOUND = 144;
+    public static final int DEPARTMENT_SCHOOL_NOT_FOUND = 145;
+    public static final int DEPARTMENT_SCHOOL_FOUND = 146;
+    public static final int DEPARTMENT_NOT_CREATED = 147;
+    public static final int DEPARTMENT_CREATED = 148;
+    public static final int DEPARTMENT_NOT_UPDATED = 149;
+    public static final int DEPARTMENT_UPDATED = 150;
+    public static final int DEPARTMENT_NOT_DELETED = 151;
+    public static final int DEPARTMENT_DELETED = 152;
+    //Concerning Option objet
+    public static final int OPTION_NOT_FOUND = 153;
+    public static final int OPTION_FOUND = 154;
+    public static final int OPTION_SCHOOL_NOT_FOUND = 155;
+    public static final int OPTION_SCHOOL_FOUND = 156;
+    public static final int OPTION_NOT_CREATED = 157;
+    public static final int OPTION_CREATED = 158;
+    public static final int OPTION_NOT_UPDATED = 159;
+    public static final int OPTION_UPDATED = 160;
+    public static final int OPTION_NOT_DELETED = 161;
+    public static final int OPTION_DELETED = 162;
+
+
+
     //Common used value
     public static final int EXCEPTION_SAVED_USER = 600;
     public static final int EXCEPTION_UPDATED_USER = 601;
@@ -65,6 +90,14 @@ public  class ResponseCode {
     public static final int EXCEPTION_SAVED_SCHOOL = 609;
     public static final int EXCEPTION_UPDATED_SCHOOL = 610;
     public static final int EXCEPTION_INSTITUTION_NAME = 611;
+    public static final int EXCEPTION_SCHOOL_FOUND = 612;
+    public static final int EXCEPTION_SCHOOL_NAME = 613;
+    public static final int EXCEPTION_DEPARTMENT_FOUND = 614;
+    public static final int EXCEPTION_SAVED_DEPARTMENT = 615;
+    public static final int EXCEPTION_SAVED_OPTION = 616;
 
     public static final int ERROR_IN_FORM_FILLED = 800;
+
+
+
 }

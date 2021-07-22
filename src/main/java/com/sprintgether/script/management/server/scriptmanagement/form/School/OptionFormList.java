@@ -1,9 +1,10 @@
 package com.sprintgether.script.management.server.scriptmanagement.form.School;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-public class SchoolFormList {
+public class OptionFormList {
     int pageNumber;
     int PageSize;
     String sortBy1;
@@ -11,10 +12,12 @@ public class SchoolFormList {
     String sortBy2;
     String direction2;
 
+    String optionName;
+    String departmentName;
     String schoolName;
-    String instName;
     String keyword;
-    public SchoolFormList() {
+
+    public OptionFormList() {
         this.pageNumber = 0;
         this.PageSize = 10;
         this.direction1  = "ASC";
@@ -22,7 +25,8 @@ public class SchoolFormList {
         this.direction2 = "ASC";
         this.sortBy2 = "acronym";
         this.schoolName = "";
-        this.instName = "";
+        this.departmentName = "";
+        this.optionName = "";
         this.keyword = "";
     }
 }

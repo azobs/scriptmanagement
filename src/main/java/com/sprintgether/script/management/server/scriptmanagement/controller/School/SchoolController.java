@@ -54,7 +54,7 @@ public class SchoolController {
             List<FieldError> errorList = bindingResult.getFieldErrors();
             for (FieldError error : errorList) {
                 return new ServerResponse<Page<School>>(error.getDefaultMessage(),
-                        "Some form entry are not well filled in the institutionForm for save",
+                        "Some form entry are not well filled in the schoolForm for save",
                         ResponseCode.ERROR_IN_FORM_FILLED,
                         null);
             }

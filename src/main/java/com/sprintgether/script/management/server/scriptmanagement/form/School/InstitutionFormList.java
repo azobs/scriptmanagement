@@ -18,9 +18,9 @@ public class InstitutionFormList {
         this.pageNumber = 0;
         this.PageSize = 10;
         this.direction1  = "ASC";
-        this.sortBy1 = "NAME";
+        this.sortBy1 = "name";
         this.direction2 = "ASC";
-        this.sortBy2 = "ACRONYM";
+        this.sortBy2 = "acronym";
         this.name = "";
         this.keyword = "";
     }

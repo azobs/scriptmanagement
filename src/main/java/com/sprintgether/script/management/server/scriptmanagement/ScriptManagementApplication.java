@@ -23,7 +23,6 @@ import java.util.stream.Stream;
 public class ScriptManagementApplication {
 
     public static void main(String[] args) {
-
         SpringApplication.run(ScriptManagementApplication.class, args);
     }
 

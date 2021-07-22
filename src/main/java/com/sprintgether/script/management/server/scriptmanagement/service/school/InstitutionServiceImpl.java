@@ -27,6 +27,7 @@ public class InstitutionServiceImpl implements InstitutionService{
 
     @Override
     public ServerResponse<Institution> findInstitutionByName(String name) {
+        name = name.toLowerCase();
         ServerResponse<Institution> srInstitution = new ServerResponse<>();
         Optional<Institution> optionalInstitution = institutionRepository.findInstitutionByName(name);
         if(optionalInstitution.isPresent()){
@@ -55,6 +56,7 @@ public class InstitutionServiceImpl implements InstitutionService{
 
     @Override
     public ServerResponse<Page<Institution>> findAllInstitution(String keyword, Pageable pageable) {
+        keyword =  keyword.toLowerCase();
         ServerResponse<Page<Institution>> srPageInstitution = new ServerResponse<>();
         Page<Institution> pageofInstitution = institutionRepository.findByNameContaining(keyword, pageable);
         srPageInstitution.setErrorMessage("The page of institution has been made");
@@ -77,6 +79,7 @@ public class InstitutionServiceImpl implements InstitutionService{
     public ServerResponse<Institution> saveInstitution(String name, String acronym, String description,
                                                         String location, String address,
                                                         String logoInstitution) throws DuplicateInstitutionException {
+        name = name.toLowerCase();
         ServerResponse<Institution> srInst = new ServerResponse<>();
         srInst.setResponseCode(ResponseCode.INSTITUTION_NOT_CREATED);
 
@@ -114,6 +117,7 @@ public class InstitutionServiceImpl implements InstitutionService{
     public ServerResponse<Institution> updateInstitution(String name, String acronym, String description,
                                                           String location, String address,
                                                           String logoInstitution) throws InstitutionNotFoundException {
+        name = name.toLowerCase();
         ServerResponse<Institution> srInst = new ServerResponse<>();
         srInst.setResponseCode(ResponseCode.INSTITUTION_NOT_UPDATED);
 
@@ -141,6 +145,7 @@ public class InstitutionServiceImpl implements InstitutionService{
 
     @Override
     public ServerResponse<Institution> deleteInstitution(String name) {
+        name = name.toLowerCase();
         return null;
     }
 }

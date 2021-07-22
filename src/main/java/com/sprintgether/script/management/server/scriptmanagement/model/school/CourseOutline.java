@@ -18,17 +18,11 @@ public class CourseOutline {
     @Id
     String id;
     String title;
-    @DBRef
-    Course ownerCourse;
 
     public CourseOutline(String title) {
         this.title = title;
     }
 
-    public CourseOutline(String title, Course ownerCourse) {
-        this.title = title;
-        this.ownerCourse = ownerCourse;
-    }
 
     public String getTitle() {
         try{

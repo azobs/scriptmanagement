@@ -18,7 +18,6 @@ import java.util.List;
 public class Option {
     @Id
     String id;
-    @Indexed(unique = true)
     String name;
     String acronym;
     String description;

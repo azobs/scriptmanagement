@@ -23,15 +23,12 @@ public class Department {
     String description;
     @DBRef
     School ownerSchool;
-    @DBRef
-    Staff hod;
 
     public Department(String name, String acronym, String description,
-                      School ownerSchool, Staff hod) {
+                      School ownerSchool) {
         this.name = name;
         this.acronym = acronym;
         this.description = description;
         this.ownerSchool = ownerSchool;
-        this.hod = hod;
     }
 }
