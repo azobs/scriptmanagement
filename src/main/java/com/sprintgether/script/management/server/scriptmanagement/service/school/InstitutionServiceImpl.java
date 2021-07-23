@@ -27,7 +27,7 @@ public class InstitutionServiceImpl implements InstitutionService{
 
     @Override
     public ServerResponse<Institution> findInstitutionByName(String name) {
-        name = name.toLowerCase();
+        name = name.toLowerCase().trim();
         ServerResponse<Institution> srInstitution = new ServerResponse<>();
         Optional<Institution> optionalInstitution = institutionRepository.findInstitutionByName(name);
         if(optionalInstitution.isPresent()){
@@ -56,7 +56,7 @@ public class InstitutionServiceImpl implements InstitutionService{
 
     @Override
     public ServerResponse<Page<Institution>> findAllInstitution(String keyword, Pageable pageable) {
-        keyword =  keyword.toLowerCase();
+        keyword =  keyword.toLowerCase().trim();
         ServerResponse<Page<Institution>> srPageInstitution = new ServerResponse<>();
         Page<Institution> pageofInstitution = institutionRepository.findByNameContaining(keyword, pageable);
         srPageInstitution.setErrorMessage("The page of institution has been made");
@@ -79,7 +79,12 @@ public class InstitutionServiceImpl implements InstitutionService{
     public ServerResponse<Institution> saveInstitution(String name, String acronym, String description,
                                                         String location, String address,
                                                         String logoInstitution) throws DuplicateInstitutionException {
-        name = name.toLowerCase();
+        name = name.toLowerCase().trim();
+        acronym = acronym.trim();
+        description = description.trim();
+        location = location.trim();
+        address = address.trim();
+        logoInstitution = logoInstitution.trim();
         ServerResponse<Institution> srInst = new ServerResponse<>();
         srInst.setResponseCode(ResponseCode.INSTITUTION_NOT_CREATED);
 
@@ -117,7 +122,12 @@ public class InstitutionServiceImpl implements InstitutionService{
     public ServerResponse<Institution> updateInstitution(String name, String acronym, String description,
                                                           String location, String address,
                                                           String logoInstitution) throws InstitutionNotFoundException {
-        name = name.toLowerCase();
+        name = name.toLowerCase().trim();
+        acronym = acronym.trim();
+        description = description.trim();
+        location = location.trim();
+        address = address.trim();
+        logoInstitution = logoInstitution.trim();
         ServerResponse<Institution> srInst = new ServerResponse<>();
         srInst.setResponseCode(ResponseCode.INSTITUTION_NOT_UPDATED);
 
@@ -145,7 +155,7 @@ public class InstitutionServiceImpl implements InstitutionService{
 
     @Override
     public ServerResponse<Institution> deleteInstitution(String name) {
-        name = name.toLowerCase();
+        name = name.toLowerCase().trim();
         return null;
     }
 }

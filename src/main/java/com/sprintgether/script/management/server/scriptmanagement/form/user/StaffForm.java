@@ -20,6 +20,7 @@ public class StaffForm {
     String staffType = EnumStaffType.LECTURER.name();
     @NotNull(message = "The staff email cannot be null")
     @NotBlank(message = "The staff email cannot be blank caracter")
+    @NotEmpty(message = "The staff email cannot be empty")
     @Email(message = "Check the email enter and ensure that the email structure is respected")
     String email;
     String phoneNumber;

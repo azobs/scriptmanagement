@@ -13,7 +13,6 @@ import java.util.List;
 @Document
 @Getter
 @Setter
-@ToString(exclude = "ownerCourseOutline")
 @NoArgsConstructor
 public class Course {
     @Id
@@ -25,16 +24,17 @@ public class Course {
     @DBRef
     List<Staff> listofLecturer = new ArrayList<Staff>();
     @DBRef
-    CourseOutline ownerCourseOutline;
+    CourseOutline courseOutline;
 
-    public Course(String id, String title, String courseCode, Level ownerLevel, int nbreCredit, List<Staff> listofLecturer, CourseOutline ownerCourseOutline) {
+    public Course(String id, String title, String courseCode, Level ownerLevel, int nbreCredit,
+                  List<Staff> listofLecturer, CourseOutline courseOutline) {
         this.id = id;
         this.title = title;
         this.courseCode = courseCode;
         this.ownerLevel = ownerLevel;
         this.nbreCredit = nbreCredit;
         this.listofLecturer = listofLecturer;
-        this.ownerCourseOutline = ownerCourseOutline;
+        this.courseOutline = courseOutline;
     }
 
     public Course(String title, String courseCode, Level ownerLevel, List<Staff> listofLecturer) {
@@ -44,7 +44,8 @@ public class Course {
         this.listofLecturer = listofLecturer;
     }
 
-    public Course(String title, String courseCode, Level ownerLevel, int nbreCredit, List<Staff> listofLecturer) {
+    public Course(String title, String courseCode, Level ownerLevel, int nbreCredit,
+                  List<Staff> listofLecturer) {
         this.title = title;
         this.courseCode = courseCode;
         this.ownerLevel = ownerLevel;

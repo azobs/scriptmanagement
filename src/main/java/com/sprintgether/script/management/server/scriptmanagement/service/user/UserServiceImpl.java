@@ -29,6 +29,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ServerResponse<User> findUserByUsername(String username) {
+        username = username.trim();
         ServerResponse<User> serverResponse = new ServerResponse<>();
         serverResponse.setResponseCode(ResponseCode.USER_NOT_FOUND);
         serverResponse.setAssociatedObject(null);
@@ -44,6 +45,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ServerResponse<User> saveUser(String username, String password) throws DuplicateUserException {
+        username = username.trim();
+        password = password.trim();
+
         ServerResponse<User> serverResponse = new ServerResponse<>();
         serverResponse.setResponseCode(ResponseCode.USER_NOT_CREATED);
         serverResponse.setAssociatedObject(null);
@@ -71,6 +75,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public ServerResponse<User> updatePassword(String username,
                                                String newPassword) throws UserNotFoundException {
+        username = username.trim();
+        newPassword = newPassword.trim();
+
         ServerResponse<User> serverResponse = new ServerResponse<>();
         serverResponse.setResponseCode(ResponseCode.USER_NOT_UPDATED);
         serverResponse.setAssociatedObject(null);
@@ -96,6 +103,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public ServerResponse<User> addRoleToUser(String username, String roleName)
             throws RoleNotFoundException, RoleExistForUserException, UserNotFoundException {
+        username = username.trim();
+        roleName = roleName.toLowerCase().trim();
+
         ServerResponse<User> srUser = new ServerResponse<>();
         srUser.setResponseCode(ResponseCode.USER_NOT_UPDATED);
         /****
@@ -138,6 +148,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public ServerResponse<User> removeRoleToUser(String username, String roleName)
             throws RoleNotExistForUserException, UserNotFoundException {
+        username = username.trim();
+        roleName = roleName.toLowerCase().trim();
+
         ServerResponse<User> srUser = new ServerResponse<>();
         ServerResponse<User> srUser1 = this.findUserByUsername(username);
         ServerResponse<Role> srRole = roleService.findByRoleName(roleName);
@@ -169,6 +182,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ServerResponse<User> activateUser(String username, boolean active) throws UserNotFoundException {
+        username = username.trim();
+
         ServerResponse<User> serverResponse = new ServerResponse<>();
         serverResponse.setResponseCode(ResponseCode.USER_NOT_UPDATED);
         serverResponse.setAssociatedObject(null);
@@ -190,6 +205,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ServerResponse<User> deleteUser(String username) throws UserNotFoundException {
+        username = username.trim();
         ServerResponse<User> serverResponse = new ServerResponse<>();
         serverResponse.setResponseCode(ResponseCode.USER_NOT_DELETED);
         serverResponse.setAssociatedObject(null);

@@ -74,6 +74,31 @@ public  class ResponseCode {
     public static final int OPTION_UPDATED = 160;
     public static final int OPTION_NOT_DELETED = 161;
     public static final int OPTION_DELETED = 162;
+    //Concerning Level objet
+    public static final int LEVEL_NOT_FOUND = 163;
+    public static final int LEVEL_FOUND = 164;
+    public static final int LEVEL_SCHOOL_NOT_FOUND = 165;
+    public static final int LEVEL_SCHOOL_FOUND = 166;
+    public static final int LEVEL_NOT_CREATED = 167;
+    public static final int LEVEL_CREATED = 168;
+    public static final int LEVEL_NOT_UPDATED = 169;
+    public static final int LEVEL_UPDATED = 170;
+    public static final int LEVEL_NOT_DELETED = 171;
+    public static final int LEVEL_DELETED = 172;
+    //Concerning Course objet
+    public static final int COURSE_NOT_FOUND = 173;
+    public static final int COURSE_FOUND = 174;
+    public static final int COURSE_SCHOOL_NOT_FOUND = 175;
+    public static final int COURSE_SCHOOL_FOUND = 176;
+    public static final int COURSE_NOT_CREATED = 177;
+    public static final int COURSE_CREATED = 178;
+    public static final int COURSE_NOT_UPDATED = 179;
+    public static final int COURSE_UPDATED = 180;
+    public static final int COURSE_NOT_DELETED = 181;
+    public static final int COURSE_DELETED = 182;
+    //Concerning CourseOutline objet
+    public static final int COURSEOUTLINE_NOT_UPDATED = 183;
+    public static final int COURSEOUTLINE_UPDATED = 184;
 
 
 
@@ -95,6 +120,13 @@ public  class ResponseCode {
     public static final int EXCEPTION_DEPARTMENT_FOUND = 614;
     public static final int EXCEPTION_SAVED_DEPARTMENT = 615;
     public static final int EXCEPTION_SAVED_OPTION = 616;
+    public static final int EXCEPTION_OPTION_FOUND = 617;
+    public static final int EXCEPTION_SAVED_LEVEL = 618;
+    public static final int EXCEPTION_LEVEL_FOUND = 619;
+    public static final int EXCEPTION_COURSE_SAVED = 620;
+    public static final int EXCEPTION_COURSE_FOUND = 621;
+    public static final int EXCEPTION_STAFF_FOUND = 622;
+    public static final int EXCEPTION_STAFF_COURSE_EXIST = 623;
 
     public static final int ERROR_IN_FORM_FILLED = 800;
 

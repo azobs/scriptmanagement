@@ -193,7 +193,7 @@ public class StaffController {
         try{
             //System.out.println("Tne execution of the code in the try block just started like this");
             srStaff = staffService.updateStaff(staffForm.getEmail(), staffForm.getFirstName(),
-                    staffForm.getLastName(), staffForm.getAddress(), staffForm.getDescription());
+                    staffForm.getLastName(), staffForm.getAddress(), staffForm.getPhoneNumber(), staffForm.getDescription());
             srStaff.setErrorMessage("The staff has been succefully updated");
         }
         catch (StaffNotFoundException e){

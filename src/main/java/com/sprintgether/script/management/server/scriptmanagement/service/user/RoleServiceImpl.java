@@ -23,6 +23,7 @@ public class RoleServiceImpl implements RoleService{
 
     @Override
     public ServerResponse<Role> findByRoleName(String roleName) {
+        roleName = roleName.toLowerCase().trim();
         ServerResponse<Role> srRole = new ServerResponse<>();
         Optional<Role> optionalRole = roleRepository.findRoleByRoleName(roleName);
         if(optionalRole.isPresent()){
@@ -41,7 +42,12 @@ public class RoleServiceImpl implements RoleService{
     }
 
     @Override
-    public ServerResponse<Role> saveRole(String roleName, String roleAlias, String roleDescription) throws DuplicateRoleException {
+    public ServerResponse<Role> saveRole(String roleName, String roleAlias, String roleDescription)
+            throws DuplicateRoleException {
+        roleName = roleName.toLowerCase().trim();
+        roleAlias = roleAlias.trim();
+        roleDescription = roleDescription.trim();
+
         ServerResponse<Role> srRole = new ServerResponse<>();
         srRole.setResponseCode(ResponseCode.ROLE_NOT_CREATED);
         srRole.setAssociatedObject(null);
@@ -68,7 +74,12 @@ public class RoleServiceImpl implements RoleService{
     }
 
     @Override
-    public ServerResponse<Role> updateRole(String roleName, String roleAlias, String roleDescription) throws RoleNotFoundException {
+    public ServerResponse<Role> updateRole(String roleName, String roleAlias, String roleDescription)
+            throws RoleNotFoundException {
+        roleName = roleName.toLowerCase().trim();
+        roleAlias = roleAlias.trim();
+        roleDescription = roleDescription.trim();
+
         ServerResponse<Role> srRole = new ServerResponse<>();
         srRole.setResponseCode(ResponseCode.ROLE_NOT_UPDATED);
         srRole.setAssociatedObject(null);
@@ -104,6 +115,7 @@ public class RoleServiceImpl implements RoleService{
 
     @Override
     public ServerResponse<Role> deleteRole(String roleName) {
+        roleName = roleName.toLowerCase().trim();
         return null;
     }
 }

@@ -37,6 +37,7 @@ public class StaffServiceImpl implements StaffService{
 
     @Override
     public ServerResponse<Staff> findStaffByEmail(String email) {
+        email = email.trim();
         ServerResponse<Staff> serverResponse = new ServerResponse<>();
         Optional<Staff> optionalStaff = staffRepository.findStaffByEmail(email);
         //System.out.println("dans le service email = "+email);
@@ -67,6 +68,7 @@ public class StaffServiceImpl implements StaffService{
 
     @Override
     public ServerResponse<Page<Staff>> findAllStaff(String keyword, Pageable pageable) {
+        keyword = keyword.toLowerCase().trim();
         ServerResponse<Page<Staff>> srPageStaff = new ServerResponse<>();
         Page<Staff> pageofStaff = staffRepository.findByFirstNameContaining(keyword, pageable);
         srPageStaff.setErrorMessage("The page of staff has been made");
@@ -127,6 +129,15 @@ public class StaffServiceImpl implements StaffService{
                                            String email, String phoneNumber, String address,
                                            String description, String username, String password)
             throws DuplicateStaffException {
+        email = email.trim();
+        firstName = firstName.toLowerCase().trim();
+        lastName = lastName.toLowerCase().trim();
+        phoneNumber = phoneNumber.toLowerCase().trim();
+        address = address.toLowerCase().trim();
+        description = description.toLowerCase().trim();
+        username = username.trim();
+        password = password.trim();
+
         ServerResponse<Staff> serverResponse = new ServerResponse<>();
         serverResponse.setResponseCode(ResponseCode.STAFF_NOT_CREATED);
         serverResponse.setAssociatedObject(null);
@@ -187,8 +198,15 @@ public class StaffServiceImpl implements StaffService{
 
     @Override
     public ServerResponse<Staff> updateStaff(String email, String newFirstName, String newLastName,
-                                             String newAddress, String newDescription)
+                                             String newAddress, String newPhoneNumber, String newDescription)
             throws StaffNotFoundException {
+        email = email.trim();
+        newFirstName = newFirstName.toLowerCase().trim();
+        newLastName = newLastName.toLowerCase().trim();
+        newPhoneNumber = newPhoneNumber.toLowerCase().trim();
+        newAddress = newAddress.toLowerCase().trim();
+        newDescription = newDescription.toLowerCase().trim();
+
         ServerResponse<Staff> serverResponse = new ServerResponse<>();
         serverResponse.setResponseCode(ResponseCode.STAFF_NOT_UPDATE);
         serverResponse.setAssociatedObject(null);
@@ -201,6 +219,7 @@ public class StaffServiceImpl implements StaffService{
             staffToUpdate.setFirstName(newFirstName);
             staffToUpdate.setLastName(newLastName);
             staffToUpdate.setAddress(newAddress);
+            staffToUpdate.setAddress(newPhoneNumber);
             staffToUpdate.setDescription(newDescription);
             Staff staffUpdated = staffRepository.save(staffToUpdate);
 
@@ -217,6 +236,8 @@ public class StaffServiceImpl implements StaffService{
     @Override
     public ServerResponse<Staff> updateStaffType(String email,
                                                  String newStaffType) throws StaffNotFoundException {
+        email = email.trim();
+
         ServerResponse<Staff> serverResponse = new ServerResponse<>();
         serverResponse.setResponseCode(ResponseCode.STAFF_NOT_UPDATE);
         serverResponse.setAssociatedObject(null);
@@ -250,6 +271,8 @@ public class StaffServiceImpl implements StaffService{
     @Override
     public ServerResponse<Staff> updateStaffPassword(String email,
                                                      String newPassword) throws StaffNotFoundException {
+        email = email.trim();
+        newPassword = newPassword.trim();
         ServerResponse<Staff> serverResponse = new ServerResponse<>();
         serverResponse.setResponseCode(ResponseCode.STAFF_NOT_UPDATE);
         serverResponse.setAssociatedObject(null);
@@ -283,6 +306,8 @@ public class StaffServiceImpl implements StaffService{
 
     @Override
     public ServerResponse<Staff> activateStaff(String email, boolean active) throws StaffNotFoundException {
+        email = email.trim();
+
         ServerResponse<Staff> serverResponse = new ServerResponse<>();
         serverResponse.setResponseCode(ResponseCode.STAFF_NOT_UPDATE);
         serverResponse.setAssociatedObject(null);
@@ -317,6 +342,9 @@ public class StaffServiceImpl implements StaffService{
     @Override
     public ServerResponse<Staff> addRoleToStaff(String email, String roleName)
             throws RoleNotFoundException, StaffNotFoundException {
+        email = email.trim();
+        roleName =  roleName.toLowerCase().trim();
+
         ServerResponse<Staff> srStaff = new ServerResponse<>();
         srStaff.setResponseCode(ResponseCode.STAFF_NOT_UPDATE);
 
@@ -356,6 +384,9 @@ public class StaffServiceImpl implements StaffService{
     @Override
     public ServerResponse<Staff> removeRoleToStaff(String email, String roleName)
             throws RoleNotExistForUserException, StaffNotFoundException {
+        email = email.trim();
+        email = roleName.toLowerCase().trim();
+
         ServerResponse<Staff> srStaff = new ServerResponse<>();
 
         ServerResponse<Staff> srStaff1 = this.findStaffByEmail(email);
@@ -382,6 +413,7 @@ public class StaffServiceImpl implements StaffService{
 
     @Override
     public ServerResponse<Staff> deleteStaff(String email) throws StaffNotFoundException {
+        email = email.trim();
         return null;
     }
 

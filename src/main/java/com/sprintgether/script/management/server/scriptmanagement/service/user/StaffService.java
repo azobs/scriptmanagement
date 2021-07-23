@@ -22,7 +22,7 @@ public interface StaffService {
                                     String phoneNumber, String address, String description, String username,
                                     String password) throws DuplicateStaffException;
     ServerResponse<Staff> updateStaff(String email, String newFirstName, String newLastName, String newAddress,
-                                      String newDescription) throws StaffNotFoundException;
+                                      String newPhoneNumber, String newDescription) throws StaffNotFoundException;
     ServerResponse<Staff> updateStaffType(String email, String newStaffType) throws StaffNotFoundException;
     ServerResponse<Staff> updateStaffPassword(String email, String newPassword) throws StaffNotFoundException;
     ServerResponse<Staff> activateStaff(String email, boolean active) throws StaffNotFoundException;

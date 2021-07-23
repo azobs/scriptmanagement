@@ -31,7 +31,7 @@ public class SchoolServiceImpl implements SchoolService{
 
     @Override
     public ServerResponse<School> findSchoolByName(String name) {
-        name = name.toLowerCase();
+        name = name.toLowerCase().trim();
         ServerResponse<School> srSchool = new ServerResponse<>();
         Optional<School> optionalSchool = schoolRepository.findSchoolByName(name);
         if(optionalSchool.isPresent()){
@@ -58,7 +58,7 @@ public class SchoolServiceImpl implements SchoolService{
 
     @Override
     public ServerResponse<Page<School>> findAllSchool(String keyword, Pageable pageable) {
-        keyword = keyword.toLowerCase();
+        keyword = keyword.toLowerCase().trim();
         ServerResponse<Page<School>> srPageSchool = new ServerResponse<Page<School>>();
         Page<School> pageofSchool = schoolRepository.findByNameContaining(keyword, pageable);
         srPageSchool.setErrorMessage("The page of school has been made successfully");
@@ -80,7 +80,7 @@ public class SchoolServiceImpl implements SchoolService{
     @Override
     public ServerResponse<Page<School>> findSchoolOfInstitution(String instName, Pageable pageable)
             throws InstitutionNotFoundException {
-        instName = instName.toLowerCase();
+        instName = instName.toLowerCase().trim();
         ServerResponse<Page<School>> srPageofSchool = new ServerResponse<>();
         ServerResponse<Institution> srInst = institutionService.findInstitutionByName(instName);
         if(srInst.getResponseCode() == ResponseCode.INSTITUTION_FOUND){
@@ -98,7 +98,7 @@ public class SchoolServiceImpl implements SchoolService{
 
     @Override
     public ServerResponse<List<School>> findSchoolOfInstitution(String instName) throws InstitutionNotFoundException {
-        instName =  instName.toLowerCase();
+        instName =  instName.toLowerCase().trim();
         ServerResponse<List<School>> srListofSchool = new ServerResponse<>();
         ServerResponse<Institution> srInst = institutionService.findInstitutionByName(instName);
         if(srInst.getResponseCode() == ResponseCode.INSTITUTION_FOUND){
@@ -127,15 +127,20 @@ public class SchoolServiceImpl implements SchoolService{
                                              String logoSchool, String ownerInstitutionName,
                                              String parentInstitutionName)
             throws DuplicateSchoolException {
-        name = name.toLowerCase();
-        ownerInstitutionName = ownerInstitutionName.toLowerCase();
-        parentInstitutionName = parentInstitutionName.toLowerCase();
+        name = name.toLowerCase().trim();
+        acronym = acronym.trim();
+        description = description.trim();
+        logoSchool = logoSchool.trim();
+        ownerInstitutionName = ownerInstitutionName.toLowerCase().trim();
+        parentInstitutionName = parentInstitutionName.toLowerCase().trim();
         ServerResponse<School> srSchool = new ServerResponse<>();
         /*****
          * We must retrieve the ownerInstitution (It can be null) and the parentInstitution (can be null)
          */
         ServerResponse<Institution> srInst = institutionService.findInstitutionByName(ownerInstitutionName);
+        //System.out.println("srInst de ownerInstitution = "+srInst.getErrorMessage());
         ServerResponse<Institution> srInst1 = institutionService.findInstitutionByName(parentInstitutionName);
+        //System.out.println("srInst de parentInstitution = "+srInst1.getErrorMessage());
         /****************
          * We must check if there is no other school with the same name
          */
@@ -168,9 +173,12 @@ public class SchoolServiceImpl implements SchoolService{
     public ServerResponse<School> updateSchool(String name, String acronym, String description,
                                                String logoSchool, String ownerInstitutionName,
                                                String parentInstitutionName) throws SchoolNotFoundException {
-        name = name.toLowerCase();
-        ownerInstitutionName = ownerInstitutionName.toLowerCase();
-        parentInstitutionName =  parentInstitutionName.toLowerCase();
+        name = name.toLowerCase().trim();
+        acronym = acronym.trim();
+        description = description.trim();
+        logoSchool = logoSchool.trim();
+        ownerInstitutionName = ownerInstitutionName.toLowerCase().trim();
+        parentInstitutionName =  parentInstitutionName.toLowerCase().trim();
         ServerResponse<School> srSchool = new ServerResponse<>();
         /*****
          * We must retrieve the ownerInstitution (It can be null) and the parentInstitution (can be null)
@@ -202,7 +210,7 @@ public class SchoolServiceImpl implements SchoolService{
 
     @Override
     public ServerResponse<School> deleteSchool(String name) throws SchoolNotFoundException {
-        name = name.toLowerCase();
+        name = name.toLowerCase().trim();
         return null;
     }
 }

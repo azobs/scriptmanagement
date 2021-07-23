@@ -92,7 +92,13 @@ public class DepartmentController {
         String schoolName = departmentFormList.getSchoolName();
         ServerResponse<Page<Department>> srDepartmentPage = new ServerResponse<Page<Department>>();
         try {
-            srDepartmentPage = departmentService.findDepartmentOfSchool(schoolName, sort);
+            if(!departmentFormList.getKeyword().equalsIgnoreCase("")){
+                srDepartmentPage = departmentService.findAllDepartmentOfSchool(schoolName,
+                        departmentFormList.getKeyword(), sort);
+            }
+            else{
+                srDepartmentPage = departmentService.findAllDepartmentOfSchool(schoolName, sort);
+            }
         } catch (SchoolNotFoundException e) {
             //e.printStackTrace();
             srDepartmentPage.setErrorMessage("The specified school name does not match any school");
@@ -119,7 +125,7 @@ public class DepartmentController {
         String schoolName = departmentFormList.getSchoolName();
         ServerResponse<List<Department>> srDepartmentList = new ServerResponse<List<Department>>();
         try {
-            srDepartmentList = departmentService.findDepartmentOfSchool(schoolName);
+            srDepartmentList = departmentService.findAllDepartmentOfSchool(schoolName);
         } catch (SchoolNotFoundException e) {
             //e.printStackTrace();
             srDepartmentList.setErrorMessage("The specified School name does not match any school");

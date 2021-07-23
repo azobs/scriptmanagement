@@ -39,9 +39,9 @@ public class OptionServiceImpl implements OptionService {
     public ServerResponse<Option> findOptionOfDepartmentByName(String schoolName, String departmentName,
                                                                String optionName)
             throws SchoolNotFoundException, DepartmentNotFoundException {
-        schoolName = schoolName.toLowerCase();
-        departmentName = departmentName.toLowerCase();
-        optionName = optionName.toLowerCase();
+        schoolName = schoolName.toLowerCase().trim();
+        departmentName = departmentName.toLowerCase().trim();
+        optionName = optionName.toLowerCase().trim();
         ServerResponse<Option> srOption = new ServerResponse<>();
         ServerResponse<School> srSchool = schoolService.findSchoolByName(schoolName);
         if(srSchool.getResponseCode() != ResponseCode.SCHOOL_FOUND){
@@ -91,7 +91,7 @@ public class OptionServiceImpl implements OptionService {
 
     @Override
     public ServerResponse<Page<Option>> findAllOption(String keyword, Pageable pageable) {
-        keyword = keyword.toLowerCase();
+        keyword = keyword.toLowerCase().trim();
         ServerResponse<Page<Option>> srOptionPage = new ServerResponse<>();
         Page<Option> pageOfOption = optionRepository.findAllByNameContaining(keyword, pageable);
         srOptionPage.setResponseCode(ResponseCode.NORMAL_RESPONSE);
@@ -104,12 +104,13 @@ public class OptionServiceImpl implements OptionService {
     public ServerResponse<Page<Option>> findAllOptionOfDepartment(String schoolName,
                                                                   String departmentName, String keyword,
                                                                   Pageable pageable) throws DepartmentNotFoundException {
-        schoolName = schoolName.toLowerCase();
-        departmentName = departmentName.toLowerCase();
-        keyword = keyword.toLowerCase();
+        schoolName = schoolName.toLowerCase().trim();
+        departmentName = departmentName.toLowerCase().trim();
+        keyword = keyword.toLowerCase().trim();
         ServerResponse<Page<Option>> srOptionPage = new ServerResponse<>();
         try {
-            ServerResponse<Department> srDepartment = departmentService.findDepartmentOfSchoolByName(schoolName, departmentName);
+            ServerResponse<Department> srDepartment = departmentService.findDepartmentOfSchoolByName(
+                    schoolName, departmentName);
             if(srDepartment.getResponseCode() != ResponseCode.DEPARTMENT_FOUND){
                 throw new DepartmentNotFoundException("The department name does not match any department in the system");
             }
@@ -133,8 +134,8 @@ public class OptionServiceImpl implements OptionService {
                                                                   String departmentName,
                                                                   Pageable pageable)
             throws DepartmentNotFoundException {
-        schoolName = schoolName.toLowerCase();
-        departmentName = departmentName.toLowerCase();
+        schoolName = schoolName.toLowerCase().trim();
+        departmentName = departmentName.toLowerCase().trim();
         ServerResponse<Page<Option>> srOptionPage = new ServerResponse<>();
         try {
             ServerResponse<Department> srDepartment = departmentService.findDepartmentOfSchoolByName(schoolName, departmentName);
@@ -158,8 +159,8 @@ public class OptionServiceImpl implements OptionService {
     @Override
     public ServerResponse<List<Option>> findAllOptionOfDepartment(String schoolName,
                                                                   String departmentName) throws DepartmentNotFoundException {
-        schoolName = schoolName.toLowerCase();
-        departmentName = departmentName.toLowerCase();
+        schoolName = schoolName.toLowerCase().trim();
+        departmentName = departmentName.toLowerCase().trim();
         ServerResponse<List<Option>> srOptionList = new ServerResponse<>();
         try {
             ServerResponse<Department> srDepartment = departmentService.findDepartmentOfSchoolByName(schoolName, departmentName);
@@ -189,9 +190,11 @@ public class OptionServiceImpl implements OptionService {
     public ServerResponse<Option> saveOption(String name, String acronym, String description,
                                              String departmentName, String schoolName)
             throws DuplicateOptionInDepartmentException, DepartmentNotFoundException {
-        name = name.toLowerCase();
-        departmentName = departmentName.toLowerCase();
-        schoolName = schoolName.toLowerCase();
+        name = name.toLowerCase().trim();
+        acronym = acronym.trim();
+        description = description.trim();
+        departmentName = departmentName.toLowerCase().trim();
+        schoolName = schoolName.toLowerCase().trim();
         ServerResponse<Option> srOption = new ServerResponse<>();
         try {
             ServerResponse<Department> srDepartment = departmentService.findDepartmentOfSchoolByName(schoolName, departmentName);
@@ -228,9 +231,11 @@ public class OptionServiceImpl implements OptionService {
     public ServerResponse<Option> updateOption(String name, String acronym, String description,
                                                String departmentName, String schoolName)
             throws OptionNotFoundException, DepartmentNotFoundException {
-        name  = name.toLowerCase();
-        departmentName = departmentName.toLowerCase();
-        schoolName =  schoolName.toLowerCase();
+        name  = name.toLowerCase().trim();
+        acronym = acronym.trim();
+        description = description.trim();
+        departmentName = departmentName.toLowerCase().trim();
+        schoolName =  schoolName.toLowerCase().trim();
         ServerResponse<Option> srOption = new ServerResponse<>();
         ServerResponse<Department> srDepartment = null;
         try {
@@ -266,9 +271,9 @@ public class OptionServiceImpl implements OptionService {
     public ServerResponse<Option> deleteOption(String schoolName, String departmentName,
                                                String optionName)
             throws SchoolNotFoundException, DepartmentNotFoundException, OptionNotFoundException {
-        schoolName = schoolName.toLowerCase();
-        departmentName = departmentName.toLowerCase();
-        optionName = optionName.toLowerCase();
+        schoolName = schoolName.toLowerCase().trim();
+        departmentName = departmentName.toLowerCase().trim();
+        optionName = optionName.toLowerCase().trim();
         return null;
     }
 }

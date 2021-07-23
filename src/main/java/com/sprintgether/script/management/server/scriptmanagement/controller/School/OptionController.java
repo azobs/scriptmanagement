@@ -4,6 +4,7 @@ import com.sprintgether.script.management.server.scriptmanagement.commonused.Res
 import com.sprintgether.script.management.server.scriptmanagement.commonused.ServerResponse;
 import com.sprintgether.script.management.server.scriptmanagement.exception.school.DepartmentNotFoundException;
 import com.sprintgether.script.management.server.scriptmanagement.exception.school.DuplicateOptionInDepartmentException;
+import com.sprintgether.script.management.server.scriptmanagement.exception.school.OptionNotFoundException;
 import com.sprintgether.script.management.server.scriptmanagement.exception.school.SchoolNotFoundException;
 import com.sprintgether.script.management.server.scriptmanagement.form.School.OptionForm;
 import com.sprintgether.script.management.server.scriptmanagement.form.School.OptionFormList;
@@ -75,7 +76,7 @@ public class OptionController {
     }
 
     @GetMapping(path = "/optionPageOfDepartment")
-    public ServerResponse<Page<Option>> getOptionPageOfSchool(@Valid @RequestBody OptionFormList optionFormList,
+    public ServerResponse<Page<Option>> getOptionPageOfDepartment(@Valid @RequestBody OptionFormList optionFormList,
                                                                       BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             //System.out.println(bindingResult.toString());
@@ -93,7 +94,14 @@ public class OptionController {
 
         ServerResponse<Page<Option>> srOptionPage = new ServerResponse<>();
         try {
-            srOptionPage = optionService.findAllOptionOfDepartment(schoolName, departmentName, sort);
+            if(!optionFormList.getKeyword().equalsIgnoreCase("")){
+                srOptionPage = optionService.findAllOptionOfDepartment(schoolName, departmentName,
+                        optionFormList.getKeyword(), sort);
+            }
+            else{
+                srOptionPage = optionService.findAllOptionOfDepartment(schoolName,
+                        departmentName, sort);
+            }
         } catch (DepartmentNotFoundException e) {
             //e.printStackTrace();
             srOptionPage.setErrorMessage("The associated department has not found");
@@ -199,6 +207,42 @@ public class OptionController {
             //e.printStackTrace();
             srOption.setErrorMessage("The department name does not match any department in the system");
             srOption.setResponseCode(ResponseCode.EXCEPTION_DEPARTMENT_FOUND);
+            srOption.setMoreDetails(e.getMessage());
+        }
+
+        return srOption;
+    }
+
+    @PutMapping(path = "/optionUpdated")
+    public ServerResponse<Option> postOptionUpdated(@Valid @RequestBody OptionForm optionForm,
+                                                  BindingResult bindingResult) {
+        ServerResponse<Option> srOption = new ServerResponse("", "", ResponseCode.BAD_REQUEST, null);
+
+        if (bindingResult.hasErrors()) {
+            //System.out.println(bindingResult.toString());
+            List<FieldError> errorList = bindingResult.getFieldErrors();
+            for (FieldError error : errorList) {
+                return new ServerResponse<Option>(error.getDefaultMessage(),
+                        "Some entry are not well filled in the schoolForm for save",
+                        ResponseCode.ERROR_IN_FORM_FILLED,
+                        null);
+            }
+        }
+
+        try {
+            srOption = optionService.updateOption(optionForm.getName(), optionForm.getAcronym(),
+                    optionForm.getDescription(), optionForm.getOwnerDepartment(),
+                    optionForm.getOwnerSchool());
+            srOption.setErrorMessage("The Option has been successfully updated");
+        } catch (DepartmentNotFoundException e) {
+            //e.printStackTrace();
+            srOption.setErrorMessage("The department name does not match any department in the system");
+            srOption.setResponseCode(ResponseCode.EXCEPTION_DEPARTMENT_FOUND);
+            srOption.setMoreDetails(e.getMessage());
+        } catch (OptionNotFoundException e) {
+            //e.printStackTrace();
+            srOption.setErrorMessage("The option name does not match any option in the system");
+            srOption.setResponseCode(ResponseCode.EXCEPTION_OPTION_FOUND);
             srOption.setMoreDetails(e.getMessage());
         }
 

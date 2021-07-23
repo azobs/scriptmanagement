@@ -32,8 +32,8 @@ public class DepartmentServiceImpl implements DepartmentService{
     @Override
     public ServerResponse<Department> findDepartmentOfSchoolByName(String schoolName,
                                                                    String departmentName) throws SchoolNotFoundException {
-        schoolName = schoolName.toLowerCase();
-        departmentName = departmentName.toLowerCase();
+        schoolName = schoolName.toLowerCase().trim();
+        departmentName = departmentName.toLowerCase().trim();
         ServerResponse<Department> srDepartment = new ServerResponse<>();
         ServerResponse<School> srSchool = schoolService.findSchoolByName(schoolName);
         if(srSchool.getResponseCode() != ResponseCode.SCHOOL_FOUND){
@@ -75,7 +75,7 @@ public class DepartmentServiceImpl implements DepartmentService{
 
     @Override
     public ServerResponse<Page<Department>> findAllDepartment(String keyword, Pageable pageable) {
-        keyword  = keyword.toLowerCase();
+        keyword  = keyword.toLowerCase().trim();
         ServerResponse<Page<Department>> srPageDepartment = new ServerResponse<Page<Department>>();
         Page<Department> pageofDepartment = departmentRepository.findAllByNameContaining(keyword, pageable);
         srPageDepartment.setErrorMessage("The page of department has been made successfully");
@@ -87,8 +87,8 @@ public class DepartmentServiceImpl implements DepartmentService{
     @Override
     public ServerResponse<Page<Department>> findAllDepartmentOfSchool(String schoolName, String keyword,
                                                                       Pageable pageable) throws SchoolNotFoundException {
-        schoolName = schoolName.toLowerCase();
-        keyword = keyword.toLowerCase();
+        schoolName = schoolName.toLowerCase().trim();
+        keyword = keyword.toLowerCase().trim();
         ServerResponse<Page<Department>> srPageDepartment = new ServerResponse<Page<Department>>();
         ServerResponse<School> srSchool = schoolService.findSchoolByName(schoolName);
         if(srSchool.getResponseCode() != ResponseCode.SCHOOL_FOUND){
@@ -103,9 +103,9 @@ public class DepartmentServiceImpl implements DepartmentService{
     }
 
     @Override
-    public ServerResponse<Page<Department>> findDepartmentOfSchool(String schoolName, Pageable pageable)
+    public ServerResponse<Page<Department>> findAllDepartmentOfSchool(String schoolName, Pageable pageable)
             throws SchoolNotFoundException {
-        schoolName = schoolName.toLowerCase();
+        schoolName = schoolName.toLowerCase().trim();
         ServerResponse<Page<Department>> srPageofDepartment = new ServerResponse<>();
         ServerResponse<School> srSchool = schoolService.findSchoolByName(schoolName);
         if(srSchool.getResponseCode() != ResponseCode.SCHOOL_FOUND){
@@ -120,9 +120,9 @@ public class DepartmentServiceImpl implements DepartmentService{
     }
 
     @Override
-    public ServerResponse<List<Department>> findDepartmentOfSchool(String schoolName)
+    public ServerResponse<List<Department>> findAllDepartmentOfSchool(String schoolName)
             throws SchoolNotFoundException {
-        schoolName = schoolName.toLowerCase();
+        schoolName = schoolName.toLowerCase().trim();
         ServerResponse<List<Department>> srListofDepartment = new ServerResponse<>();
         ServerResponse<School> srSchool = schoolService.findSchoolByName(schoolName);
         if(srSchool.getResponseCode() != ResponseCode.SCHOOL_FOUND){
@@ -145,8 +145,10 @@ public class DepartmentServiceImpl implements DepartmentService{
     public ServerResponse<Department> saveDepartment(String name, String acronym, String description,
                                                      String ownerSchoolName)
             throws DuplicateDepartmentInSchoolException, SchoolNotFoundException {
-        name = name.toLowerCase();
-        ownerSchoolName = ownerSchoolName.toLowerCase();
+        name = name.toLowerCase().trim();
+        acronym = acronym.trim();
+        description = description.trim();
+        ownerSchoolName = ownerSchoolName.toLowerCase().trim();
         ServerResponse<Department> srDepartment = new ServerResponse<>();
         /****
          * It is not possible to have a department without school
@@ -184,8 +186,10 @@ public class DepartmentServiceImpl implements DepartmentService{
     @Override
     public ServerResponse<Department> updateDepartment(String name, String acronym, String description,
                                                        String ownerSchoolName) throws DepartmentNotFoundException, SchoolNotFoundException {
-        name  = name.toLowerCase();
-        ownerSchoolName = ownerSchoolName.toLowerCase();
+        name  = name.toLowerCase().trim();
+        acronym = acronym.trim();
+        description = description.trim();
+        ownerSchoolName = ownerSchoolName.toLowerCase().trim();
         ServerResponse<Department> srDepartment = new ServerResponse<>();
         /****
          * It is not possible to have a department without school
@@ -219,8 +223,8 @@ public class DepartmentServiceImpl implements DepartmentService{
     @Override
     public ServerResponse<Department> deleteDepartmentOfSchoolByName(String schoolName,
                                                                      String departmentName) throws SchoolNotFoundException, DepartmentNotFoundException {
-        schoolName  = schoolName.toLowerCase();
-        departmentName = departmentName.toLowerCase();
+        schoolName  = schoolName.toLowerCase().trim();
+        departmentName = departmentName.toLowerCase().trim();
         return null;
     }
 

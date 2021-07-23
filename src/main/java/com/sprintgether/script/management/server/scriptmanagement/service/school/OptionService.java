@@ -12,7 +12,8 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface OptionService {
-    ServerResponse<Option> findOptionOfDepartmentByName(String schoolName, String departmentName, String optionName) throws SchoolNotFoundException, DepartmentNotFoundException;
+    ServerResponse<Option> findOptionOfDepartmentByName(String schoolName, String departmentName,
+                                                        String optionName) throws SchoolNotFoundException, DepartmentNotFoundException;
     ServerResponse<List<Option>> findAllOption();
     ServerResponse<Page<Option>> findAllOption(Pageable pageable);
     ServerResponse<Page<Option>> findAllOption(String keyword, Pageable pageable);
@@ -26,5 +27,6 @@ public interface OptionService {
     ServerResponse<Option> updateOption(String name, String acronym, String description,
                                       String departmentName, String schoolName)
             throws OptionNotFoundException, DepartmentNotFoundException;
-    ServerResponse<Option> deleteOption(String schoolName, String departmentName, String optionName) throws SchoolNotFoundException, DepartmentNotFoundException, OptionNotFoundException;
+    ServerResponse<Option> deleteOption(String schoolName, String departmentName, String optionName)
+            throws SchoolNotFoundException, DepartmentNotFoundException, OptionNotFoundException;
 }

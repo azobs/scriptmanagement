@@ -16,8 +16,8 @@ public interface DepartmentService {
     ServerResponse<Page<Department>> findAllDepartment(Pageable pageable);
     ServerResponse<Page<Department>> findAllDepartment(String keyword, Pageable pageable);
     ServerResponse<Page<Department>> findAllDepartmentOfSchool(String schoolName, String keyword, Pageable pageable) throws SchoolNotFoundException;
-    ServerResponse<Page<Department>> findDepartmentOfSchool(String schoolName, Pageable pageable) throws SchoolNotFoundException;
-    ServerResponse<List<Department>> findDepartmentOfSchool(String schoolName) throws SchoolNotFoundException;
+    ServerResponse<Page<Department>> findAllDepartmentOfSchool(String schoolName, Pageable pageable) throws SchoolNotFoundException;
+    ServerResponse<List<Department>> findAllDepartmentOfSchool(String schoolName) throws SchoolNotFoundException;
     Department saveDepartment(Department department);
     ServerResponse<Department> saveDepartment(String name, String acronym, String description,
                                               String ownerSchoolName) throws DuplicateDepartmentInSchoolException, SchoolNotFoundException;
