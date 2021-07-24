@@ -25,6 +25,7 @@ public interface DepartmentService {
     ServerResponse<Department> updateDepartment(String name, String acronym, String description,
                                                 String ownerSchoolName)
             throws DepartmentNotFoundException, SchoolNotFoundException;
-    ServerResponse<Department> updateDepartmentName(String departmentId, String departmentName) throws DepartmentNotFoundException;
+    ServerResponse<Department> updateDepartmentName(String departmentId, String departmentName)
+            throws DepartmentNotFoundException, DuplicateDepartmentInSchoolException;
     ServerResponse<Department> deleteDepartmentOfSchoolByName(String schoolName, String departmentName) throws SchoolNotFoundException, DepartmentNotFoundException;
 }

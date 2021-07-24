@@ -210,6 +210,7 @@ public class SchoolServiceImpl implements SchoolService{
     @Override
     public ServerResponse<School> updateSchoolName(String schoolId, String schoolName)
             throws SchoolNotFoundException, DuplicateSchoolException {
+        schoolId = schoolId.trim();
         schoolName = schoolName.toLowerCase().trim();
         ServerResponse<School> srSchool = new ServerResponse<>();
         Optional<School> optionalSchoolToUpdated = schoolRepository.findById(schoolId);

@@ -268,6 +268,47 @@ public class OptionServiceImpl implements OptionService {
     }
 
     @Override
+    public ServerResponse<Option> updateOptionName(String optionId, String optionName)
+            throws OptionNotFoundException, DuplicateOptionInDepartmentException {
+        optionId = optionId.trim();
+        optionName = optionName.toLowerCase().trim();
+        ServerResponse<Option> srOption = new ServerResponse<>();
+        Optional<Option> optionalOption = optionRepository.findById(optionId);
+        if(!optionalOption.isPresent()){
+            throw new OptionNotFoundException("The option Id does not match any option in the system");
+        }
+        Option optionToUpdated = optionalOption.get();
+        String schoolName = optionToUpdated.getOwnerDepartment().getOwnerSchool().getName();
+        String departmentName = optionToUpdated.getOwnerDepartment().getName();
+        try {
+            ServerResponse<Option> srOption1 = this.findOptionOfDepartmentByName(schoolName,
+                    departmentName, optionName);
+            if(srOption1.getResponseCode() == ResponseCode.OPTION_FOUND){
+                throw new DuplicateOptionInDepartmentException("The new option name match with " +
+                        "another option in the same department");
+            }
+            optionToUpdated.setName(optionName);
+            Option optionUpdate = this.saveOption(optionToUpdated);
+            srOption.setErrorMessage("The option name has been successfully updated");
+            srOption.setResponseCode(ResponseCode.OPTION_UPDATED);
+            srOption.setAssociatedObject(optionUpdate);
+        } catch (SchoolNotFoundException e) {
+            //e.printStackTrace();
+            srOption.setResponseCode(ResponseCode.EXCEPTION_SCHOOL_FOUND);
+            srOption.setErrorMessage("The school name associated with the optionId does not match " +
+                    "any school in the system");
+            srOption.setMoreDetails(e.getMessage());
+        } catch (DepartmentNotFoundException e) {
+            //e.printStackTrace();
+            srOption.setResponseCode(ResponseCode.EXCEPTION_DEPARTMENT_FOUND);
+            srOption.setErrorMessage("The department name associated with the optionId does not " +
+                    "match any department in the system");
+            srOption.setMoreDetails(e.getMessage());
+        }
+        return srOption;
+    }
+
+    @Override
     public ServerResponse<Option> deleteOption(String schoolName, String departmentName,
                                                String optionName)
             throws SchoolNotFoundException, DepartmentNotFoundException, OptionNotFoundException {

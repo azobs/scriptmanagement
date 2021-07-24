@@ -221,6 +221,37 @@ public class DepartmentServiceImpl implements DepartmentService{
     }
 
     @Override
+    public ServerResponse<Department> updateDepartmentName(String departmentId,
+                                                           String departmentName)
+            throws DepartmentNotFoundException, DuplicateDepartmentInSchoolException {
+        departmentId = departmentId.trim();
+        departmentName = departmentName.toLowerCase().trim();
+        ServerResponse<Department> srDepartment = new ServerResponse<>();
+        Optional<Department> optionalDepartment = departmentRepository.findById(departmentId);
+        if(!optionalDepartment.isPresent()){
+            throw new DepartmentNotFoundException("The specified department ID does not match any department in the system");
+        }
+        Department departmentToUpdate = optionalDepartment.get();
+        try {
+            ServerResponse<Department> srDepartment1 = this.findDepartmentOfSchoolByName(
+                    departmentToUpdate.getOwnerSchool().getName(), departmentName);
+            if(srDepartment1.getResponseCode() == ResponseCode.DEPARTMENT_FOUND){
+                throw new DuplicateDepartmentInSchoolException("The department name is already used by another department in the school specified");
+            }
+            departmentToUpdate.setName(departmentName);
+            Department departmentUpdate = this.saveDepartment(departmentToUpdate);
+            srDepartment.setErrorMessage("The department name has been successfully updated");
+            srDepartment.setResponseCode(ResponseCode.DEPARTMENT_UPDATED);
+            srDepartment.setAssociatedObject(departmentUpdate);
+        } catch (SchoolNotFoundException e) {
+            srDepartment.setResponseCode(ResponseCode.EXCEPTION_SCHOOL_FOUND);
+            srDepartment.setErrorMessage("The school name specified does not match any school in the system");
+            srDepartment.setMoreDetails(e.getMessage());
+        }
+        return srDepartment;
+    }
+
+    @Override
     public ServerResponse<Department> deleteDepartmentOfSchoolByName(String schoolName,
                                                                      String departmentName) throws SchoolNotFoundException, DepartmentNotFoundException {
         schoolName  = schoolName.toLowerCase().trim();

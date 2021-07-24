@@ -499,10 +499,67 @@ public class CourseServiceImpl implements CourseService {
         } catch (DepartmentNotFoundException e) {
             //e.printStackTrace();
             srCourse.setResponseCode(ResponseCode.EXCEPTION_DEPARTMENT_FOUND);
-            srCourse.setErrorMessage("The department name specified does not match any school in the system");
+            srCourse.setErrorMessage("The department name specified does not match any department in the system");
             srCourse.setMoreDetails(e.getMessage());
         } catch (OptionNotFoundException e) {
             e.printStackTrace();
+        }
+
+        return srCourse;
+    }
+
+    @Override
+    public ServerResponse<Course> updateCourseTitle(String courseId, String title)
+            throws CourseNotFoundException, DuplicateCourseInLevelException {
+        courseId = courseId.trim();
+        title = title.toLowerCase().trim();
+        ServerResponse<Course> srCourse = new ServerResponse<>();
+
+        Optional<Course> optionalCourse = courseRepository.findById(courseId);
+        if(!optionalCourse.isPresent()){
+            throw new CourseNotFoundException("There is no course in the system identify by this courseId");
+        }
+        Course courseToUpdate = optionalCourse.get();
+        String levelName = courseToUpdate.getOwnerLevel().getName();
+        String optionName  = courseToUpdate.getOwnerLevel().getOwnerOption().getName();
+        String departmentName = courseToUpdate.getOwnerLevel().getOwnerOption().
+                getOwnerDepartment().getName();
+        String schoolName = courseToUpdate.getOwnerLevel().getOwnerOption().
+                getOwnerDepartment().getOwnerSchool().getName();
+
+        try {
+            ServerResponse<Course> srCourse1 = this.findCourseOfLevelByTitle(schoolName,
+                    departmentName, optionName, levelName, title);
+            if(srCourse1.getResponseCode() == ResponseCode.COURSE_FOUND){
+                throw new DuplicateCourseInLevelException("The course title designate another course " +
+                        "in the level defined");
+            }
+            courseToUpdate.setTitle(title);
+            Course courseUpdate = this.saveCourse(courseToUpdate);
+
+            srCourse.setResponseCode(ResponseCode.COURSE_UPDATED);
+            srCourse.setErrorMessage("The course  title has been well updated");
+            srCourse.setAssociatedObject(courseUpdate);
+        } catch (SchoolNotFoundException e) {
+            //e.printStackTrace();
+            srCourse.setResponseCode(ResponseCode.EXCEPTION_SCHOOL_FOUND);
+            srCourse.setErrorMessage("The school name specified does not match any school in the system");
+            srCourse.setMoreDetails(e.getMessage());
+        } catch (DepartmentNotFoundException e) {
+            //e.printStackTrace();
+            srCourse.setResponseCode(ResponseCode.EXCEPTION_DEPARTMENT_FOUND);
+            srCourse.setErrorMessage("The department name specified does not match any department in the system");
+            srCourse.setMoreDetails(e.getMessage());
+        } catch (OptionNotFoundException e) {
+            //e.printStackTrace();
+            srCourse.setResponseCode(ResponseCode.EXCEPTION_OPTION_FOUND);
+            srCourse.setErrorMessage("The option name specified does not match any option in the system");
+            srCourse.setMoreDetails(e.getMessage());
+        } catch (LevelNotFoundException e) {
+            //e.printStackTrace();
+            srCourse.setResponseCode(ResponseCode.EXCEPTION_LEVEL_FOUND);
+            srCourse.setErrorMessage("The level name specified does not match any level in the system");
+            srCourse.setMoreDetails(e.getMessage());
         }
 
         return srCourse;

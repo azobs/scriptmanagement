@@ -48,6 +48,8 @@ public interface CourseService {
                                         String levelName, String optionName, String departmentName,
                                         String schoolName)
             throws LevelNotFoundException, CourseNotFoundException;
+    ServerResponse<Course> updateCourseTitle(String courseId, String title)
+            throws CourseNotFoundException, DuplicateCourseInLevelException;
     ServerResponse<Course> setLecturerToCourse(String lecturerEmail, String schoolName,
                                                String departmentName, String optionName,
                                                String levelName, String courseTitle)

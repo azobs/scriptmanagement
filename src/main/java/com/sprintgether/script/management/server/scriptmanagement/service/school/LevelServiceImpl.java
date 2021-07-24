@@ -342,6 +342,53 @@ public class LevelServiceImpl implements LevelService {
     }
 
     @Override
+    public ServerResponse<Level> updateLevelName(String levelId, String levelName)
+            throws LevelNotFoundException, DuplicateLevelInOptionException {
+        levelId = levelId.trim();
+        levelName = levelName.toLowerCase().trim();
+        ServerResponse<Level> srLevel = new ServerResponse<>();
+        Optional<Level> optionalLevel = levelRepository.findById(levelId);
+        if(!optionalLevel.isPresent()){
+            throw new LevelNotFoundException("The levelId specified does not match any level in " +
+                    "the system");
+        }
+        Level levelToUpdated = optionalLevel.get();
+        String optionName = levelToUpdated.getOwnerOption().getName();
+        String departmentName = levelToUpdated.getOwnerOption().getOwnerDepartment().getName();
+        String schoolName = levelToUpdated.getOwnerOption().getOwnerDepartment().getOwnerSchool().getName();
+        try {
+            ServerResponse<Level> srLevel1 = this.findLevelOfOptionByName(schoolName, departmentName,
+                    optionName, levelName);
+            if(srLevel1.getResponseCode() == ResponseCode.LEVEL_FOUND){
+                throw new DuplicateLevelInOptionException("The new level name will match with " +
+                        "another level in the option");
+            }
+            levelToUpdated.setName(levelName);
+            Level levelUpdated = this.saveLevel(levelToUpdated);
+
+            srLevel.setErrorMessage("The level has been successfully updated");
+            srLevel.setResponseCode(ResponseCode.LEVEL_UPDATED);
+            srLevel.setAssociatedObject(levelUpdated);
+        } catch (SchoolNotFoundException e) {
+            //e.printStackTrace();
+            srLevel.setErrorMessage("There is problem in the school associated");
+            srLevel.setMoreDetails(e.getMessage());
+            srLevel.setResponseCode(ResponseCode.EXCEPTION_SCHOOL_FOUND);
+        } catch (DepartmentNotFoundException e) {
+            //e.printStackTrace();
+            srLevel.setErrorMessage("There is problem in the department associated");
+            srLevel.setMoreDetails(e.getMessage());
+            srLevel.setResponseCode(ResponseCode.EXCEPTION_DEPARTMENT_FOUND);
+        } catch (OptionNotFoundException e) {
+            //e.printStackTrace();
+            srLevel.setErrorMessage("There is problem in the option associated");
+            srLevel.setMoreDetails(e.getMessage());
+            srLevel.setResponseCode(ResponseCode.EXCEPTION_OPTION_FOUND);
+        }
+        return srLevel;
+    }
+
+    @Override
     public ServerResponse<Level> deleteLevel(String schoolName, String departmentName,
                                              String optionName, String levelName)
             throws SchoolNotFoundException, DepartmentNotFoundException, OptionNotFoundException, LevelNotFoundException {
