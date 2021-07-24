@@ -1,6 +1,7 @@
 package com.sprintgether.script.management.server.scriptmanagement.model.school;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sprintgether.script.management.server.scriptmanagement.model.script.Content;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -20,6 +21,12 @@ public class Module {
     String id;
     int moduleOrder;
     String title;
+    /******
+     * We can add a module summary during the creation or modification of a module
+     */
+    @DBRef
+    List<Content> listofContent = new ArrayList<>();
+    EnumCoursePartType moduleType;
     @DBRef
     CourseOutline ownerCourseOutline;
 

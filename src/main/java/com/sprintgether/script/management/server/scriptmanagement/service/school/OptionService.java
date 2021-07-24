@@ -27,6 +27,7 @@ public interface OptionService {
     ServerResponse<Option> updateOption(String name, String acronym, String description,
                                       String departmentName, String schoolName)
             throws OptionNotFoundException, DepartmentNotFoundException;
+    ServerResponse<Option> updateOptionName(String optionId, String optionName) throws OptionNotFoundException;
     ServerResponse<Option> deleteOption(String schoolName, String departmentName, String optionName)
             throws SchoolNotFoundException, DepartmentNotFoundException, OptionNotFoundException;
 }

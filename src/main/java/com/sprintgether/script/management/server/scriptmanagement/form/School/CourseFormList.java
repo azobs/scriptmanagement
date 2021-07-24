@@ -14,6 +14,7 @@ public class CourseFormList {
     String direction3;
 
     String courseTitle;
+    String courseType;
     String levelName;
     String optionName;
     String departmentName;
@@ -30,6 +31,7 @@ public class CourseFormList {
         this.direction3 = "ASC";
         this.sortBy3 = "nbreCredit";
         this.courseTitle = "";
+        this.courseTitle = "ALL";
         this.levelName = "";
         this.schoolName = "";
         this.departmentName = "";

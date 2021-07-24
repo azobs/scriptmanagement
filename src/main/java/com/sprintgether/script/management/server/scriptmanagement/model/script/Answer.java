@@ -6,6 +6,9 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Document
 @Data
 @NoArgsConstructor
@@ -15,11 +18,11 @@ public class Answer {
     @DBRef
     Question concernedQuestion;
     @DBRef
-    Content content;
+    List<Content> listofContent = new ArrayList<>();
 
-    public Answer(Question concernedQuestion, Content content) {
+    public Answer(Question concernedQuestion, List<Content> listofContent) {
         this.concernedQuestion = concernedQuestion;
-        this.content = content;
+        this.listofContent = listofContent;
     }
 
     @Override
@@ -27,7 +30,7 @@ public class Answer {
         return "Answer{" +
                 "id='" + id + '\'' +
                 ", concernedQuestion=" + concernedQuestion.getId() +
-                ", content=" + content.getValue() +
+                ", content=" + listofContent +
                 '}';
     }
 }

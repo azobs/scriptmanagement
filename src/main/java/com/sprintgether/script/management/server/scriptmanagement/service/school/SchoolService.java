@@ -23,6 +23,7 @@ public interface SchoolService {
     ServerResponse<School> updateSchool(String name, String acronym, String description,
                                         String logoSchool, String ownerInstitutionName,
                                         String parentInstitutionName) throws SchoolNotFoundException;
-
+    ServerResponse<School> updateSchoolName(String schoolId, String schoolName)
+            throws SchoolNotFoundException, DuplicateSchoolException;
     ServerResponse<School> deleteSchool(String name) throws SchoolNotFoundException;
 }

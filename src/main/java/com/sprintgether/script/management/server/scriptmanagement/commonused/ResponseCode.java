@@ -44,61 +44,70 @@ public  class ResponseCode {
     //Concerning School objet
     public static final int SCHOOL_NOT_FOUND = 133;
     public static final int SCHOOL_FOUND = 134;
-    public static final int SCHOOL_INSTITUTION_NOT_FOUND = 135;
-    public static final int SCHOOL_INSTITUTION_FOUND = 136;
-    public static final int SCHOOL_NOT_CREATED = 137;
-    public static final int SCHOOL_CREATED = 138;
-    public static final int SCHOOL_NOT_UPDATED = 139;
-    public static final int SCHOOL_UPDATED = 140;
-    public static final int SCHOOL_NOT_DELETED = 141;
-    public static final int SCHOOL_DELETED = 142;
+    public static final int SCHOOL_NOT_CREATED = 135;
+    public static final int SCHOOL_CREATED = 136;
+    public static final int SCHOOL_NOT_UPDATED = 137;
+    public static final int SCHOOL_UPDATED = 138;
+    public static final int SCHOOL_NOT_DELETED = 139;
+    public static final int SCHOOL_DELETED = 140;
     //Concerning Department objet
-    public static final int DEPARTMENT_NOT_FOUND = 143;
-    public static final int DEPARTMENT_FOUND = 144;
-    public static final int DEPARTMENT_SCHOOL_NOT_FOUND = 145;
-    public static final int DEPARTMENT_SCHOOL_FOUND = 146;
-    public static final int DEPARTMENT_NOT_CREATED = 147;
-    public static final int DEPARTMENT_CREATED = 148;
-    public static final int DEPARTMENT_NOT_UPDATED = 149;
-    public static final int DEPARTMENT_UPDATED = 150;
-    public static final int DEPARTMENT_NOT_DELETED = 151;
-    public static final int DEPARTMENT_DELETED = 152;
+    public static final int DEPARTMENT_NOT_FOUND = 141;
+    public static final int DEPARTMENT_FOUND = 142;
+    public static final int DEPARTMENT_NOT_CREATED = 143;
+    public static final int DEPARTMENT_CREATED = 144;
+    public static final int DEPARTMENT_NOT_UPDATED = 145;
+    public static final int DEPARTMENT_UPDATED = 146;
+    public static final int DEPARTMENT_NOT_DELETED = 147;
+    public static final int DEPARTMENT_DELETED = 148;
     //Concerning Option objet
-    public static final int OPTION_NOT_FOUND = 153;
-    public static final int OPTION_FOUND = 154;
-    public static final int OPTION_SCHOOL_NOT_FOUND = 155;
-    public static final int OPTION_SCHOOL_FOUND = 156;
-    public static final int OPTION_NOT_CREATED = 157;
-    public static final int OPTION_CREATED = 158;
-    public static final int OPTION_NOT_UPDATED = 159;
-    public static final int OPTION_UPDATED = 160;
-    public static final int OPTION_NOT_DELETED = 161;
-    public static final int OPTION_DELETED = 162;
+    public static final int OPTION_NOT_FOUND = 149;
+    public static final int OPTION_FOUND = 150;
+    public static final int OPTION_NOT_CREATED = 151;
+    public static final int OPTION_CREATED = 152;
+    public static final int OPTION_NOT_UPDATED = 153;
+    public static final int OPTION_UPDATED = 154;
+    public static final int OPTION_NOT_DELETED = 155;
+    public static final int OPTION_DELETED = 156;
     //Concerning Level objet
-    public static final int LEVEL_NOT_FOUND = 163;
-    public static final int LEVEL_FOUND = 164;
-    public static final int LEVEL_SCHOOL_NOT_FOUND = 165;
-    public static final int LEVEL_SCHOOL_FOUND = 166;
-    public static final int LEVEL_NOT_CREATED = 167;
-    public static final int LEVEL_CREATED = 168;
-    public static final int LEVEL_NOT_UPDATED = 169;
-    public static final int LEVEL_UPDATED = 170;
-    public static final int LEVEL_NOT_DELETED = 171;
-    public static final int LEVEL_DELETED = 172;
+    public static final int LEVEL_NOT_FOUND = 157;
+    public static final int LEVEL_FOUND = 158;
+    public static final int LEVEL_NOT_CREATED = 159;
+    public static final int LEVEL_CREATED = 160;
+    public static final int LEVEL_NOT_UPDATED = 161;
+    public static final int LEVEL_UPDATED = 162;
+    public static final int LEVEL_NOT_DELETED = 163;
+    public static final int LEVEL_DELETED = 164;
     //Concerning Course objet
-    public static final int COURSE_NOT_FOUND = 173;
-    public static final int COURSE_FOUND = 174;
-    public static final int COURSE_SCHOOL_NOT_FOUND = 175;
-    public static final int COURSE_SCHOOL_FOUND = 176;
-    public static final int COURSE_NOT_CREATED = 177;
-    public static final int COURSE_CREATED = 178;
-    public static final int COURSE_NOT_UPDATED = 179;
-    public static final int COURSE_UPDATED = 180;
-    public static final int COURSE_NOT_DELETED = 181;
-    public static final int COURSE_DELETED = 182;
+    public static final int COURSE_NOT_FOUND = 165;
+    public static final int COURSE_FOUND = 166;
+    public static final int COURSE_NOT_CREATED = 167;
+    public static final int COURSE_CREATED = 168;
+    public static final int COURSE_NOT_UPDATED = 169;
+    public static final int COURSE_UPDATED = 170;
+    public static final int COURSE_NOT_DELETED = 171;
+    public static final int COURSE_DELETED = 172;
     //Concerning CourseOutline objet
-    public static final int COURSEOUTLINE_NOT_UPDATED = 183;
-    public static final int COURSEOUTLINE_UPDATED = 184;
+    public static final int COURSEOUTLINE_NOT_UPDATED = 173;
+    public static final int COURSEOUTLINE_UPDATED = 174;
+    //Concerning Content objet
+    public static final int CONTENT_NOT_ADDED = 175;
+    public static final int CONTENT_ADDED = 176;
+    public static final int CONTENT_NOT_UPDATED = 177;
+    public static final int CONTENT_UPDATED = 178;
+    public static final int CONTENT_NOT_DELETED = 179;
+    public static final int CONTENT_DELETED = 180;
+    //Concerning Module objet
+    public static final int MODULE_NOT_FOUND = 181;
+    public static final int MODULE_FOUND = 182;
+    public static final int MODULE_NOT_CREATED = 183;
+    public static final int MODULE_CREATED = 184;
+    public static final int MODULE_NOT_UPDATED = 185;
+    public static final int MODULE_UPDATED = 186;
+    public static final int MODULE_NOT_DELETED = 187;
+    public static final int MODULE_DELETED = 188;
+
+
+
 
 
 
@@ -127,6 +136,9 @@ public  class ResponseCode {
     public static final int EXCEPTION_COURSE_FOUND = 621;
     public static final int EXCEPTION_STAFF_FOUND = 622;
     public static final int EXCEPTION_STAFF_COURSE_EXIST = 623;
+    public static final int EXCEPTION_ENUM_COURSE_PART_TYPE = 624;
+    public static final int EXCEPTION_CONTENT_ADDED = 625;
+    public static final int EXCEPTION_CONTENT_FOUND = 626;
 
     public static final int ERROR_IN_FORM_FILLED = 800;
 

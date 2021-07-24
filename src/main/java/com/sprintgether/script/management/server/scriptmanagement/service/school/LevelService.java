@@ -34,6 +34,7 @@ public interface LevelService {
                                     String emailClassPerfect, String departmentName,
                                       String schoolName)
             throws LevelNotFoundException, OptionNotFoundException;
+    ServerResponse<Level> updateLevelName(String levelId, String levelName) throws LevelNotFoundException;
     ServerResponse<Level> deleteLevel(String schoolName, String departmentName, String optionName,
                                       String levelName)
             throws SchoolNotFoundException, DepartmentNotFoundException, OptionNotFoundException, LevelNotFoundException;

@@ -1,6 +1,7 @@
 package com.sprintgether.script.management.server.scriptmanagement.model.school;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sprintgether.script.management.server.scriptmanagement.model.script.Content;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -19,6 +20,12 @@ public class SubSection {
     String id;
     String title;
     int subSectionOrder;
+    /******
+     * We can add a subsection summary during the creation or modification of a subsection
+     */
+    @DBRef
+    List<Content> listofContent = new ArrayList<>();
+    EnumCoursePartType subsectionType;
     @DBRef
     Section ownerSection;
 

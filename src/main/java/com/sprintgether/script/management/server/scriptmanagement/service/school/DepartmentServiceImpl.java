@@ -113,7 +113,7 @@ public class DepartmentServiceImpl implements DepartmentService{
         }
         School school = srSchool.getAssociatedObject();
         Page<Department> pageOfDepartment = departmentRepository.findAllByOwnerSchool(school, pageable);
-        srPageofDepartment.setResponseCode(ResponseCode.DEPARTMENT_SCHOOL_FOUND);
+        srPageofDepartment.setResponseCode(ResponseCode.NORMAL_RESPONSE);
         srPageofDepartment.setErrorMessage("The school department school page has been made successfully");
         srPageofDepartment.setAssociatedObject(pageOfDepartment);
         return srPageofDepartment;
@@ -130,7 +130,7 @@ public class DepartmentServiceImpl implements DepartmentService{
         }
         School school = srSchool.getAssociatedObject();
         List<Department> listOfDepartment = departmentRepository.findAllByOwnerSchoolOrderByName(school);
-        srListofDepartment.setResponseCode(ResponseCode.DEPARTMENT_SCHOOL_FOUND);
+        srListofDepartment.setResponseCode(ResponseCode.NORMAL_RESPONSE);
         srListofDepartment.setErrorMessage("The school department school list has been made successfully");
         srListofDepartment.setAssociatedObject(listOfDepartment);
         return srListofDepartment;

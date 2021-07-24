@@ -6,7 +6,6 @@ import com.sprintgether.script.management.server.scriptmanagement.dao.school.Ins
 import com.sprintgether.script.management.server.scriptmanagement.exception.school.DuplicateInstitutionException;
 import com.sprintgether.script.management.server.scriptmanagement.exception.school.InstitutionNotFoundException;
 import com.sprintgether.script.management.server.scriptmanagement.model.school.Institution;
-import com.sprintgether.script.management.server.scriptmanagement.model.school.School;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -152,9 +151,33 @@ public class InstitutionServiceImpl implements InstitutionService{
         return srInst;
     }
 
+    @Override
+    public ServerResponse<Institution> updateInstitutionName(String institutionId,
+                                                             String institutionName)
+            throws InstitutionNotFoundException, DuplicateInstitutionException {
+        institutionName = institutionName.toLowerCase().trim();
+        ServerResponse<Institution> srInst = new ServerResponse<>();
+        Optional<Institution> optionalInstToUpdated = institutionRepository.findById(institutionId);
+        if(!optionalInstToUpdated.isPresent()){
+            throw new InstitutionNotFoundException("The institution id specified does not match any institution in the system");
+        }
+        ServerResponse<Institution> srInst1 = this.findInstitutionByName(institutionName);
+        if(srInst1.getResponseCode() == ResponseCode.INSTITUTION_FOUND){
+            throw new DuplicateInstitutionException("The institution name specified identify another institution in the system");
+        }
+        Institution instToUpdated = optionalInstToUpdated.get();
+        instToUpdated.setName(institutionName);
+        Institution instUpdated = this.saveInstitution(instToUpdated);
+        srInst.setErrorMessage("The institution name has been successfully updated");
+        srInst.setResponseCode(ResponseCode.INSTITUTION_UPDATED);
+        srInst.setAssociatedObject(instUpdated);
+        return srInst;
+    }
+
 
     @Override
-    public ServerResponse<Institution> deleteInstitution(String name) {
+    public ServerResponse<Institution> deleteInstitution(String name)
+            throws InstitutionNotFoundException{
         name = name.toLowerCase().trim();
         return null;
     }

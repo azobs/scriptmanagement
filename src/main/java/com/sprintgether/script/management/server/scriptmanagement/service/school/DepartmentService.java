@@ -20,8 +20,11 @@ public interface DepartmentService {
     ServerResponse<List<Department>> findAllDepartmentOfSchool(String schoolName) throws SchoolNotFoundException;
     Department saveDepartment(Department department);
     ServerResponse<Department> saveDepartment(String name, String acronym, String description,
-                                              String ownerSchoolName) throws DuplicateDepartmentInSchoolException, SchoolNotFoundException;
+                                              String ownerSchoolName)
+            throws DuplicateDepartmentInSchoolException, SchoolNotFoundException;
     ServerResponse<Department> updateDepartment(String name, String acronym, String description,
-                                                String ownerSchoolName) throws DepartmentNotFoundException, SchoolNotFoundException;
+                                                String ownerSchoolName)
+            throws DepartmentNotFoundException, SchoolNotFoundException;
+    ServerResponse<Department> updateDepartmentName(String departmentId, String departmentName) throws DepartmentNotFoundException;
     ServerResponse<Department> deleteDepartmentOfSchoolByName(String schoolName, String departmentName) throws SchoolNotFoundException, DepartmentNotFoundException;
 }

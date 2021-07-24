@@ -1,9 +1,13 @@
 package com.sprintgether.script.management.server.scriptmanagement.model.school;
 
+import com.sprintgether.script.management.server.scriptmanagement.model.script.Content;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Document
 @Getter
@@ -15,6 +19,12 @@ public class Paragraph {
     String id;
     String title;
     int paragraphOrder;
+    /******
+     * We can add a paragraph summary during the creation or modification of a paragraph
+     */
+    @DBRef
+    List<Content> listofContent = new ArrayList<>();
+    EnumCoursePartType paragraphType;
     @DBRef
     SubSection ownerSubSection;
 

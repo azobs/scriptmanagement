@@ -6,6 +6,9 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Document
 @Data
 @NoArgsConstructor
@@ -14,11 +17,11 @@ public class Proposition {
     String id;
     Boolean valid;
     @DBRef
-    Content content;
+    List<Content> listofContent = new ArrayList<>();
 
-    public Proposition(Boolean valid, Content content) {
+    public Proposition(Boolean valid, List<Content> listofContent) {
         this.valid = valid;
-        this.content = content;
+        this.listofContent = listofContent;
     }
 
     @Override
@@ -26,7 +29,7 @@ public class Proposition {
         return "Proposition{" +
                 "id='" + id + '\'' +
                 ", valid=" + valid +
-                ", content=" + content.getValue() +
+                ", content=" + listofContent +
                 '}';
     }
 }

@@ -71,10 +71,11 @@ public class Question {
     @DBRef
     List<Indication> listofIndication = new ArrayList<Indication>();
     /*****
-     * A question must have his proper content
+     * A question must have his proper content. And that content can be a list
+     * of several content ordering in one maner. Text, image, text, table and so on.
      */
     @DBRef
-    Content content;
+    List<Content> listofContent = new ArrayList<>();
 
 
 
@@ -82,7 +83,7 @@ public class Question {
                     Staff ownerQuestion, Course concernedCourse, Module concernedModule,
                     Chapter concernedChapter, Section concernedSection, SubSection concernedSubSection,
                     Paragraph concernedParagraph, List<Proposition> listofProposition,
-                    List<Indication> listofIndication, Content content) {
+                    List<Indication> listofIndication, List<Content> listofContent) {
         this.questionType = questionType;
         this.levelofDifficulty = levelofDifficulty;
         this.ownerQuestion = ownerQuestion;
@@ -94,7 +95,7 @@ public class Question {
         this.concernedParagraph = concernedParagraph;
         this.listofProposition = listofProposition;
         this.listofIndication = listofIndication;
-        this.content = content;
+        this.listofContent = listofContent;
     }
 
     @Override
@@ -110,7 +111,7 @@ public class Question {
                 ", concernedParagraph=" + concernedParagraph.getTitle() +
                 ", listofProposition=" + listofProposition +
                 ", listofIndication=" + listofIndication +
-                ", content=" + content.getValue() +
+                ", listofContent=" + listofContent+
                 '}';
     }
 }

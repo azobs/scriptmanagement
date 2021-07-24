@@ -86,7 +86,7 @@ public class SchoolServiceImpl implements SchoolService{
         if(srInst.getResponseCode() == ResponseCode.INSTITUTION_FOUND){
             Institution ownerInst = srInst.getAssociatedObject();
             Page<School> pageofSchool = schoolRepository.findAllByOwnerInstitution(ownerInst, pageable);
-            srPageofSchool.setResponseCode(ResponseCode.SCHOOL_INSTITUTION_FOUND);
+            srPageofSchool.setResponseCode(ResponseCode.NORMAL_RESPONSE);
             srPageofSchool.setAssociatedObject(pageofSchool);
             srPageofSchool.setErrorMessage("The school page of the institution specified has been made");
         }
@@ -113,7 +113,7 @@ public class SchoolServiceImpl implements SchoolService{
                 }
             });
             srListofSchool.setErrorMessage("The school list of the institution specified has been made");
-            srListofSchool.setResponseCode(ResponseCode.SCHOOL_INSTITUTION_FOUND);
+            srListofSchool.setResponseCode(ResponseCode.NORMAL_RESPONSE);
             srListofSchool.setAssociatedObject(listofSchool);
         }
         else if(srInst.getResponseCode() == ResponseCode.INSTITUTION_NOT_FOUND){
@@ -204,6 +204,28 @@ public class SchoolServiceImpl implements SchoolService{
         srSchool.setResponseCode(ResponseCode.SCHOOL_UPDATED);
         srSchool.setAssociatedObject(schoolUpdated);
 
+        return srSchool;
+    }
+
+    @Override
+    public ServerResponse<School> updateSchoolName(String schoolId, String schoolName)
+            throws SchoolNotFoundException, DuplicateSchoolException {
+        schoolName = schoolName.toLowerCase().trim();
+        ServerResponse<School> srSchool = new ServerResponse<>();
+        Optional<School> optionalSchoolToUpdated = schoolRepository.findById(schoolId);
+        if(!optionalSchoolToUpdated.isPresent()){
+            throw new SchoolNotFoundException("The school id specified does not match any school in the system");
+        }
+        ServerResponse<School> srSchool1 = this.findSchoolByName(schoolName);
+        if(srSchool1.getResponseCode() == ResponseCode.SCHOOL_FOUND){
+            throw new DuplicateSchoolException("The school name specified has been used by another school in the system");
+        }
+        School schoolToUpdate = optionalSchoolToUpdated.get();
+        schoolToUpdate.setName(schoolName);
+        School schoolUpdated = this.saveSchool(schoolToUpdate);
+        srSchool.setErrorMessage("The school name has been successfully updated");
+        srSchool.setResponseCode(ResponseCode.SCHOOL_UPDATED);
+        srSchool.setAssociatedObject(schoolUpdated);
         return srSchool;
     }
 

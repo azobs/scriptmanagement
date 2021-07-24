@@ -17,9 +17,13 @@ public interface InstitutionService {
     ServerResponse<Page<Institution>> findAllInstitution(String keyword, Pageable pageable);
     ServerResponse<Page<Institution>> findAllInstitution(Pageable pageable);
     ServerResponse<Institution> saveInstitution(String name, String acronym, String description,
-                                                 String location, String address, String logoInstitution) throws DuplicateInstitutionException;
+                                                 String location, String address, String logoInstitution)
+            throws DuplicateInstitutionException;
     Institution saveInstitution(Institution institution);
     ServerResponse<Institution> updateInstitution(String name, String acronym, String description,
-                                                 String location, String address, String logoInstitution) throws InstitutionNotFoundException;
-    ServerResponse<Institution> deleteInstitution(String name);
+                                                 String location, String address, String logoInstitution)
+            throws InstitutionNotFoundException;
+    ServerResponse<Institution> updateInstitutionName(String institutionId, String institutionName)
+            throws InstitutionNotFoundException, DuplicateInstitutionException;
+    ServerResponse<Institution> deleteInstitution(String name) throws InstitutionNotFoundException;
 }

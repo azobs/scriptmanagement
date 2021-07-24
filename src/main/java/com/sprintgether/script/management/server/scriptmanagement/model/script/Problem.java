@@ -42,6 +42,13 @@ public class Problem {
     SubSection concernedSubSection;
     @DBRef
     Paragraph concernedParagraph;
+    /******************
+     * A problem must have a list of content before the list of question
+     * concerning this content. The content must be a list beacause we can have a
+     * text, then a table, then an image and at the end a text. All the content
+     * in that list must be display in the order that it was inserted in the system
+     */
+    List<Content> listofContent = new ArrayList<>();
     /*****
      * A problem must have a list of question.
      */
@@ -56,7 +63,7 @@ public class Problem {
     public Problem(EnumProblemType problemType, EnumLevelofDifficulty levelofDifficulty, Staff ownerProblem,
                    Course concernedCourse,
                    Module concernedModule, Chapter concernedChapter, Section concernedSection,
-                   SubSection concernedSubSection, Paragraph concernedParagraph,
+                   SubSection concernedSubSection, Paragraph concernedParagraph, List<Content> listofContent,
                    List<Question> listofQuestion, List<Indication> listofIndication) {
         this.problemType = problemType;
         this.levelofDifficulty = levelofDifficulty;
@@ -67,6 +74,7 @@ public class Problem {
         this.concernedSection = concernedSection;
         this.concernedSubSection = concernedSubSection;
         this.concernedParagraph = concernedParagraph;
+        this.listofContent = listofContent;
         this.listofQuestion = listofQuestion;
         this.listofIndication = listofIndication;
     }
@@ -81,6 +89,7 @@ public class Problem {
                 ", concernedSection=" + concernedSection.getTitle() +
                 ", concernedSubSection=" + concernedSubSection.getTitle() +
                 ", concernedParagraph=" + concernedParagraph.getTitle() +
+                ", listofContent=" + listofContent +
                 ", listofQuestion=" + listofQuestion +
                 ", listofIndication=" + listofIndication +
                 '}';

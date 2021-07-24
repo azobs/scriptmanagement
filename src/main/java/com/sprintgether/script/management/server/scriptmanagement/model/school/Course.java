@@ -1,9 +1,9 @@
 package com.sprintgether.script.management.server.scriptmanagement.model.school;
 
+import com.sprintgether.script.management.server.scriptmanagement.model.script.Content;
 import com.sprintgether.script.management.server.scriptmanagement.model.user.Staff;
 import lombok.*;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -19,10 +19,17 @@ public class Course {
     String id;
     String title;
     String courseCode;
+    @DBRef
     Level ownerLevel;
     int nbreCredit;
     @DBRef
     List<Staff> listofLecturer = new ArrayList<Staff>();
+    /******
+     * We can add a course summary during the creation or modification of a course
+     */
+    @DBRef
+    List<Content> listofContent = new ArrayList<>();
+    EnumCoursePartType courseType;
     @DBRef
     CourseOutline courseOutline;
 

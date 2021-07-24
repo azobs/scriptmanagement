@@ -4,9 +4,12 @@ import com.sprintgether.script.management.server.scriptmanagement.commonused.Res
 import com.sprintgether.script.management.server.scriptmanagement.commonused.ServerResponse;
 import com.sprintgether.script.management.server.scriptmanagement.dao.school.CourseOutlineRepository;
 import com.sprintgether.script.management.server.scriptmanagement.dao.school.CourseRepository;
+import com.sprintgether.script.management.server.scriptmanagement.dao.script.ContentRepository;
 import com.sprintgether.script.management.server.scriptmanagement.exception.school.*;
 import com.sprintgether.script.management.server.scriptmanagement.exception.user.StaffNotFoundException;
 import com.sprintgether.script.management.server.scriptmanagement.model.school.*;
+import com.sprintgether.script.management.server.scriptmanagement.model.script.Content;
+import com.sprintgether.script.management.server.scriptmanagement.model.script.EnumContentType;
 import com.sprintgether.script.management.server.scriptmanagement.model.user.Staff;
 import com.sprintgether.script.management.server.scriptmanagement.service.user.StaffService;
 import org.springframework.data.domain.Page;
@@ -25,6 +28,7 @@ public class CourseServiceImpl implements CourseService {
 
     CourseRepository courseRepository;
     CourseOutlineRepository courseOutlineRepository;
+    ContentRepository contentRepository;
     LevelService levelService;
     OptionService optionService;
     DepartmentService departmentService;
@@ -34,7 +38,8 @@ public class CourseServiceImpl implements CourseService {
     public CourseServiceImpl(CourseRepository courseRepository, LevelService levelService,
                              OptionService optionService, DepartmentService departmentService,
                              SchoolService schoolService, StaffService staffService,
-                             CourseOutlineRepository courseOutlineRepository) {
+                             CourseOutlineRepository courseOutlineRepository,
+                             ContentRepository contentRepository) {
         this.courseRepository = courseRepository;
         this.levelService = levelService;
         this.optionService = optionService;
@@ -42,6 +47,7 @@ public class CourseServiceImpl implements CourseService {
         this.schoolService = schoolService;
         this.staffService = staffService;
         this.courseOutlineRepository = courseOutlineRepository;
+        this.contentRepository = contentRepository;
     }
 
     @Override
@@ -256,12 +262,107 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
+    public ServerResponse<Page<Course>> findAllCourseOfLevelByType(String schoolName,
+                                                                   String departmentName,
+                                                                   String optionName,
+                                                                   String levelName,
+                                                                   String courseType,
+                                                                   Pageable pageable)
+            throws LevelNotFoundException {
+
+        schoolName = schoolName.toLowerCase().trim();
+        departmentName = departmentName.toLowerCase().trim();
+        optionName = optionName.toLowerCase().trim();
+        levelName = levelName.toLowerCase().trim();
+        courseType = courseType.trim();
+
+        ServerResponse<Page<Course>> srCoursePage = new ServerResponse<>();
+        try {
+            ServerResponse<Level> srLevel = levelService.findLevelOfOptionByName(schoolName, departmentName,
+                    optionName, levelName);
+            if(srLevel.getResponseCode() != ResponseCode.LEVEL_FOUND){
+                throw new LevelNotFoundException("The level name specified does not match any level in the option specified");
+            }
+            Level concernedLevel = srLevel.getAssociatedObject();
+            EnumCoursePartType enumCoursePartType = EnumCoursePartType.valueOf(courseType.toUpperCase());
+            Page<Course> pageOfCourse = courseRepository.findAllByOwnerLevelAndCourseType(
+                    concernedLevel, enumCoursePartType, pageable);
+
+            srCoursePage.setErrorMessage("The course page of level by type has been successfully made");
+            srCoursePage.setResponseCode(ResponseCode.NORMAL_RESPONSE);
+            srCoursePage.setAssociatedObject(pageOfCourse);
+        } catch (SchoolNotFoundException e) {
+            //e.printStackTrace();
+            srCoursePage.setErrorMessage("The school name specified does not match any school in the system");
+            srCoursePage.setMoreDetails(e.getMessage());
+            srCoursePage.setResponseCode(ResponseCode.EXCEPTION_SCHOOL_FOUND);
+        } catch (DepartmentNotFoundException e) {
+            //e.printStackTrace();
+            srCoursePage.setErrorMessage("The department name specified does not match any department in the school specified");
+            srCoursePage.setMoreDetails(e.getMessage());
+            srCoursePage.setResponseCode(ResponseCode.EXCEPTION_DEPARTMENT_FOUND);
+        } catch (OptionNotFoundException e) {
+            //e.printStackTrace();
+            srCoursePage.setErrorMessage("The option name specified does not match any option in the department specified");
+            srCoursePage.setMoreDetails(e.getMessage());
+            srCoursePage.setResponseCode(ResponseCode.EXCEPTION_OPTION_FOUND);
+        }
+        return srCoursePage;
+    }
+
+    @Override
+    public ServerResponse<List<Course>> findAllCourseOfLevelByType(String schoolName,
+                                                                   String departmentName,
+                                                                   String optionName, String levelName,
+                                                                   String courseType)
+            throws LevelNotFoundException {
+        schoolName = schoolName.toLowerCase().trim();
+        departmentName = departmentName.toLowerCase().trim();
+        optionName = optionName.toLowerCase().trim();
+        levelName = levelName.toLowerCase().trim();
+        courseType = courseType.trim();
+
+        ServerResponse<List<Course>> srCourseList = new ServerResponse<>();
+
+        try {
+            ServerResponse<Level> srLevel = levelService.findLevelOfOptionByName(schoolName,
+                    departmentName, optionName,levelName);
+            if(srLevel.getResponseCode() !=  ResponseCode.LEVEL_FOUND){
+                throw new LevelNotFoundException("The level name specified does not match any level in the option specified");
+            }
+            Level associatedLevel = srLevel.getAssociatedObject();
+            EnumCoursePartType enumCoursePartType = EnumCoursePartType.valueOf(courseType.toUpperCase());
+            List<Course> listOfCourse = courseRepository.findAllByOwnerLevelAndCourseType(associatedLevel, enumCoursePartType);
+            srCourseList.setErrorMessage("The course list of level by type has been successfully made");
+            srCourseList.setResponseCode(ResponseCode.NORMAL_RESPONSE);
+            srCourseList.setAssociatedObject(listOfCourse);
+        } catch (SchoolNotFoundException e) {
+            //e.printStackTrace();
+            srCourseList.setResponseCode(ResponseCode.EXCEPTION_SCHOOL_FOUND);
+            srCourseList.setMoreDetails(e.getMessage());
+            srCourseList.setErrorMessage("The school name specified does not match any school in the system");
+        } catch (DepartmentNotFoundException e) {
+            //e.printStackTrace();
+            srCourseList.setResponseCode(ResponseCode.EXCEPTION_DEPARTMENT_FOUND);
+            srCourseList.setMoreDetails(e.getMessage());
+            srCourseList.setErrorMessage("The department name specified does not match any department in the school specified");
+        } catch (OptionNotFoundException e) {
+            //e.printStackTrace();
+            srCourseList.setResponseCode(ResponseCode.EXCEPTION_OPTION_FOUND);
+            srCourseList.setMoreDetails(e.getMessage());
+            srCourseList.setErrorMessage("The option name specified does not match any option in the department specified");
+        }
+
+        return srCourseList;
+    }
+
+    @Override
     public Course saveCourse(Course course) {
         return courseRepository.save(course);
     }
 
     @Override
-    public ServerResponse<Course> saveCourse(String title, String courseCode, int nbreCredit,
+    public ServerResponse<Course> saveCourse(String title, String courseCode, int nbreCredit, String courseType,
                                              String levelName, String optionName,
                                              String departmentName, String schoolName,
                                              String courseOutlineTitle)
@@ -269,6 +370,7 @@ public class CourseServiceImpl implements CourseService {
 
         title = title.toLowerCase().trim();
         courseCode = courseCode.trim();
+        courseType = courseType.trim();
         levelName = levelName.toLowerCase().trim();
         optionName = optionName.toLowerCase().trim();
         departmentName = departmentName.toLowerCase().trim();
@@ -289,26 +391,38 @@ public class CourseServiceImpl implements CourseService {
             if(srCourse1.getResponseCode() == ResponseCode.COURSE_FOUND){
                 throw new DuplicateCourseInLevelException("The course title specified already exist in the level specified");
             }
+            try {
+                EnumCoursePartType enumCoursePartType = EnumCoursePartType.valueOf(courseType.toUpperCase());
 
-            //We must initialise the lecturer list of a course with empty list during creation
-            List<Staff> listofStaff = new ArrayList<>();
+                //We must initialise the lecturer list of a course with empty list during creation
+                List<Staff> listofStaff = new ArrayList<>();
+                List<Content> listofContent = new ArrayList<>();
 
-            //We must automatically add a course title to the new created course
-            CourseOutline courseOutline = new CourseOutline(courseOutlineTitle);
-            CourseOutline courseOutlineSaved = courseOutlineRepository.save(courseOutline);
+                //We must automatically add a course title to the new created course
+                CourseOutline courseOutline = new CourseOutline(courseOutlineTitle);
+                CourseOutline courseOutlineSaved = courseOutlineRepository.save(courseOutline);
 
-            Course course = new Course();
-            course.setCourseCode(courseCode);
-            course.setNbreCredit(nbreCredit);
-            course.setTitle(title);
-            course.setListofLecturer(listofStaff);
-            course.setOwnerLevel(concernedLevel);
-            course.setCourseOutline(courseOutlineSaved);
+                Course course = new Course();
+                course.setCourseCode(courseCode);
+                course.setNbreCredit(nbreCredit);
+                course.setTitle(title);
+                course.setCourseType(enumCoursePartType);
+                course.setListofLecturer(listofStaff);
+                course.setListofContent(listofContent);
+                course.setOwnerLevel(concernedLevel);
+                course.setCourseOutline(courseOutlineSaved);
 
-            Course courseSaved = courseRepository.save(course);
-            srCourse.setResponseCode(ResponseCode.COURSE_CREATED);
-            srCourse.setErrorMessage("The course has been successfully created");
-            srCourse.setAssociatedObject(courseSaved);
+                Course courseSaved = courseRepository.save(course);
+                srCourse.setResponseCode(ResponseCode.COURSE_CREATED);
+                srCourse.setErrorMessage("The course has been successfully created");
+                srCourse.setAssociatedObject(courseSaved);
+            }
+            catch (IllegalArgumentException e){
+                srCourse.setResponseCode(ResponseCode.EXCEPTION_ENUM_COURSE_PART_TYPE);
+                srCourse.setErrorMessage("IllegalArgumentException");
+                srCourse.setMoreDetails(e.getMessage());
+            }
+
 
         } catch (SchoolNotFoundException e) {
             //e.printStackTrace();
@@ -329,7 +443,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public ServerResponse<Course> updateCourse(String title, String courseCode, int nbreCredit,
-                                               String levelName, String optionName,
+                                               String courseType, String levelName, String optionName,
                                                String departmentName, String schoolName)
             throws LevelNotFoundException, CourseNotFoundException {
 
@@ -355,17 +469,27 @@ public class CourseServiceImpl implements CourseService {
             if(srCourse1.getResponseCode() != ResponseCode.COURSE_FOUND){
                 throw new CourseNotFoundException("The course title specified does not match any course in the level specified");
             }
-            Course concernedCourse = srCourse1.getAssociatedObject();
+            try {
+                EnumCoursePartType enumCoursePartType = EnumCoursePartType.valueOf(courseType.toUpperCase());
+                Course concernedCourse = srCourse1.getAssociatedObject();
 
-            concernedCourse.setCourseCode(courseCode);
-            concernedCourse.setNbreCredit(nbreCredit);
-            concernedCourse.setTitle(title);
-            concernedCourse.setOwnerLevel(concernedLevel);
+                concernedCourse.setCourseCode(courseCode);
+                concernedCourse.setNbreCredit(nbreCredit);
+                concernedCourse.setTitle(title);
+                concernedCourse.setCourseType(enumCoursePartType);
+                concernedCourse.setOwnerLevel(concernedLevel);
 
-            Course courseUpdated = courseRepository.save(concernedCourse);
-            srCourse.setResponseCode(ResponseCode.COURSE_UPDATED);
-            srCourse.setErrorMessage("The course has been successfully updated");
-            srCourse.setAssociatedObject(courseUpdated);
+                Course courseUpdated = courseRepository.save(concernedCourse);
+                srCourse.setResponseCode(ResponseCode.COURSE_UPDATED);
+                srCourse.setErrorMessage("The course has been successfully updated");
+                srCourse.setAssociatedObject(courseUpdated);
+
+            }
+            catch (IllegalArgumentException e){
+                srCourse.setResponseCode(ResponseCode.EXCEPTION_ENUM_COURSE_PART_TYPE);
+                srCourse.setErrorMessage("IllegalArgumentException");
+                srCourse.setMoreDetails(e.getMessage());
+            }
 
         } catch (SchoolNotFoundException e) {
             //e.printStackTrace();
@@ -569,6 +693,206 @@ public class CourseServiceImpl implements CourseService {
             srCourseOutline.setResponseCode(ResponseCode.EXCEPTION_LEVEL_FOUND);
         }
         return srCourseOutline;
+    }
+
+    @Override
+    public ServerResponse<Course> addContentToCourse(String value, String contentType,
+                                                     String schoolName, String departmentName,
+                                                     String optionName, String levelName,
+                                                     String courseTitle) throws CourseNotFoundException{
+        value = value.trim();
+        contentType = contentType.trim();
+        levelName = levelName.toLowerCase().trim();
+        optionName = optionName.toLowerCase().trim();
+        departmentName = departmentName.toLowerCase().trim();
+        schoolName = schoolName.toLowerCase().trim();
+        courseTitle = courseTitle.toLowerCase().trim();
+        ServerResponse<Course> srCourse = new ServerResponse<>();
+
+        ServerResponse<Course> srCourse1 = null;
+        try {
+            srCourse1 = this.findCourseOfLevelByTitle(schoolName, departmentName,
+                    optionName, levelName, courseTitle);
+            if(srCourse1.getResponseCode() != ResponseCode.COURSE_FOUND){
+                throw new CourseNotFoundException("The course name specified is not in the level");
+            }
+            ////////////////
+            Course concernedCourse = srCourse1.getAssociatedObject();
+            try {
+                EnumContentType enumContentType = EnumContentType.valueOf(contentType.toUpperCase());
+                Content content = new Content();
+                content.setValue(value);
+                content.setContentType(enumContentType);
+                Content contentSaved = contentRepository.save(content);
+                concernedCourse.getListofContent().add(contentSaved);
+                Course courseSavedWithContent = this.saveCourse(concernedCourse);
+
+                srCourse.setErrorMessage("A content has been added in the list of content of the course");
+                srCourse.setResponseCode(ResponseCode.CONTENT_ADDED);
+                srCourse.setAssociatedObject(courseSavedWithContent);
+            }
+            catch (IllegalArgumentException e){
+                srCourse.setResponseCode(ResponseCode.EXCEPTION_ENUM_COURSE_PART_TYPE);
+                srCourse.setErrorMessage("IllegalArgumentException");
+                srCourse.setMoreDetails(e.getMessage());
+            }
+            ////////////////
+        } catch (SchoolNotFoundException e) {
+            //e.printStackTrace();
+            srCourse.setErrorMessage("The school name specified does not match any school in the system");
+            srCourse.setMoreDetails(e.getMessage());
+            srCourse.setResponseCode(ResponseCode.EXCEPTION_SCHOOL_FOUND);
+        } catch (DepartmentNotFoundException e) {
+            //e.printStackTrace();
+            srCourse.setErrorMessage("The department name specified does not match any department in the school");
+            srCourse.setMoreDetails(e.getMessage());
+            srCourse.setResponseCode(ResponseCode.EXCEPTION_DEPARTMENT_FOUND);
+        } catch (OptionNotFoundException e) {
+            //e.printStackTrace();
+            srCourse.setErrorMessage("The option name specified does not match any Option in the department");
+            srCourse.setMoreDetails(e.getMessage());
+            srCourse.setResponseCode(ResponseCode.EXCEPTION_OPTION_FOUND);
+        } catch (LevelNotFoundException e) {
+            //e.printStackTrace();
+            srCourse.setErrorMessage("The Level name specified does not match any levem in the Option");
+            srCourse.setMoreDetails(e.getMessage());
+            srCourse.setResponseCode(ResponseCode.EXCEPTION_LEVEL_FOUND);
+        }
+        if(srCourse1.getResponseCode() != ResponseCode.COURSE_FOUND){
+            throw new CourseNotFoundException("The course name specified does not match any " +
+                    "course in the level");
+        }
+
+
+        return srCourse;
+    }
+
+    @Override
+    public ServerResponse<Course> removeContentToCourse(String contentId,
+                                                        String schoolName, String departmentName,
+                                                        String optionName, String levelName,
+                                                        String courseTitle)
+            throws CourseNotFoundException, ContentNotFoundException{
+        contentId = contentId.trim();
+        levelName = levelName.toLowerCase().trim();
+        optionName = optionName.toLowerCase().trim();
+        departmentName = departmentName.toLowerCase().trim();
+        schoolName = schoolName.toLowerCase().trim();
+        courseTitle = courseTitle.toLowerCase().trim();
+
+        ServerResponse<Course> srCourse = new ServerResponse<>();
+
+        Optional<Content> optionalContent = contentRepository.findById(contentId);
+
+        if(!optionalContent.isPresent()){
+            throw new ContentNotFoundException("The content id specified does not match any content in the system");
+        }
+        contentRepository.deleteById(contentId);
+
+        ServerResponse<Course> srCourse1 = null;
+        try {
+            srCourse1 = this.findCourseOfLevelByTitle(schoolName, departmentName,
+                    optionName, levelName, courseTitle);
+            if(srCourse1.getResponseCode() != ResponseCode.COURSE_FOUND){
+                throw new CourseNotFoundException("The course name specified is not in the level");
+            }
+            ////////////////
+            Course concernedCourse = srCourse1.getAssociatedObject();
+
+            srCourse.setErrorMessage("A content has been removed in the list of content of the course");
+            srCourse.setResponseCode(ResponseCode.CONTENT_DELETED);
+            srCourse.setAssociatedObject(concernedCourse);
+            ////////////////
+        } catch (SchoolNotFoundException e) {
+            //e.printStackTrace();
+            srCourse.setErrorMessage("The school name specified does not match any school in the system");
+            srCourse.setMoreDetails(e.getMessage());
+            srCourse.setResponseCode(ResponseCode.EXCEPTION_SCHOOL_FOUND);
+        } catch (DepartmentNotFoundException e) {
+            //e.printStackTrace();
+            srCourse.setErrorMessage("The department name specified does not match any department in the school");
+            srCourse.setMoreDetails(e.getMessage());
+            srCourse.setResponseCode(ResponseCode.EXCEPTION_DEPARTMENT_FOUND);
+        } catch (OptionNotFoundException e) {
+            //e.printStackTrace();
+            srCourse.setErrorMessage("The option name specified does not match any Option in the department");
+            srCourse.setMoreDetails(e.getMessage());
+            srCourse.setResponseCode(ResponseCode.EXCEPTION_OPTION_FOUND);
+        } catch (LevelNotFoundException e) {
+            //e.printStackTrace();
+            srCourse.setErrorMessage("The Level name specified does not match any levem in the Option");
+            srCourse.setMoreDetails(e.getMessage());
+            srCourse.setResponseCode(ResponseCode.EXCEPTION_LEVEL_FOUND);
+        }
+        if(srCourse1.getResponseCode() != ResponseCode.COURSE_FOUND){
+            throw new CourseNotFoundException("The course name specified does not match any " +
+                    "course in the level");
+        }
+
+
+        return srCourse;
+    }
+
+    @Override
+    public ServerResponse<Course> updateContentToCourse(String contentId, String value,
+                                                        String schoolName, String departmentName,
+                                                        String optionName, String levelName,
+                                                        String courseTitle)
+            throws CourseNotFoundException, ContentNotFoundException{
+        ServerResponse<Course> srCourse = new ServerResponse<>();
+        contentId = contentId.trim();
+        value = value.trim();
+        Optional<Content> optionalContent = contentRepository.findById(contentId);
+
+        if(!optionalContent.isPresent()){
+            throw new ContentNotFoundException("The content id specified does not match any content in the system");
+        }
+
+        Content content = optionalContent.get();
+        content.setValue(value);
+        contentRepository.save(content);
+
+        ServerResponse<Course> srCourse1 = null;
+        try {
+            srCourse1 = this.findCourseOfLevelByTitle(schoolName, departmentName,
+                    optionName, levelName, courseTitle);
+            if(srCourse1.getResponseCode() != ResponseCode.COURSE_FOUND){
+                throw new CourseNotFoundException("The course name specified is not in the level");
+            }
+            ////////////////
+            Course concernedCourse = srCourse1.getAssociatedObject();
+
+            srCourse.setErrorMessage("A content has been removed in the list of content of the course");
+            srCourse.setResponseCode(ResponseCode.CONTENT_UPDATED);
+            srCourse.setAssociatedObject(concernedCourse);
+            ////////////////
+        } catch (SchoolNotFoundException e) {
+            //e.printStackTrace();
+            srCourse.setErrorMessage("The school name specified does not match any school in the system");
+            srCourse.setMoreDetails(e.getMessage());
+            srCourse.setResponseCode(ResponseCode.EXCEPTION_SCHOOL_FOUND);
+        } catch (DepartmentNotFoundException e) {
+            //e.printStackTrace();
+            srCourse.setErrorMessage("The department name specified does not match any department in the school");
+            srCourse.setMoreDetails(e.getMessage());
+            srCourse.setResponseCode(ResponseCode.EXCEPTION_DEPARTMENT_FOUND);
+        } catch (OptionNotFoundException e) {
+            //e.printStackTrace();
+            srCourse.setErrorMessage("The option name specified does not match any Option in the department");
+            srCourse.setMoreDetails(e.getMessage());
+            srCourse.setResponseCode(ResponseCode.EXCEPTION_OPTION_FOUND);
+        } catch (LevelNotFoundException e) {
+            //e.printStackTrace();
+            srCourse.setErrorMessage("The Level name specified does not match any levem in the Option");
+            srCourse.setMoreDetails(e.getMessage());
+            srCourse.setResponseCode(ResponseCode.EXCEPTION_LEVEL_FOUND);
+        }
+        if(srCourse1.getResponseCode() != ResponseCode.COURSE_FOUND){
+            throw new CourseNotFoundException("The course name specified does not match any " +
+                    "course in the level");
+        }
+
+        return srCourse;
     }
 
     @Override

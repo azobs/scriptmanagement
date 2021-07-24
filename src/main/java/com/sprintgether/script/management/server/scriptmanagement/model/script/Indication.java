@@ -6,6 +6,9 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Document
 @Data
 @NoArgsConstructor
@@ -13,17 +16,17 @@ public class Indication {
     @Id
     String id;
     @DBRef
-    Content content;
+    List<Content> listofContent = new ArrayList<>();
 
-    public Indication(Content content) {
-        this.content = content;
+    public Indication(List<Content> listofContent) {
+        this.listofContent = listofContent;
     }
 
     @Override
     public String toString() {
         return "Indication{" +
                 "id='" + id + '\'' +
-                ", content=" + content.getValue() +
+                ", content=" + listofContent +
                 '}';
     }
 }

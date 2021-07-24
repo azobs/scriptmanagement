@@ -1,6 +1,7 @@
 package com.sprintgether.script.management.server.scriptmanagement.model.school;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sprintgether.script.management.server.scriptmanagement.model.script.Content;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -19,6 +20,12 @@ public class Chapter {
     String id;
     String title;
     int chapterOrder;
+    /******
+     * We can add a chapter summary during the creation or modification of a chapter
+     */
+    @DBRef
+    List<Content> listofContent = new ArrayList<>();
+    EnumCoursePartType chapterType;
     @DBRef
     Module ownerModule;
 

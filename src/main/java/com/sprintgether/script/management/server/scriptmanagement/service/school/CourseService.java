@@ -18,6 +18,7 @@ public interface CourseService {
     ServerResponse<List<Course>> findAllCourse();
     ServerResponse<Page<Course>> findAllCourse(Pageable pageable);
     ServerResponse<Page<Course>> findAllCourse(String keyword, Pageable pageable);
+
     ServerResponse<Page<Course>> findAllCourseOfLevel(String schoolName, String departmentName,
                                                       String optionName, String levelName, Pageable pageable)
             throws LevelNotFoundException;
@@ -29,12 +30,21 @@ public interface CourseService {
                                                       String optionName, String levelName)
             throws LevelNotFoundException;
 
+    ServerResponse<Page<Course>> findAllCourseOfLevelByType(String schoolName, String departmentName, String optionName,
+                                                            String levelName, String courseType,
+                                                            Pageable pageable)
+            throws LevelNotFoundException;
+    ServerResponse<List<Course>> findAllCourseOfLevelByType(String schoolName, String departmentName,
+                                                      String optionName, String levelName, String courseType)
+            throws LevelNotFoundException;
+
     Course saveCourse(Course course);
-    ServerResponse<Course> saveCourse(String title, String courseCode, int nbreCredit,
+    ServerResponse<Course> saveCourse(String title, String courseCode, int nbreCredit, String courseType,
                                       String levelName, String optionName, String departmentName,
                                       String schoolName, String courseOutlineTitle)
             throws LevelNotFoundException, DuplicateCourseInLevelException;
-    ServerResponse<Course> updateCourse(String title, String courseCode, int nbreCredit,
+
+    ServerResponse<Course> updateCourse(String title, String courseCode, int nbreCredit, String courseType,
                                         String levelName, String optionName, String departmentName,
                                         String schoolName)
             throws LevelNotFoundException, CourseNotFoundException;
@@ -50,6 +60,21 @@ public interface CourseService {
                                                         String departmentName, String optionName,
                                                         String levelName, String courseTitle)
             throws CourseNotFoundException;
+
+    ServerResponse<Course> addContentToCourse(String value, String contentType, String schoolName,
+                                              String departmentName, String optionName,
+                                              String levelName, String courseTitle) throws CourseNotFoundException;
+
+    ServerResponse<Course> removeContentToCourse(String contentId, String schoolName,
+                                              String departmentName, String optionName,
+                                              String levelName, String courseTitle)
+            throws CourseNotFoundException, ContentNotFoundException;
+
+    ServerResponse<Course> updateContentToCourse(String contentId, String value, String schoolName,
+                                              String departmentName, String optionName,
+                                              String levelName, String courseTitle)
+            throws CourseNotFoundException, ContentNotFoundException;
+
     ServerResponse<Course> deleteCourse(String schoolName, String departmentName, String optionName,
                                         String levelName, String courseTitle)
             throws SchoolNotFoundException, DepartmentNotFoundException, OptionNotFoundException, LevelNotFoundException, CourseNotFoundException;
