@@ -10,6 +10,10 @@ import javax.validation.constraints.NotNull;
 @Data
 @NoArgsConstructor
 public class SchoolForm {
+    @NotNull(message = "The school id cannot be null")
+    @NotBlank(message = "The school id cannot be blank caracter")
+    @NotEmpty(message = "The school id cannot be empty")
+    String schoolId;
     @NotNull(message = "The school name cannot be null")
     @NotBlank(message = "The school name cannot be blank caracter")
     @NotEmpty(message = "The school name cannot be empty")

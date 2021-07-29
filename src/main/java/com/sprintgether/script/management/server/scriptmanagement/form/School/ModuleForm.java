@@ -11,24 +11,24 @@ import javax.validation.constraints.NotNull;
 
 @Data
 @NoArgsConstructor
-public class CourseForm {
-    @NotNull(message = "The course Id cannot be null")
-    @NotBlank(message = "The course Id cannot be blank caracter")
-    @NotEmpty(message = "The course Id cannot be empty")
-    String courseId;
+public class ModuleForm {
+    @NotNull(message = "The module Id cannot be null")
+    @NotBlank(message = "The module Id cannot be blank caracter")
+    @NotEmpty(message = "The module Id cannot be empty")
+    String moduleId;
     @NotNull(message = "The course title cannot be null")
     @NotBlank(message = "The course title cannot be blank caracter")
     @NotEmpty(message = "The course title cannot be empty")
     String title;
-    @NotNull(message = "The course code cannot be null")
-    @NotBlank(message = "The course code cannot be blank caracter")
-    @NotEmpty(message = "The course code cannot be empty")
-    String courseCode;
     @NotNull(message = "The level name cannot be null")
     @Min(value = 1, message = "The minimum number of credit is 1")
-    int nbreCredit;
+    int moduleOrder;
     @NotNull(message = "The course type cannot be null THEORETICAL/PRACTICAL")
-    String courseType = EnumCoursePartType.THEORETICAL.name();
+    String moduleType = EnumCoursePartType.THEORETICAL.name();
+    @NotNull(message = "The course title cannot be null")
+    @NotBlank(message = "The course title cannot be blank caracter")
+    @NotEmpty(message = "The course title cannot be empty")
+    String courseTitle;
     @NotNull(message = "The level name cannot be null")
     @NotBlank(message = "The level name cannot be blank caracter")
     @NotEmpty(message = "The level name cannot be empty")
@@ -45,6 +45,4 @@ public class CourseForm {
     @NotBlank(message = "The school name cannot be blank caracter")
     @NotEmpty(message = "The school name cannot be empty")
     String ownerSchool;
-    String courseOutlineTitle;
-
 }

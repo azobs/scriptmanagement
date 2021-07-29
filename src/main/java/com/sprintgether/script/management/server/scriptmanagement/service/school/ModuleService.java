@@ -11,59 +11,71 @@ import java.util.List;
 
 public interface ModuleService {
     ServerResponse<Module> findModuleOfCourseOutlineByTitle(String schoolName, String departmentName,
-                                                    String optionName, String levelName, String moduleTitle)
-            throws SchoolNotFoundException, DepartmentNotFoundException, OptionNotFoundException, LevelNotFoundException;
+                                                    String optionName, String levelName,
+                                                            String courseTitle, String moduleTitle)
+            throws SchoolNotFoundException, DepartmentNotFoundException, OptionNotFoundException,
+            LevelNotFoundException, CourseNotFoundException;
 
     ServerResponse<Page<Module>> findAllModuleOfCourseOutline(String schoolName, String departmentName,
-                                                      String optionName, String levelName, Pageable pageable)
-            throws LevelNotFoundException;
+                                                      String optionName, String levelName,
+                                                              String courseTitle, Pageable pageable)
+            throws CourseNotFoundException;
+
     ServerResponse<Page<Module>> findAllModuleOfCourseOutline(String schoolName, String departmentName,
-                                                      String optionName, String levelName, String keyword,
-                                                      Pageable pageable)
-            throws LevelNotFoundException;
+                                                      String optionName, String levelName,
+                                                              String courseTitle, String keyword,
+                                                              Pageable pageable)
+            throws CourseNotFoundException;
+
     ServerResponse<List<Module>> findAllModuleOfCourseOutline(String schoolName, String departmentName,
-                                                      String optionName, String levelName)
-            throws LevelNotFoundException;
+                                                      String optionName, String levelName,
+                                                              String courseTitle)
+            throws CourseNotFoundException;
 
     ServerResponse<Page<Module>> findAllModuleOfCourseOutlineByType(String schoolName, String departmentName, String optionName,
-                                                            String levelName, String moduleType,
+                                                            String levelName, String courseTitle,
+                                                                    String moduleType,
                                                             Pageable pageable)
-            throws LevelNotFoundException;
+            throws CourseNotFoundException;
     ServerResponse<List<Module>> findAllModuleOfCourseOutlineByType(String schoolName, String departmentName,
-                                                            String optionName, String levelName, String moduleType)
-            throws LevelNotFoundException;
+                                                            String optionName, String levelName,
+                                                                    String courseTitle, String moduleType)
+            throws CourseNotFoundException;
 
     Module saveModule(Module module);
-    ServerResponse<Module> saveModule(String title, int moduleOrder, String moduleType,
+    ServerResponse<Module> saveModule(String title, int moduleOrder, String moduleType, String courseTitle,
                                       String levelName, String optionName, String departmentName,
                                       String schoolName)
-            throws LevelNotFoundException, DuplicateModuleInCourseOutlineException;
+            throws CourseNotFoundException, DuplicateModuleInCourseOutlineException;
 
-    ServerResponse<Module> updateModule(String title, int moduleOrder, String moduleType,
+    ServerResponse<Module> updateModule(String moduleId, String title, int moduleOrder, String moduleType, String courseTitle,
                                         String levelName, String optionName, String departmentName,
                                         String schoolName)
-            throws LevelNotFoundException, ModuleNotFoundException;
+            throws ModuleNotFoundException, DuplicateModuleInCourseOutlineException;
 
     ServerResponse<Module> updateModuleTitle(String moduleId, String newModuleTitle)
-            throws ModuleNotFoundException;
+            throws ModuleNotFoundException, DuplicateModuleInCourseOutlineException;
 
     ServerResponse<Module> addContentToModule(String value, String contentType, String schoolName,
                                               String departmentName, String optionName,
-                                              String levelName, String moduleTitle)
+                                              String levelName, String courseTitle, String moduleTitle)
             throws ModuleNotFoundException;
 
-    ServerResponse<Module> removeContentToCourse(String contentId, String schoolName,
+    ServerResponse<Module> removeContentToModule(String contentId, String schoolName,
                                                  String departmentName, String optionName,
-                                                 String levelName, String moduleTitle)
+                                                 String levelName, String courseTitle, String moduleTitle)
             throws ModuleNotFoundException, ContentNotFoundException;
 
     ServerResponse<Module> updateContentToCourse(String contentId, String value, String schoolName,
                                                  String departmentName, String optionName,
-                                                 String levelName, String moduleTitle)
+                                                 String levelName, String courseTitle, String moduleTitle)
             throws ModuleNotFoundException, ContentNotFoundException;
 
     ServerResponse<Module> deleteModule(String schoolName, String departmentName, String optionName,
-                                        String levelName, String moduleTitle)
-            throws SchoolNotFoundException, DepartmentNotFoundException, OptionNotFoundException, LevelNotFoundException, ModuleNotFoundException;
+                                        String levelName, String courseTitle, String moduleTitle)
+            throws SchoolNotFoundException, DepartmentNotFoundException, OptionNotFoundException,
+            LevelNotFoundException, CourseNotFoundException, ModuleNotFoundException;
+
+    ServerResponse<Module> deleteModule(String moduleId) throws ModuleNotFoundException;
 
 }

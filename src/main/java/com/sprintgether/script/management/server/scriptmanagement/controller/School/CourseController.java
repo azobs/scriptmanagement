@@ -7,7 +7,6 @@ import com.sprintgether.script.management.server.scriptmanagement.exception.user
 import com.sprintgether.script.management.server.scriptmanagement.form.School.*;
 import com.sprintgether.script.management.server.scriptmanagement.model.school.Course;
 import com.sprintgether.script.management.server.scriptmanagement.model.school.CourseOutline;
-import com.sprintgether.script.management.server.scriptmanagement.model.school.Level;
 import com.sprintgether.script.management.server.scriptmanagement.service.school.CourseService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,6 +25,7 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/sm/school")
 public class CourseController {
+
     CourseService courseService;
 
     public CourseController(CourseService courseService) {
@@ -40,8 +40,8 @@ public class CourseController {
         Sort.Order order2 = new Sort.Order(courseFormList.getDirection2().equalsIgnoreCase("ASC")
                 ?Sort.Direction.ASC:Sort.Direction.DESC, courseFormList.getSortBy2());
 
-        Sort.Order order3 = new Sort.Order(courseFormList.getDirection2().equalsIgnoreCase("ASC")
-                ?Sort.Direction.ASC:Sort.Direction.DESC, courseFormList.getSortBy2());
+        Sort.Order order3 = new Sort.Order(courseFormList.getDirection3().equalsIgnoreCase("ASC")
+                ?Sort.Direction.ASC:Sort.Direction.DESC, courseFormList.getSortBy3());
 
         List<Sort.Order> orderList = new ArrayList<Sort.Order>();
         orderList.add(order1);
@@ -86,7 +86,7 @@ public class CourseController {
             List<FieldError> errorList = bindingResult.getFieldErrors();
             for (FieldError error : errorList) {
                 return new ServerResponse<Page<Course>>(error.getDefaultMessage(),
-                        "Some form entry are not well filled in the institutionForm for save",
+                        "Some form entry are not well filled in the courseFormList for save",
                         ResponseCode.ERROR_IN_FORM_FILLED,
                         null);
             }
@@ -95,7 +95,7 @@ public class CourseController {
         String schoolName = courseFormList.getSchoolName();
         String departmentName = courseFormList.getDepartmentName();
         String optionName = courseFormList.getOptionName();
-        String levelName = courseFormList.getOptionName();
+        String levelName = courseFormList.getLevelName();
         String courseType = courseFormList.getCourseType().trim();
 
         ServerResponse<Page<Course>> srCoursePage = new ServerResponse<>();
@@ -135,11 +135,11 @@ public class CourseController {
                         null);
             }
         }
-        String schoolName = courseFormList.getSchoolName();
-        String departmentName = courseFormList.getDepartmentName();
-        String optionName = courseFormList.getOptionName();
-        String levelName = courseFormList.getOptionName();
-        String courseType = courseFormList.getCourseType();
+        String schoolName = courseFormList.getSchoolName().toLowerCase().trim();
+        String departmentName = courseFormList.getDepartmentName().toLowerCase().trim();
+        String optionName = courseFormList.getOptionName().toLowerCase().trim();
+        String levelName = courseFormList.getOptionName().toLowerCase().trim();
+        String courseType = courseFormList.getCourseType().trim();
 
         ServerResponse<List<Course>> srCourseList = new ServerResponse<>();
         try {
@@ -264,25 +264,64 @@ public class CourseController {
         }
 
         try {
-            srCourse = courseService.updateCourse(courseForm.getTitle(), courseForm.getCourseCode(),
+            srCourse = courseService.updateCourse(courseForm.getCourseId(), courseForm.getTitle(), courseForm.getCourseCode(),
                     courseForm.getNbreCredit(), courseForm.getCourseType(), courseForm.getOwnerLevel(),
                     courseForm.getOwnerOption(),
                     courseForm.getOwnerDepartment(), courseForm.getOwnerSchool());
             srCourse.setErrorMessage("The Course has been successfully updated");
-        } catch (LevelNotFoundException e) {
-            //e.printStackTrace();
-            srCourse.setErrorMessage("The level name does not match any level in the system");
-            srCourse.setResponseCode(ResponseCode.EXCEPTION_LEVEL_FOUND);
-            srCourse.setMoreDetails(e.getMessage());
         } catch (CourseNotFoundException e) {
             //e.printStackTrace();
             srCourse.setErrorMessage("The course name does not match any course in the system");
             srCourse.setResponseCode(ResponseCode.EXCEPTION_COURSE_FOUND);
             srCourse.setMoreDetails(e.getMessage());
+        } catch (DuplicateCourseInLevelException e) {
+            //e.printStackTrace();
+            srCourse.setErrorMessage("The course name already exist in the system");
+            srCourse.setResponseCode(ResponseCode.EXCEPTION_COURSE_DUPLICATED);
+            srCourse.setMoreDetails(e.getMessage());
         }
 
         return srCourse;
     }
+
+    @PutMapping(path = "/courseTitleUpdated")
+    public ServerResponse<Course> postCourseTitleUpdated(@Valid @RequestBody CourseForm courseForm,
+                                                    BindingResult bindingResult) {
+        ServerResponse<Course> srCourse = new ServerResponse("", "",
+                ResponseCode.BAD_REQUEST, null);
+
+        if (bindingResult.hasErrors()) {
+            //System.out.println(bindingResult.toString());
+            List<FieldError> errorList = bindingResult.getFieldErrors();
+            for (FieldError error : errorList) {
+                return new ServerResponse<Course>(error.getDefaultMessage(),
+                        "Some entry are not well filled in the schoolForm for save",
+                        ResponseCode.ERROR_IN_FORM_FILLED,
+                        null);
+            }
+        }
+
+        String newTitle = courseForm.getTitle();
+        String courseId = courseForm.getCourseId();
+
+        try {
+            srCourse = courseService.updateCourseTitle(courseId, newTitle);
+            srCourse.setErrorMessage("The Course title has been successfully updated");
+        } catch (CourseNotFoundException e) {
+            //e.printStackTrace();
+            srCourse.setErrorMessage("The course name does not match any course in the system");
+            srCourse.setResponseCode(ResponseCode.EXCEPTION_COURSE_FOUND);
+            srCourse.setMoreDetails(e.getMessage());
+        } catch (DuplicateCourseInLevelException e) {
+            //e.printStackTrace();
+            srCourse.setErrorMessage("The course name already exist in the system");
+            srCourse.setResponseCode(ResponseCode.EXCEPTION_COURSE_DUPLICATED);
+            srCourse.setMoreDetails(e.getMessage());
+        }
+
+        return srCourse;
+    }
+
 
     @PutMapping(path = "/courseOutlineUpdated")
     public ServerResponse<CourseOutline> postCourseOutlineUpdated(@Valid @RequestBody CourseForm courseForm,
@@ -427,8 +466,8 @@ public class CourseController {
         return srCourse;
     }
 
-    @PostMapping(path = "/updateContentToCourse")
-    public ServerResponse<Course> postUpdateContentToCourse(@Valid @RequestBody CourseContentForm courseContentForm,
+    @PutMapping(path = "/updateContentToCourse")
+    public ServerResponse<Course> putUpdateContentToCourse(@Valid @RequestBody CourseContentForm courseContentForm,
                                                          BindingResult bindingResult) {
         ServerResponse<Course> srCourse = new ServerResponse("", "", ResponseCode.BAD_REQUEST, null);
 
@@ -451,7 +490,7 @@ public class CourseController {
             srCourse.setErrorMessage("The content has been successfully added to the course");
         } catch (CourseNotFoundException e) {
             //e.printStackTrace();
-            srCourse.setResponseCode(ResponseCode.EXCEPTION_CONTENT_ADDED);
+            srCourse.setResponseCode(ResponseCode.EXCEPTION_COURSE_FOUND);
             srCourse.setErrorMessage("There is problem during the creation of content");
             srCourse.setMoreDetails(e.getMessage());
         } catch (ContentNotFoundException e) {
@@ -463,6 +502,7 @@ public class CourseController {
 
         return srCourse;
     }
+
 
     @PostMapping(path = "/removeContentToCourse")
     public ServerResponse<Course> postRemoveContentToCourse(@Valid @RequestBody CourseContentForm courseContentForm,
@@ -485,7 +525,7 @@ public class CourseController {
                     courseContentForm.getOwnerSchool(), courseContentForm.getOwnerDepartment(),
                     courseContentForm.getOwnerOption(),
                     courseContentForm.getOwnerLevel(), courseContentForm.getCourseTitle());
-            srCourse.setErrorMessage("The content has been successfully added to the course");
+            srCourse.setErrorMessage("The content has been successfully removed to the course");
         } catch (CourseNotFoundException e) {
             //e.printStackTrace();
             srCourse.setResponseCode(ResponseCode.EXCEPTION_CONTENT_ADDED);

@@ -13,7 +13,11 @@ import java.util.List;
 public interface CourseService {
     ServerResponse<Course> findCourseOfLevelByTitle(String schoolName, String departmentName,
                                                     String optionName, String levelName, String courseTitle)
-            throws SchoolNotFoundException, DepartmentNotFoundException, OptionNotFoundException, LevelNotFoundException;
+            throws SchoolNotFoundException, DepartmentNotFoundException, OptionNotFoundException,
+            LevelNotFoundException;
+
+    ServerResponse<Course> findCourseByCourseOutline(String courseOutlineId)
+            throws CourseOutlineNotFoundException, CourseNotFoundException;
 
     ServerResponse<List<Course>> findAllCourse();
     ServerResponse<Page<Course>> findAllCourse(Pageable pageable);
@@ -38,18 +42,21 @@ public interface CourseService {
                                                       String optionName, String levelName, String courseType)
             throws LevelNotFoundException;
 
+
     Course saveCourse(Course course);
     ServerResponse<Course> saveCourse(String title, String courseCode, int nbreCredit, String courseType,
                                       String levelName, String optionName, String departmentName,
                                       String schoolName, String courseOutlineTitle)
             throws LevelNotFoundException, DuplicateCourseInLevelException;
 
-    ServerResponse<Course> updateCourse(String title, String courseCode, int nbreCredit, String courseType,
+    ServerResponse<Course> updateCourse(String courseId, String title, String courseCode, int nbreCredit, String courseType,
                                         String levelName, String optionName, String departmentName,
                                         String schoolName)
-            throws LevelNotFoundException, CourseNotFoundException;
+            throws CourseNotFoundException, DuplicateCourseInLevelException;
+
     ServerResponse<Course> updateCourseTitle(String courseId, String title)
             throws CourseNotFoundException, DuplicateCourseInLevelException;
+
     ServerResponse<Course> setLecturerToCourse(String lecturerEmail, String schoolName,
                                                String departmentName, String optionName,
                                                String levelName, String courseTitle)
@@ -79,7 +86,8 @@ public interface CourseService {
 
     ServerResponse<Course> deleteCourse(String schoolName, String departmentName, String optionName,
                                         String levelName, String courseTitle)
-            throws SchoolNotFoundException, DepartmentNotFoundException, OptionNotFoundException, LevelNotFoundException, CourseNotFoundException;
+            throws SchoolNotFoundException, DepartmentNotFoundException, OptionNotFoundException,
+            LevelNotFoundException, CourseNotFoundException;
 
-
+    ServerResponse<Course> deleteCourse(String courseId) throws CourseNotFoundException;
 }

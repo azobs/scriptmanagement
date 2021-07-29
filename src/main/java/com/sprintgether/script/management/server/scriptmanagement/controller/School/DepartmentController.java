@@ -220,18 +220,55 @@ public class DepartmentController {
             }
         }
         try {
-            srDepartment = departmentService.updateDepartment(departmentForm.getName(),
+            srDepartment = departmentService.updateDepartment(departmentForm.getDepartmentId(),
+                    departmentForm.getName(),
                     departmentForm.getAcronym(), departmentForm.getDescription(),
                     departmentForm.getOwnerSchoolName());
+            srDepartment.setErrorMessage("The department has been successfully updated");
         } catch (DepartmentNotFoundException e) {
             srDepartment.setErrorMessage("The specified department name does not identify any department in the system");
             srDepartment.setMoreDetails(e.getMessage());
             srDepartment.setResponseCode(ResponseCode.EXCEPTION_DEPARTMENT_FOUND);
-        } catch (SchoolNotFoundException e) {
-            //e.printStackTrace();
-            srDepartment.setErrorMessage("The specified school name does not identify any school in the system");
+        } catch (DuplicateDepartmentInSchoolException e) {
+            srDepartment.setErrorMessage("The specified department already exist in the " +
+                    "school specified");
             srDepartment.setMoreDetails(e.getMessage());
-            srDepartment.setResponseCode(ResponseCode.EXCEPTION_SCHOOL_FOUND);
+            srDepartment.setResponseCode(ResponseCode.EXCEPTION_DEPARTMENT_DUPLICATED);
+        }
+        return srDepartment;
+    }
+
+    @PutMapping(path = "/departmentNameUpdated")
+    public ServerResponse<Department> putDepartmentNameUpdated(@Valid @RequestBody DepartmentForm departmentForm,
+                                                           BindingResult bindingResult) {
+        ServerResponse<Department> srDepartment = new ServerResponse("", "", ResponseCode.BAD_REQUEST, null);
+
+        if (bindingResult.hasErrors()) {
+            //System.out.println(bindingResult.toString());
+            List<FieldError> errorList = bindingResult.getFieldErrors();
+            for (FieldError error : errorList) {
+                return new ServerResponse<Department>(error.getDefaultMessage(),
+                        "Some form entry are not well filled in the staffForm for udpate",
+                        ResponseCode.ERROR_IN_FORM_FILLED,
+                        null);
+            }
+        }
+
+        String departmentId = departmentForm.getDepartmentId();
+        String newDepartmentName = departmentForm.getName();
+
+        try {
+            srDepartment = departmentService.updateDepartmentName(departmentId, newDepartmentName);
+            srDepartment.setErrorMessage("The department name has been successfully updated");
+        } catch (DepartmentNotFoundException e) {
+            srDepartment.setErrorMessage("The specified department name does not identify any department in the system");
+            srDepartment.setMoreDetails(e.getMessage());
+            srDepartment.setResponseCode(ResponseCode.EXCEPTION_DEPARTMENT_FOUND);
+        } catch (DuplicateDepartmentInSchoolException e) {
+            srDepartment.setErrorMessage("The specified department already exist in the " +
+                    "school specified");
+            srDepartment.setMoreDetails(e.getMessage());
+            srDepartment.setResponseCode(ResponseCode.EXCEPTION_DEPARTMENT_DUPLICATED);
         }
         return srDepartment;
     }

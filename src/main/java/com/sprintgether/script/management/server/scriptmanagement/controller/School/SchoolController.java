@@ -199,20 +199,62 @@ public class SchoolController {
         }
 
         try {
-            srSchool = schoolService.updateSchool(schoolForm.getName(), schoolForm.getAcronym(),
+            srSchool = schoolService.updateSchool(schoolForm.getSchoolId(), schoolForm.getName(), schoolForm.getAcronym(),
                     schoolForm.getDescription(), schoolForm.getLogoSchool(),
                     schoolForm.getOwnerInstitution(), schoolForm.getParentInstitution());
             srSchool.setErrorMessage("The school has been successfully updated");
         } catch (SchoolNotFoundException e) {
             //e.printStackTrace();
             srSchool.setErrorMessage("The school name does not match any school");
-            srSchool.setResponseCode(ResponseCode.EXCEPTION_UPDATED_INSTITUTION);
+            srSchool.setResponseCode(ResponseCode.EXCEPTION_SCHOOL_FOUND);
+            srSchool.setMoreDetails(e.getMessage());
+        } catch (DuplicateSchoolException e) {
+            //e.printStackTrace();
+            srSchool.setErrorMessage("The school name already exist in the system");
+            srSchool.setResponseCode(ResponseCode.EXCEPTION_SCHOOL_DUPLICATED);
             srSchool.setMoreDetails(e.getMessage());
         }
 
         return srSchool;
     }
 
+
+    @PutMapping(path = "/schoolNameUpdated")
+    public ServerResponse<School> putSchoolNameUpdated(@Valid @RequestBody SchoolForm schoolForm,
+                                                   BindingResult bindingResult) {
+        ServerResponse<School> srSchool = new ServerResponse("", "", ResponseCode.BAD_REQUEST, null);
+
+        if (bindingResult.hasErrors()) {
+            //System.out.println(bindingResult.toString());
+            List<FieldError> errorList = bindingResult.getFieldErrors();
+            for (FieldError error : errorList) {
+                return new ServerResponse<School>(error.getDefaultMessage(),
+                        "Some form entry are not well filled in the staffForm for udpate",
+                        ResponseCode.ERROR_IN_FORM_FILLED,
+                        null);
+            }
+        }
+
+        String schoolId = schoolForm.getSchoolId();
+        String newSchoolName = schoolForm.getName();
+
+        try {
+            srSchool = schoolService.updateSchoolName(schoolId, newSchoolName);
+            srSchool.setErrorMessage("The school name has been successfully updated");
+        } catch (SchoolNotFoundException e) {
+            //e.printStackTrace();
+            srSchool.setErrorMessage("The school name does not match any school");
+            srSchool.setResponseCode(ResponseCode.EXCEPTION_SCHOOL_FOUND);
+            srSchool.setMoreDetails(e.getMessage());
+        } catch (DuplicateSchoolException e) {
+            //e.printStackTrace();
+            srSchool.setErrorMessage("The school name already exist in the system");
+            srSchool.setResponseCode(ResponseCode.EXCEPTION_SCHOOL_DUPLICATED);
+            srSchool.setMoreDetails(e.getMessage());
+        }
+
+        return srSchool;
+    }
 
 
 }

@@ -40,7 +40,8 @@ public class DepartmentServiceImpl implements DepartmentService{
             throw new SchoolNotFoundException("The specified school name does not match any school in the system");
         }
         School school = srSchool.getAssociatedObject();
-        Optional<Department> optionalDepartment = departmentRepository.findByOwnerSchoolAndName(school, departmentName);
+        Optional<Department> optionalDepartment = departmentRepository.findByOwnerSchoolAndName(
+                school, departmentName);
         if(optionalDepartment.isPresent()){
             srDepartment.setErrorMessage("The department has been identified and returned");
             srDepartment.setResponseCode(ResponseCode.DEPARTMENT_FOUND);
@@ -184,39 +185,59 @@ public class DepartmentServiceImpl implements DepartmentService{
     }
 
     @Override
-    public ServerResponse<Department> updateDepartment(String name, String acronym, String description,
-                                                       String ownerSchoolName) throws DepartmentNotFoundException, SchoolNotFoundException {
+    public ServerResponse<Department> updateDepartment(String departmentId, String name, String acronym, String description,
+                                                       String ownerSchoolName)
+            throws DuplicateDepartmentInSchoolException, DepartmentNotFoundException {
+        departmentId = departmentId.trim();
         name  = name.toLowerCase().trim();
         acronym = acronym.trim();
         description = description.trim();
         ownerSchoolName = ownerSchoolName.toLowerCase().trim();
         ServerResponse<Department> srDepartment = new ServerResponse<>();
-        /****
-         * It is not possible to have a department without school
-         */
-        ServerResponse<School> srSchool = schoolService.findSchoolByName(ownerSchoolName);
-        if(srSchool.getResponseCode() != ResponseCode.SCHOOL_FOUND){
-            throw new SchoolNotFoundException("The owner school specified for the department is not found");
-        }
-        /**
-         * We searching for the department to update in the system and we know that we cannot
-         * update the school and the department name of a department
-         */
-        ServerResponse<Department> srDepartment1 = new ServerResponse<>();
-        School ownerSchool = srSchool.getAssociatedObject();
-        srDepartment1 = this.findDepartmentOfSchoolByName(ownerSchool.getName(), name);
-        if(srDepartment.getResponseCode() == ResponseCode.DEPARTMENT_NOT_FOUND){
-            throw new DepartmentNotFoundException("The department name specified does not match any department object in the system");
-        }
-        Department department = srDepartment1.getAssociatedObject();
-        department.setDescription(description);
-        department.setAcronym(acronym);
+        srDepartment.setResponseCode(ResponseCode.DEPARTMENT_NOT_UPDATED);
 
-        Department departmentUpdated = departmentRepository.save(department);
+        //////////////////////////////////
+        Optional<Department> optionalDepartment = departmentRepository.findById(departmentId);
+        if(!optionalDepartment.isPresent()){
+            throw new DepartmentNotFoundException("The department id specified does not match " +
+                    "any department object in the system");
+        }
+        else{
+            Department departmentToUpdated1 = optionalDepartment.get();
 
-        srDepartment.setResponseCode(ResponseCode.DEPARTMENT_UPDATED);
-        srDepartment.setErrorMessage("The department specified has been updated successfully");
-        srDepartment.setAssociatedObject(departmentUpdated);
+            departmentToUpdated1.setDescription(description);
+            departmentToUpdated1.setAcronym(acronym);
+
+            ServerResponse<Department> srDepartment2 = null;
+            try {
+                srDepartment2 = this.findDepartmentOfSchoolByName(ownerSchoolName, name);
+
+                if(srDepartment2.getResponseCode() == ResponseCode.DEPARTMENT_FOUND){
+                    Department departmentToUpdated2 = srDepartment2.getAssociatedObject();
+                    if(!departmentToUpdated1.getId().equalsIgnoreCase(departmentToUpdated2.getId())){
+                        throw new DuplicateDepartmentInSchoolException("The new department name will " +
+                                "cause duplication in the school specified");
+                    }
+                }
+                else{
+                    departmentToUpdated1.setName(name);
+                }
+                Department departmentUpdated = departmentRepository.save(departmentToUpdated1);
+
+                srDepartment.setResponseCode(ResponseCode.DEPARTMENT_UPDATED);
+                srDepartment.setErrorMessage("The department specified has been updated successfully");
+                srDepartment.setAssociatedObject(departmentUpdated);
+
+            } catch (SchoolNotFoundException e) {
+                //e.printStackTrace();
+                srDepartment.setResponseCode(ResponseCode.EXCEPTION_SCHOOL_FOUND);
+                srDepartment.setErrorMessage("The school name specified does not match any school " +
+                        "in the system");
+                srDepartment.setMoreDetails(e.getMessage());
+            }
+
+        }
+        //////////////////////////////////
         return srDepartment;
     }
 
@@ -256,6 +277,12 @@ public class DepartmentServiceImpl implements DepartmentService{
                                                                      String departmentName) throws SchoolNotFoundException, DepartmentNotFoundException {
         schoolName  = schoolName.toLowerCase().trim();
         departmentName = departmentName.toLowerCase().trim();
+        return null;
+    }
+
+    @Override
+    public ServerResponse<Department> deleteDepartmentOfSchool(String departmentID)
+            throws DepartmentNotFoundException {
         return null;
     }
 

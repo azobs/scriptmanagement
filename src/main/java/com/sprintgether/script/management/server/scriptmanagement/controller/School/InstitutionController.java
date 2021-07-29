@@ -146,11 +146,59 @@ public class InstitutionController {
         }
 
         try {
-            srInstitution = institutionService.updateInstitution(institutionForm.getName(), institutionForm.getAcronym(), institutionForm.getDescription(), institutionForm.getLocation(), institutionForm.getAddress(), institutionForm.getLogoInstitution());
+            srInstitution = institutionService.updateInstitution(institutionForm.getInstitutionId(),
+                    institutionForm.getName(), institutionForm.getAcronym(),
+                    institutionForm.getDescription(), institutionForm.getLocation(),
+                    institutionForm.getAddress(), institutionForm.getLogoInstitution());
             srInstitution.setErrorMessage("The institution has been successfully updated");
         } catch (InstitutionNotFoundException e) {
             //e.printStackTrace();
             srInstitution.setErrorMessage("The institution name does not match any institution");
+            srInstitution.setResponseCode(ResponseCode.EXCEPTION_UPDATED_INSTITUTION);
+            srInstitution.setMoreDetails(e.getMessage());
+        } catch (DuplicateInstitutionException e) {
+            //e.printStackTrace();
+            srInstitution.setErrorMessage("The institution name match other institution in " +
+                    "the system");
+            srInstitution.setResponseCode(ResponseCode.EXCEPTION_UPDATED_INSTITUTION);
+            srInstitution.setMoreDetails(e.getMessage());
+        }
+
+        return srInstitution;
+    }
+
+
+    @PutMapping(path = "/institutionNameUpdated")
+    public ServerResponse<Institution> putInstitutionNameUpdated(@Valid @RequestBody InstitutionForm institutionForm,
+                                                             BindingResult bindingResult) {
+        ServerResponse<Institution> srInstitution = new ServerResponse("", "", ResponseCode.BAD_REQUEST, null);
+
+        if (bindingResult.hasErrors()) {
+            //System.out.println(bindingResult.toString());
+            List<FieldError> errorList = bindingResult.getFieldErrors();
+            for (FieldError error : errorList) {
+                return new ServerResponse<Institution>(error.getDefaultMessage(),
+                        "Some form entry are not well filled in the staffForm for udpate",
+                        ResponseCode.ERROR_IN_FORM_FILLED,
+                        null);
+            }
+        }
+
+        String institutionId = institutionForm.getInstitutionId();
+        String newInstitutionName = institutionForm.getName();
+
+        try {
+            srInstitution = institutionService.updateInstitutionName(institutionId, newInstitutionName);
+            srInstitution.setErrorMessage("The institution name has been successfully updated");
+        } catch (InstitutionNotFoundException e) {
+            //e.printStackTrace();
+            srInstitution.setErrorMessage("The institution name does not match any institution");
+            srInstitution.setResponseCode(ResponseCode.EXCEPTION_UPDATED_INSTITUTION);
+            srInstitution.setMoreDetails(e.getMessage());
+        } catch (DuplicateInstitutionException e) {
+            //e.printStackTrace();
+            srInstitution.setErrorMessage("The institution name match other institution in " +
+                    "the system");
             srInstitution.setResponseCode(ResponseCode.EXCEPTION_UPDATED_INSTITUTION);
             srInstitution.setMoreDetails(e.getMessage());
         }

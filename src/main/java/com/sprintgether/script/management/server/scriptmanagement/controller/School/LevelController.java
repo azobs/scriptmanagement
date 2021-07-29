@@ -234,22 +234,62 @@ public class LevelController {
         }
 
         try {
-            srLevel = levelService.updateLevel(levelForm.getName(), levelForm.getAcronym(), levelForm.getOwnerOption(), levelForm.getEmailClassPerfect(), levelForm.getOwnerDepartment(), levelForm.getOwnerSchool());
+            srLevel = levelService.updateLevel(levelForm.getLevelId(), levelForm.getName(),
+                    levelForm.getAcronym(), levelForm.getOwnerOption(),
+                    levelForm.getEmailClassPerfect(), levelForm.getOwnerDepartment(),
+                    levelForm.getOwnerSchool());
             srLevel.setErrorMessage("The Level has been successfully updated");
-        } catch (OptionNotFoundException e) {
-            //e.printStackTrace();
-            srLevel.setErrorMessage("The option name does not match any option in the system");
-            srLevel.setResponseCode(ResponseCode.EXCEPTION_OPTION_FOUND);
-            srLevel.setMoreDetails(e.getMessage());
         } catch (LevelNotFoundException e) {
             //e.printStackTrace();
             srLevel.setErrorMessage("The level name does not match any level in the system");
             srLevel.setResponseCode(ResponseCode.EXCEPTION_LEVEL_FOUND);
             srLevel.setMoreDetails(e.getMessage());
+        } catch (DuplicateLevelInOptionException e) {
+            //e.printStackTrace();
+            srLevel.setErrorMessage("The level name already exist in the system");
+            srLevel.setResponseCode(ResponseCode.EXCEPTION_LEVEL_DUPLICATED);
+            srLevel.setMoreDetails(e.getMessage());
         }
 
         return srLevel;
     }
+
+    @PutMapping(path = "/levelNameUpdated")
+    public ServerResponse<Level> postLevelNameUpdated(@Valid @RequestBody LevelForm levelForm,
+                                                  BindingResult bindingResult) {
+        ServerResponse<Level> srLevel = new ServerResponse("", "", ResponseCode.BAD_REQUEST, null);
+
+        if (bindingResult.hasErrors()) {
+            //System.out.println(bindingResult.toString());
+            List<FieldError> errorList = bindingResult.getFieldErrors();
+            for (FieldError error : errorList) {
+                return new ServerResponse<Level>(error.getDefaultMessage(),
+                        "Some entry are not well filled in the schoolForm for save",
+                        ResponseCode.ERROR_IN_FORM_FILLED,
+                        null);
+            }
+        }
+        String levelId = levelForm.getLevelId();
+        String newLevelName = levelForm.getName();
+
+        try {
+            srLevel = levelService.updateLevelName(levelId, newLevelName);
+            srLevel.setErrorMessage("The Level name has been successfully updated");
+        } catch (LevelNotFoundException e) {
+            //e.printStackTrace();
+            srLevel.setErrorMessage("The level name does not match any level in the system");
+            srLevel.setResponseCode(ResponseCode.EXCEPTION_LEVEL_FOUND);
+            srLevel.setMoreDetails(e.getMessage());
+        } catch (DuplicateLevelInOptionException e) {
+            //e.printStackTrace();
+            srLevel.setErrorMessage("The level name already exist in the system");
+            srLevel.setResponseCode(ResponseCode.EXCEPTION_LEVEL_DUPLICATED);
+            srLevel.setMoreDetails(e.getMessage());
+        }
+
+        return srLevel;
+    }
+
 
 
 }

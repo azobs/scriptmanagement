@@ -20,10 +20,11 @@ public interface SchoolService {
                                       String logoSchool, String ownerInstitutionName,
                                       String parentInstitutionName) throws DuplicateSchoolException;
     School saveSchool(School school);
-    ServerResponse<School> updateSchool(String name, String acronym, String description,
+    ServerResponse<School> updateSchool(String schoolId, String name, String acronym, String description,
                                         String logoSchool, String ownerInstitutionName,
-                                        String parentInstitutionName) throws SchoolNotFoundException;
+                                        String parentInstitutionName)
+            throws SchoolNotFoundException, DuplicateSchoolException;
     ServerResponse<School> updateSchoolName(String schoolId, String schoolName)
             throws SchoolNotFoundException, DuplicateSchoolException;
-    ServerResponse<School> deleteSchool(String name) throws SchoolNotFoundException;
+    ServerResponse<School> deleteSchool(String idOrName) throws SchoolNotFoundException;
 }

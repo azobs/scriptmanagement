@@ -24,11 +24,12 @@ public interface OptionService {
     ServerResponse<Option> saveOption(String name, String acronym, String description,
                                       String departmentName, String schoolName)
             throws DuplicateOptionInDepartmentException, DepartmentNotFoundException;
-    ServerResponse<Option> updateOption(String name, String acronym, String description,
+    ServerResponse<Option> updateOption(String optionId, String name, String acronym, String description,
                                       String departmentName, String schoolName)
-            throws OptionNotFoundException, DepartmentNotFoundException;
+            throws OptionNotFoundException, DuplicateOptionInDepartmentException;
     ServerResponse<Option> updateOptionName(String optionId, String optionName)
             throws OptionNotFoundException, DuplicateOptionInDepartmentException;
     ServerResponse<Option> deleteOption(String schoolName, String departmentName, String optionName)
             throws SchoolNotFoundException, DepartmentNotFoundException, OptionNotFoundException;
+    ServerResponse<Option> deleteOption(String optionId) throws OptionNotFoundException;
 }

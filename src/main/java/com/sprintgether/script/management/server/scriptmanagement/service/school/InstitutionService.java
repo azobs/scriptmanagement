@@ -20,10 +20,16 @@ public interface InstitutionService {
                                                  String location, String address, String logoInstitution)
             throws DuplicateInstitutionException;
     Institution saveInstitution(Institution institution);
-    ServerResponse<Institution> updateInstitution(String name, String acronym, String description,
+    ServerResponse<Institution> updateInstitutionByName(String name, String acronym, String description,
                                                  String location, String address, String logoInstitution)
             throws InstitutionNotFoundException;
+    ServerResponse<Institution> updateInstitutionById(String institutionId, String acronym, String description,
+                                                  String location, String address, String logoInstitution)
+            throws InstitutionNotFoundException;
+    ServerResponse<Institution> updateInstitution(String institutionId, String name, String acronym, String description,
+                                                        String location, String address, String logoInstitution)
+            throws InstitutionNotFoundException, DuplicateInstitutionException;
     ServerResponse<Institution> updateInstitutionName(String institutionId, String institutionName)
             throws InstitutionNotFoundException, DuplicateInstitutionException;
-    ServerResponse<Institution> deleteInstitution(String name) throws InstitutionNotFoundException;
+    ServerResponse<Institution> deleteInstitution(String idOrName) throws InstitutionNotFoundException;
 }

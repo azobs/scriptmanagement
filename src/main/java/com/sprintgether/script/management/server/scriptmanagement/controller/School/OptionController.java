@@ -230,19 +230,58 @@ public class OptionController {
         }
 
         try {
-            srOption = optionService.updateOption(optionForm.getName(), optionForm.getAcronym(),
+            srOption = optionService.updateOption(optionForm.getOptionId(), optionForm.getName(),
+                    optionForm.getAcronym(),
                     optionForm.getDescription(), optionForm.getOwnerDepartment(),
                     optionForm.getOwnerSchool());
             srOption.setErrorMessage("The Option has been successfully updated");
-        } catch (DepartmentNotFoundException e) {
-            //e.printStackTrace();
-            srOption.setErrorMessage("The department name does not match any department in the system");
-            srOption.setResponseCode(ResponseCode.EXCEPTION_DEPARTMENT_FOUND);
-            srOption.setMoreDetails(e.getMessage());
         } catch (OptionNotFoundException e) {
             //e.printStackTrace();
             srOption.setErrorMessage("The option name does not match any option in the system");
             srOption.setResponseCode(ResponseCode.EXCEPTION_OPTION_FOUND);
+            srOption.setMoreDetails(e.getMessage());
+        } catch (DuplicateOptionInDepartmentException e) {
+            //e.printStackTrace();
+            srOption.setErrorMessage("There is other option with the name specified in the system");
+            srOption.setResponseCode(ResponseCode.EXCEPTION_OPTION_DUPLICATED);
+            srOption.setMoreDetails(e.getMessage());
+        }
+
+        return srOption;
+    }
+
+    @PutMapping(path = "/optionNameUpdated")
+    public ServerResponse<Option> postOptionNameUpdated(@Valid @RequestBody OptionForm optionForm,
+                                                    BindingResult bindingResult) {
+        ServerResponse<Option> srOption = new ServerResponse("", "",
+                ResponseCode.BAD_REQUEST, null);
+
+        if (bindingResult.hasErrors()) {
+            //System.out.println(bindingResult.toString());
+            List<FieldError> errorList = bindingResult.getFieldErrors();
+            for (FieldError error : errorList) {
+                return new ServerResponse<Option>(error.getDefaultMessage(),
+                        "Some entry are not well filled in the schoolForm for save",
+                        ResponseCode.ERROR_IN_FORM_FILLED,
+                        null);
+            }
+        }
+
+        String optionId = optionForm.getOptionId();
+        String newOptionName = optionForm.getName();
+
+        try {
+            srOption = optionService.updateOptionName(optionId, newOptionName);
+            srOption.setErrorMessage("The Option name has been successfully updated");
+        } catch (OptionNotFoundException e) {
+            //e.printStackTrace();
+            srOption.setErrorMessage("The option name does not match any option in the system");
+            srOption.setResponseCode(ResponseCode.EXCEPTION_OPTION_FOUND);
+            srOption.setMoreDetails(e.getMessage());
+        } catch (DuplicateOptionInDepartmentException e) {
+            //e.printStackTrace();
+            srOption.setErrorMessage("There is other option with the name specified in the system");
+            srOption.setResponseCode(ResponseCode.EXCEPTION_OPTION_DUPLICATED);
             srOption.setMoreDetails(e.getMessage());
         }
 

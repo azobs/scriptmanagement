@@ -139,6 +139,14 @@ public  class ResponseCode {
     public static final int EXCEPTION_ENUM_COURSE_PART_TYPE = 624;
     public static final int EXCEPTION_CONTENT_ADDED = 625;
     public static final int EXCEPTION_CONTENT_FOUND = 626;
+    public static final int EXCEPTION_COURSEOUTLINE_FOUND = 627;
+    public static final int EXCEPTION_SCHOOL_DUPLICATED = 628;
+    public static final int EXCEPTION_DEPARTMENT_DUPLICATED = 629;
+    public static final int EXCEPTION_OPTION_DUPLICATED = 630;
+    public static final int EXCEPTION_LEVEL_DUPLICATED = 631;
+    public static final int EXCEPTION_COURSE_DUPLICATED = 632;
+    public static final int EXCEPTION_MOUDULE_DUPLICATED = 633;
+    public static final int EXCEPTION_MODULE_FOUND = 634;
 
     public static final int ERROR_IN_FORM_FILLED = 800;
 

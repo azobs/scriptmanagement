@@ -11,6 +11,11 @@ import javax.validation.constraints.Size;
 @Data
 @NoArgsConstructor
 public class InstitutionForm {
+    @NotNull(message = "The institution id cannot be null")
+    @NotBlank(message = "The institution id cannot be blank caracter")
+    @NotEmpty(message = "The institution id cannot be empty")
+    @Size(min=2, max=50, message="The institution name must have at least 2 caracters and at most 50")
+    String institutionId;
     @NotNull(message = "The institution name cannot be null")
     @NotBlank(message = "The institution name cannot be blank caracter")
     @NotEmpty(message = "The institution name cannot be empty")

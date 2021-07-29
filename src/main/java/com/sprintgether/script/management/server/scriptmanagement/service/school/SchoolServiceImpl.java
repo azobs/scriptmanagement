@@ -170,39 +170,56 @@ public class SchoolServiceImpl implements SchoolService{
     }
 
     @Override
-    public ServerResponse<School> updateSchool(String name, String acronym, String description,
+    public ServerResponse<School> updateSchool(String schoolId, String name, String acronym, String description,
                                                String logoSchool, String ownerInstitutionName,
-                                               String parentInstitutionName) throws SchoolNotFoundException {
+                                               String parentInstitutionName)
+            throws SchoolNotFoundException, DuplicateSchoolException {
+        schoolId = schoolId.trim();
         name = name.toLowerCase().trim();
         acronym = acronym.trim();
         description = description.trim();
         logoSchool = logoSchool.trim();
-        ownerInstitutionName = ownerInstitutionName.toLowerCase().trim();
         parentInstitutionName =  parentInstitutionName.toLowerCase().trim();
         ServerResponse<School> srSchool = new ServerResponse<>();
+        srSchool.setResponseCode(ResponseCode.SCHOOL_NOT_UPDATED);
         /*****
          * We must retrieve the ownerInstitution (It can be null) and the parentInstitution (can be null)
          */
-        ServerResponse<Institution> srInst = institutionService.findInstitutionByName(ownerInstitutionName);
+        //ServerResponse<Institution> srInst = institutionService.findInstitutionByName(ownerInstitutionName);
         ServerResponse<Institution> srInst1 = institutionService.findInstitutionByName(parentInstitutionName);
-        /****************
-         * We must check if there is no other school with the same name
-         */
-        ServerResponse<School>  srSchool1 = this.findSchoolByName(name);
-        if(srSchool1.getResponseCode() == ResponseCode.SCHOOL_NOT_FOUND){
-            throw new SchoolNotFoundException("The school name specified does not match any school in the system");
-        }
-        School school = srSchool1.getAssociatedObject();
-        school.setAcronym(acronym);
-        school.setDescription(description);
-        school.setLogoSchool(logoSchool);
-        school.setOwnerInstitution(srInst.getAssociatedObject());
-        school.setParentInstitution(srInst1.getAssociatedObject());
 
-        School schoolUpdated =  schoolRepository.save(school);
-        srSchool.setErrorMessage("The school specified has been successfully updated in the system");
-        srSchool.setResponseCode(ResponseCode.SCHOOL_UPDATED);
-        srSchool.setAssociatedObject(schoolUpdated);
+        Optional<School> optionalSchool = schoolRepository.findById(schoolId);
+        if(!optionalSchool.isPresent()){
+            throw new SchoolNotFoundException("The school specified does not exist in the system");
+        }
+        else{
+            School schoolToUpdated1 = optionalSchool.get();
+
+            schoolToUpdated1.setAcronym(acronym);
+            schoolToUpdated1.setDescription(description);
+            schoolToUpdated1.setLogoSchool(logoSchool);
+            //schoolToUpdated.setOwnerInstitution(srInst.getAssociatedObject());
+            schoolToUpdated1.setParentInstitution(srInst1.getAssociatedObject());
+
+            ServerResponse<School> srSchool2 = this.findSchoolByName(name);
+            if(srSchool2.getResponseCode() == ResponseCode.SCHOOL_FOUND){
+                School schoolToUpdated2 = srSchool2.getAssociatedObject();
+                if(!schoolToUpdated1.getId().equalsIgnoreCase(schoolToUpdated2.getId())){
+                    throw new DuplicateSchoolException("The new school name match with another " +
+                            "school in the system");
+                }
+            }
+            else{
+                schoolToUpdated1.setName(name);
+            }
+            School schoolUpdated =  schoolRepository.save(schoolToUpdated1);
+
+            srSchool.setErrorMessage("The school specified has been successfully updated in the " +
+                    "system");
+            srSchool.setResponseCode(ResponseCode.SCHOOL_UPDATED);
+            srSchool.setAssociatedObject(schoolUpdated);
+        }
+
 
         return srSchool;
     }
@@ -232,8 +249,8 @@ public class SchoolServiceImpl implements SchoolService{
 
 
     @Override
-    public ServerResponse<School> deleteSchool(String name) throws SchoolNotFoundException {
-        name = name.toLowerCase().trim();
+    public ServerResponse<School> deleteSchool(String idOrName) throws SchoolNotFoundException {
+        idOrName = idOrName.trim();
         return null;
     }
 }

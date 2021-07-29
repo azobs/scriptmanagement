@@ -22,10 +22,14 @@ public interface DepartmentService {
     ServerResponse<Department> saveDepartment(String name, String acronym, String description,
                                               String ownerSchoolName)
             throws DuplicateDepartmentInSchoolException, SchoolNotFoundException;
-    ServerResponse<Department> updateDepartment(String name, String acronym, String description,
+    ServerResponse<Department> updateDepartment(String departmentId, String name, String acronym, String description,
                                                 String ownerSchoolName)
-            throws DepartmentNotFoundException, SchoolNotFoundException;
+            throws DuplicateDepartmentInSchoolException, DepartmentNotFoundException;
     ServerResponse<Department> updateDepartmentName(String departmentId, String departmentName)
             throws DepartmentNotFoundException, DuplicateDepartmentInSchoolException;
-    ServerResponse<Department> deleteDepartmentOfSchoolByName(String schoolName, String departmentName) throws SchoolNotFoundException, DepartmentNotFoundException;
+    ServerResponse<Department> deleteDepartmentOfSchoolByName(String schoolName,
+                                                              String departmentName)
+            throws SchoolNotFoundException, DepartmentNotFoundException;
+    ServerResponse<Department> deleteDepartmentOfSchool(String departmentID)
+            throws DepartmentNotFoundException;
 }

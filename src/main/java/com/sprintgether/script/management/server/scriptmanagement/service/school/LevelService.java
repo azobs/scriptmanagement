@@ -30,13 +30,16 @@ public interface LevelService {
                                     String emailClassPerfect, String departmentName,
                                     String schoolName)
             throws DuplicateLevelInOptionException, OptionNotFoundException;
-    ServerResponse<Level> updateLevel(String name, String acronym, String optionName,
-                                    String emailClassPerfect, String departmentName,
+
+    ServerResponse<Level> updateLevel(String levelId, String name, String acronym, String optionName,
+                                      String emailClassPerfect, String departmentName,
                                       String schoolName)
-            throws LevelNotFoundException, OptionNotFoundException;
+            throws LevelNotFoundException, DuplicateLevelInOptionException;
     ServerResponse<Level> updateLevelName(String levelId, String levelName)
             throws LevelNotFoundException, DuplicateLevelInOptionException;
     ServerResponse<Level> deleteLevel(String schoolName, String departmentName, String optionName,
                                       String levelName)
-            throws SchoolNotFoundException, DepartmentNotFoundException, OptionNotFoundException, LevelNotFoundException;
+            throws SchoolNotFoundException, DepartmentNotFoundException, OptionNotFoundException,
+            LevelNotFoundException;
+    ServerResponse<Level> deleteLevel(String levelId) throws LevelNotFoundException;
 }

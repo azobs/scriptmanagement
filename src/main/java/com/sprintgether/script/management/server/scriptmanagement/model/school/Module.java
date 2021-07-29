@@ -3,6 +3,7 @@ package com.sprintgether.script.management.server.scriptmanagement.model.school;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sprintgether.script.management.server.scriptmanagement.model.script.Content;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.annotation.Id;
@@ -16,6 +17,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
 public class Module {
     @Id
     String id;

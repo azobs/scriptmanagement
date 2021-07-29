@@ -118,7 +118,7 @@ public class InstitutionServiceImpl implements InstitutionService{
     }
 
     @Override
-    public ServerResponse<Institution> updateInstitution(String name, String acronym, String description,
+    public ServerResponse<Institution> updateInstitutionByName(String name, String acronym, String description,
                                                           String location, String address,
                                                           String logoInstitution) throws InstitutionNotFoundException {
         name = name.toLowerCase().trim();
@@ -152,6 +152,93 @@ public class InstitutionServiceImpl implements InstitutionService{
     }
 
     @Override
+    public ServerResponse<Institution> updateInstitutionById(String institutionId, String acronym, String description, String location, String address, String logoInstitution) throws InstitutionNotFoundException {
+        institutionId = institutionId.trim();
+        acronym = acronym.trim();
+        description = description.trim();
+        location = location.trim();
+        address = address.trim();
+        logoInstitution = logoInstitution.trim();
+        ServerResponse<Institution> srInst = new ServerResponse<>();
+        srInst.setResponseCode(ResponseCode.INSTITUTION_NOT_UPDATED);
+
+        Optional<Institution> srInst1 = institutionRepository.findById(institutionId);
+        if(srInst1.isPresent()){
+            Institution instAUpadte = srInst1.get();
+            instAUpadte.setAcronym(acronym);
+            instAUpadte.setLogoInstitution(logoInstitution);
+            instAUpadte.setLocation(location);
+            instAUpadte.setDescription(description);
+            instAUpadte.setAddress(address);
+
+            Institution instUpdate = institutionRepository.save(instAUpadte);
+            srInst.setResponseCode(ResponseCode.INSTITUTION_UPDATED);
+            srInst.setErrorMessage("The institution has been successfully updated");
+            srInst.setAssociatedObject(instUpdate);
+        }
+        else {
+            throw new InstitutionNotFoundException("The institutionId specified does not match any institution object");
+        }
+
+        return srInst;
+    }
+
+    @Override
+    public ServerResponse<Institution> updateInstitution(String institutionId, String name,
+                                                         String acronym, String description,
+                                                         String location, String address,
+                                                         String logoInstitution)
+            throws InstitutionNotFoundException, DuplicateInstitutionException {
+
+        institutionId = institutionId.trim();
+        name = name.toLowerCase().trim();
+        acronym = acronym.trim();
+        description = description.trim();
+        location = location.trim();
+        address = address.trim();
+        logoInstitution = logoInstitution.trim();
+        ServerResponse<Institution> srInst = new ServerResponse<>();
+
+        srInst.setResponseCode(ResponseCode.INSTITUTION_NOT_UPDATED);
+
+        Optional<Institution> srInst1 = institutionRepository.findById(institutionId);
+        if(srInst1.isPresent()){
+            Institution instAUpadte1 = srInst1.get();
+
+            instAUpadte1.setAcronym(acronym);
+            instAUpadte1.setLogoInstitution(logoInstitution);
+            instAUpadte1.setLocation(location);
+            instAUpadte1.setDescription(description);
+            instAUpadte1.setAddress(address);
+            //////////////////////////////////
+            ServerResponse<Institution> srInst2 = this.findInstitutionByName(name);
+            if(srInst2.getResponseCode() == ResponseCode.INSTITUTION_FOUND){
+                Institution instAUpadte2 = srInst2.getAssociatedObject();
+                /////////////////////////
+                if(!instAUpadte1.getId().equalsIgnoreCase(instAUpadte2.getId())){
+                    throw new DuplicateInstitutionException("The institution name specified match " +
+                            "another institution in the system");
+                }
+            }
+            else {
+                instAUpadte1.setName(name);
+            }
+            //////////////////////////////////
+
+            Institution instUpdate = institutionRepository.save(instAUpadte1);
+            srInst.setResponseCode(ResponseCode.INSTITUTION_UPDATED);
+            srInst.setErrorMessage("The institution has been successfully updated");
+            srInst.setAssociatedObject(instUpdate);
+        }
+        else {
+            throw new InstitutionNotFoundException("The institutionId specified does not match " +
+                    "any institution object");
+        }
+
+        return srInst;
+    }
+
+    @Override
     public ServerResponse<Institution> updateInstitutionName(String institutionId,
                                                              String institutionName)
             throws InstitutionNotFoundException, DuplicateInstitutionException {
@@ -163,7 +250,8 @@ public class InstitutionServiceImpl implements InstitutionService{
         }
         ServerResponse<Institution> srInst1 = this.findInstitutionByName(institutionName);
         if(srInst1.getResponseCode() == ResponseCode.INSTITUTION_FOUND){
-            throw new DuplicateInstitutionException("The institution name specified identify another institution in the system");
+            throw new DuplicateInstitutionException("The institution name specified identify " +
+                    "another institution in the system");
         }
         Institution instToUpdated = optionalInstToUpdated.get();
         instToUpdated.setName(institutionName);
@@ -176,9 +264,9 @@ public class InstitutionServiceImpl implements InstitutionService{
 
 
     @Override
-    public ServerResponse<Institution> deleteInstitution(String name)
+    public ServerResponse<Institution> deleteInstitution(String idOrName)
             throws InstitutionNotFoundException{
-        name = name.toLowerCase().trim();
+        idOrName = idOrName.trim();
         return null;
     }
 }

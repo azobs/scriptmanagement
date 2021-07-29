@@ -38,25 +38,20 @@ public class OptionServiceImpl implements OptionService {
     @Override
     public ServerResponse<Option> findOptionOfDepartmentByName(String schoolName, String departmentName,
                                                                String optionName)
-            throws SchoolNotFoundException, DepartmentNotFoundException {
+            throws DepartmentNotFoundException, SchoolNotFoundException {
         schoolName = schoolName.toLowerCase().trim();
         departmentName = departmentName.toLowerCase().trim();
         optionName = optionName.toLowerCase().trim();
         ServerResponse<Option> srOption = new ServerResponse<>();
-        ServerResponse<School> srSchool = schoolService.findSchoolByName(schoolName);
-        if(srSchool.getResponseCode() != ResponseCode.SCHOOL_FOUND){
-            throw new SchoolNotFoundException("The school name specified does not match any school in the system");
-        }
-        School concernedSchool = srSchool.getAssociatedObject();
-
         ServerResponse<Department> srDepartment = departmentService.findDepartmentOfSchoolByName(
-                concernedSchool.getName(), departmentName);
+                schoolName, departmentName);
         if(srDepartment.getResponseCode() != ResponseCode.DEPARTMENT_FOUND){
             throw new DepartmentNotFoundException("The department name specified does not match any department in the school specified");
         }
         Department concernedDepartment = srDepartment.getAssociatedObject();
 
-        Optional<Option> optionalOption = optionRepository.findByOwnerDepartmentAndName(concernedDepartment, optionName);
+        Optional<Option> optionalOption = optionRepository.findByOwnerDepartmentAndName(
+                concernedDepartment, optionName);
         if(!optionalOption.isPresent()){
             srOption.setResponseCode(ResponseCode.OPTION_NOT_FOUND);
             srOption.setErrorMessage("The option name specified does not match any option in the department of the school precised");
@@ -66,6 +61,7 @@ public class OptionServiceImpl implements OptionService {
             srOption.setErrorMessage("The option has been found successfully");
             srOption.setAssociatedObject(optionalOption.get());
         }
+
         return srOption;
     }
 
@@ -228,41 +224,66 @@ public class OptionServiceImpl implements OptionService {
     }
 
     @Override
-    public ServerResponse<Option> updateOption(String name, String acronym, String description,
-                                               String departmentName, String schoolName)
-            throws OptionNotFoundException, DepartmentNotFoundException {
+    public ServerResponse<Option> updateOption(String optionId, String name, String acronym,
+                                               String description, String departmentName,
+                                               String schoolName)
+            throws OptionNotFoundException, DuplicateOptionInDepartmentException {
+        optionId = optionId.trim();
         name  = name.toLowerCase().trim();
         acronym = acronym.trim();
         description = description.trim();
         departmentName = departmentName.toLowerCase().trim();
         schoolName =  schoolName.toLowerCase().trim();
-        ServerResponse<Option> srOption = new ServerResponse<>();
-        ServerResponse<Department> srDepartment = null;
-        try {
-            srDepartment = departmentService.findDepartmentOfSchoolByName(schoolName, departmentName);
-            if(srDepartment.getResponseCode() != ResponseCode.DEPARTMENT_FOUND){
-                throw new DepartmentNotFoundException("The department name specified does not match any department in the precised school");
-            }
-            Department concernedDepartment = srDepartment.getAssociatedObject();
-            ServerResponse<Option> srOption1 = this.findOptionOfDepartmentByName(schoolName,
-                    departmentName, name);
-            if(srOption1.getResponseCode() != ResponseCode.OPTION_FOUND){
-                throw new OptionNotFoundException("The option name does not match any option in the department specified");
-            }
-            Option option = srOption1.getAssociatedObject();
-            option.setAcronym(acronym);
-            option.setDescription(description);
-            Option optionUpdated = optionRepository.save(option);
 
-            srOption.setResponseCode(ResponseCode.OPTION_UPDATED);
-            srOption.setErrorMessage("The option has been successfully updated");
-            srOption.setAssociatedObject(optionUpdated);
-        } catch (SchoolNotFoundException e) {
-            //e.printStackTrace();
-            srOption.setResponseCode(ResponseCode.EXCEPTION_SCHOOL_FOUND);
-            srOption.setErrorMessage("The school name specified does not match any school in the system");
-            srOption.setMoreDetails(e.getMessage());
+        ServerResponse<Option> srOption = new ServerResponse<>();
+        srOption.setResponseCode(ResponseCode.OPTION_NOT_UPDATED);
+
+
+        //////////////////////
+        Optional<Option> optionalOption = optionRepository.findById(optionId);
+        if(!optionalOption.isPresent()){
+            throw new OptionNotFoundException("The option id does not match any option in the system");
         }
+        else{
+            Option optionToUpdated1 = optionalOption.get();
+
+            optionToUpdated1.setAcronym(acronym);
+            optionToUpdated1.setDescription(description);
+
+            try {
+                ServerResponse<Option> srOption2 = this.findOptionOfDepartmentByName(schoolName,
+                        departmentName, name);
+                if(srOption2.getResponseCode() == ResponseCode.OPTION_FOUND){
+                    Option optionToUpdated2 = srOption2.getAssociatedObject();
+                    if(!optionToUpdated1.getId().equalsIgnoreCase(optionToUpdated2.getId())){
+                        throw new DuplicateOptionInDepartmentException("The option name specified " +
+                                " already exist un the indicated department");
+                    }
+                }
+                else{
+                    optionToUpdated1.setName(name);
+                }
+
+                Option optionUpdated = optionRepository.save(optionToUpdated1);
+
+                srOption.setResponseCode(ResponseCode.OPTION_UPDATED);
+                srOption.setErrorMessage("The option has been successfully updated");
+                srOption.setAssociatedObject(optionUpdated);
+            } catch (DepartmentNotFoundException e) {
+                //e.printStackTrace();
+                srOption.setResponseCode(ResponseCode.EXCEPTION_DEPARTMENT_FOUND);
+                srOption.setErrorMessage("The department name specified does not match any " +
+                        "department in the system");
+                srOption.setMoreDetails(e.getMessage());
+            } catch (SchoolNotFoundException e) {
+                //e.printStackTrace();
+                srOption.setResponseCode(ResponseCode.EXCEPTION_DEPARTMENT_FOUND);
+                srOption.setErrorMessage("The school name specified does not match any " +
+                        "school in the system");
+                srOption.setMoreDetails(e.getMessage());
+            }
+        }
+        //////////////////////
 
         return srOption;
     }
@@ -315,6 +336,11 @@ public class OptionServiceImpl implements OptionService {
         schoolName = schoolName.toLowerCase().trim();
         departmentName = departmentName.toLowerCase().trim();
         optionName = optionName.toLowerCase().trim();
+        return null;
+    }
+
+    @Override
+    public ServerResponse<Option> deleteOption(String optionId) throws OptionNotFoundException {
         return null;
     }
 }

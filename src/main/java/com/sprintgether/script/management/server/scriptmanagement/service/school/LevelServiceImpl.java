@@ -49,29 +49,19 @@ public class LevelServiceImpl implements LevelService {
         levelName = levelName.toLowerCase().trim();
 
         ServerResponse<Level> srLevel = new ServerResponse<>();
-        ServerResponse<School> srSchool = schoolService.findSchoolByName(schoolName);
-        if(srSchool.getResponseCode() != ResponseCode.SCHOOL_FOUND){
-            throw new SchoolNotFoundException("The school name specified does not match any school in the system");
-        }
-        School concernedSchool = srSchool.getAssociatedObject();
-
-        ServerResponse<Department> srDepartment = departmentService.findDepartmentOfSchoolByName(
-                concernedSchool.getName(), departmentName);
-        if(srDepartment.getResponseCode() != ResponseCode.DEPARTMENT_FOUND){
-            throw new DepartmentNotFoundException("The department name specified does not match any department in the school specified");
-        }
-        Department concernedDepartment = srDepartment.getAssociatedObject();
-
         ServerResponse<Option> srOption = optionService.findOptionOfDepartmentByName(
-                concernedSchool.getName(), concernedDepartment.getName(), optionName);
+                schoolName, departmentName, optionName);
         if(srOption.getResponseCode() != ResponseCode.OPTION_FOUND){
-            throw new OptionNotFoundException("The option name specified does not match any option in the department of school specified");
+            throw new OptionNotFoundException("The option name specified does not match any " +
+                    "option in the department of school specified");
         }
         Option concernedOption = srOption.getAssociatedObject();
 
-        Optional<Level> optionalLevel = levelRepository.findByOwnerOptionAndName(concernedOption, levelName);
+        Optional<Level> optionalLevel = levelRepository.findByOwnerOptionAndName(concernedOption,
+                levelName);
         if(!optionalLevel.isPresent()){
-            srLevel.setErrorMessage("The level name specified does not match any level in the precised option");
+            srLevel.setErrorMessage("The level name specified does not match any level " +
+                    "in the precised option");
             srLevel.setResponseCode(ResponseCode.LEVEL_NOT_FOUND);
         }
         else {
@@ -285,10 +275,11 @@ public class LevelServiceImpl implements LevelService {
     }
 
     @Override
-    public ServerResponse<Level> updateLevel(String name, String acronym, String optionName,
-                                             String emailClassPerfect, String departmentName,
-                                             String schoolName)
-            throws LevelNotFoundException, OptionNotFoundException {
+    public ServerResponse<Level> updateLevel(String levelId, String name, String acronym,
+                                             String optionName, String emailClassPerfect,
+                                             String departmentName, String schoolName)
+            throws LevelNotFoundException, DuplicateLevelInOptionException {
+        levelId = levelId.trim();
         name = name.toLowerCase().trim();
         acronym = acronym.trim();
         optionName = optionName.toLowerCase().trim();
@@ -297,45 +288,62 @@ public class LevelServiceImpl implements LevelService {
         schoolName = schoolName.toLowerCase().trim();
 
         ServerResponse<Level> srLevel = new ServerResponse<>();
+        srLevel.setResponseCode(ResponseCode.LEVEL_NOT_UPDATED);
 
-        try {
-            ServerResponse<Option> srOption = optionService.findOptionOfDepartmentByName(schoolName,
-                    departmentName, optionName);
-            if(srOption.getResponseCode() != ResponseCode.OPTION_FOUND){
-                throw new OptionNotFoundException("The option name specified does not match any option in the  department specified");
-            }
-            Option concernedOption = srOption.getAssociatedObject();
-            ServerResponse<Level> srLevel1 = this.findLevelOfOptionByName(schoolName, departmentName,
-                    optionName, name);
-            if(srLevel1.getResponseCode() != ResponseCode.LEVEL_FOUND){
-                throw new LevelNotFoundException("The level name does not found any level in the option specified");
-            }
+        Optional<Level> optionalLevel  = levelRepository.findById(levelId);
+        if(!optionalLevel.isPresent()){
+            throw new  LevelNotFoundException("The level specified by id does not found in " +
+                    "the system");
+        }
+        else{
+            Level levelToUpdated1 = optionalLevel.get();
             //We search the classperfect staff if it's specified
             ServerResponse<Staff> srClassperfect = staffService.findStaffByEmail(emailClassPerfect);
+            //The staff can be null
             Staff classPerfect = srClassperfect.getAssociatedObject();
-            //We can now save the level without any problem
-            Level level = srLevel1.getAssociatedObject();
-            level.setAcronym(acronym);
-            level.setName(name);
-            level.setOwnerOption(concernedOption);
-            level.setClassPrefect(classPerfect);
+            levelToUpdated1.setAcronym(acronym);
+            levelToUpdated1.setName(name);
+            //level.setOwnerOption(concernedOption);
+            levelToUpdated1.setClassPrefect(classPerfect);
 
-            Level levelUpdated = levelRepository.save(level);
+            try {
+                ServerResponse<Level> srLevel2 = this.findLevelOfOptionByName(schoolName, departmentName,
+                        optionName, name);
+                if(srLevel2.getResponseCode() == ResponseCode.LEVEL_FOUND){
+                    Level levelToUpdated2 = srLevel2.getAssociatedObject();
+                    if(!levelToUpdated1.getId().equalsIgnoreCase(levelToUpdated2.getId())){
+                        throw new DuplicateLevelInOptionException("The new name of level already " +
+                                "identify another level in the system");
+                    }
+                }
+                else{
+                    levelToUpdated1.setName(name);
+                }
 
-            srLevel.setErrorMessage("The level specified has been successfully updated");
-            srLevel.setResponseCode(ResponseCode.LEVEL_UPDATED);
-            srLevel.setAssociatedObject(levelUpdated);
+                Level levelUpdated = levelRepository.save(levelToUpdated1);
 
-        } catch (SchoolNotFoundException e) {
-            //e.printStackTrace();
-            srLevel.setResponseCode(ResponseCode.EXCEPTION_SCHOOL_FOUND);
-            srLevel.setErrorMessage("The school name specified does not match any school in the system");
-            srLevel.setMoreDetails(e.getMessage());
-        } catch (DepartmentNotFoundException e) {
-            //e.printStackTrace();
-            srLevel.setResponseCode(ResponseCode.EXCEPTION_DEPARTMENT_FOUND);
-            srLevel.setErrorMessage("The department name specified does not match any department in the school specified");
-            srLevel.setMoreDetails(e.getMessage());
+                srLevel.setErrorMessage("The level specified has been successfully updated");
+                srLevel.setResponseCode(ResponseCode.LEVEL_UPDATED);
+                srLevel.setAssociatedObject(levelUpdated);
+            } catch (SchoolNotFoundException e) {
+                //e.printStackTrace();
+                srLevel.setResponseCode(ResponseCode.EXCEPTION_SCHOOL_FOUND);
+                srLevel.setErrorMessage("The school name specified does not match any school " +
+                        "in the system");
+                srLevel.setMoreDetails(e.getMessage());
+            } catch (DepartmentNotFoundException e) {
+                //e.printStackTrace();
+                srLevel.setResponseCode(ResponseCode.EXCEPTION_DEPARTMENT_FOUND);
+                srLevel.setErrorMessage("The department name specified does not match any " +
+                        "department in the school specified");
+                srLevel.setMoreDetails(e.getMessage());
+            } catch (OptionNotFoundException e) {
+                //e.printStackTrace();
+                srLevel.setResponseCode(ResponseCode.EXCEPTION_OPTION_FOUND);
+                srLevel.setErrorMessage("The option name specified does not match any " +
+                        "option in the department specified");
+                srLevel.setMoreDetails(e.getMessage());
+            }
         }
 
         return srLevel;
@@ -397,6 +405,11 @@ public class LevelServiceImpl implements LevelService {
         optionName = optionName.toLowerCase().trim();
         levelName = levelName.toLowerCase().trim();
 
+        return null;
+    }
+
+    @Override
+    public ServerResponse<Level> deleteLevel(String levelId) throws LevelNotFoundException {
         return null;
     }
 }
