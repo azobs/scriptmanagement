@@ -4,7 +4,7 @@ import com.sprintgether.script.management.server.scriptmanagement.commonused.Res
 import com.sprintgether.script.management.server.scriptmanagement.commonused.ServerResponse;
 import com.sprintgether.script.management.server.scriptmanagement.exception.school.*;
 import com.sprintgether.script.management.server.scriptmanagement.exception.user.StaffNotFoundException;
-import com.sprintgether.script.management.server.scriptmanagement.form.School.*;
+import com.sprintgether.script.management.server.scriptmanagement.form.school.course.*;
 import com.sprintgether.script.management.server.scriptmanagement.model.school.Course;
 import com.sprintgether.script.management.server.scriptmanagement.model.school.CourseOutline;
 import com.sprintgether.script.management.server.scriptmanagement.service.school.CourseService;
@@ -32,84 +32,85 @@ public class CourseController {
         this.courseService = courseService;
     }
 
-    public Pageable getCoursePageable(CourseFormList courseFormList){
+    public Pageable getCoursePageable(CourseList courseList){
 
-        Sort.Order order1 = new Sort.Order(courseFormList.getDirection1().equalsIgnoreCase("ASC")
-                ?Sort.Direction.ASC:Sort.Direction.DESC, courseFormList.getSortBy1());
+        Sort.Order order1 = new Sort.Order(courseList.getDirection1().equalsIgnoreCase("ASC")
+                ?Sort.Direction.ASC:Sort.Direction.DESC, courseList.getSortBy1());
 
-        Sort.Order order2 = new Sort.Order(courseFormList.getDirection2().equalsIgnoreCase("ASC")
-                ?Sort.Direction.ASC:Sort.Direction.DESC, courseFormList.getSortBy2());
+        Sort.Order order2 = new Sort.Order(courseList.getDirection2().equalsIgnoreCase("ASC")
+                ?Sort.Direction.ASC:Sort.Direction.DESC, courseList.getSortBy2());
 
-        Sort.Order order3 = new Sort.Order(courseFormList.getDirection3().equalsIgnoreCase("ASC")
-                ?Sort.Direction.ASC:Sort.Direction.DESC, courseFormList.getSortBy3());
+        Sort.Order order3 = new Sort.Order(courseList.getDirection3().equalsIgnoreCase("ASC")
+                ?Sort.Direction.ASC:Sort.Direction.DESC, courseList.getSortBy3());
 
         List<Sort.Order> orderList = new ArrayList<Sort.Order>();
         orderList.add(order1);
         orderList.add(order2);
         orderList.add(order3);
-        Pageable sort = PageRequest.of(courseFormList.getPageNumber(), courseFormList.getPageSize(), Sort.by(orderList));
+        Pageable sort = PageRequest.of(courseList.getPageNumber(), courseList.getPageSize(), Sort.by(orderList));
 
         return sort;
     }
 
     @GetMapping(path = "/coursePage")
-    public ServerResponse<Page<Course>> getCoursePage(@Valid @RequestBody CourseFormList courseFormList,
+    public ServerResponse<Page<Course>> getCoursePage(@Valid @RequestBody CourseList courseList,
                                                       BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             //System.out.println(bindingResult.toString());
             List<FieldError> errorList = bindingResult.getFieldErrors();
             for (FieldError error : errorList) {
                 return new ServerResponse<Page<Course>>(error.getDefaultMessage(),
-                        "Some form entry are not well filled in the CourseFormList for selection",
+                        "Some form entry are not well filled in the CourseList for selection",
                         ResponseCode.ERROR_IN_FORM_FILLED,
                         null);
             }
         }
 
-        Pageable sort = this.getCoursePageable(courseFormList);
+        Pageable sort = this.getCoursePageable(courseList);
 
-        if(!courseFormList.getKeyword().equalsIgnoreCase("")){
+        if(!courseList.getKeyword().equalsIgnoreCase("")){
             /***
              * We must make research by keyword
              */
-            return courseService.findAllCourse(courseFormList.getKeyword(), sort);
+            return courseService.findAllCourse(courseList.getKeyword(), sort);
         }
 
         return courseService.findAllCourse(sort);
     }
 
     @GetMapping(path = "/coursePageOfLevelByType")
-    public ServerResponse<Page<Course>> getCoursePageOfLevelByType(@Valid @RequestBody CourseFormList courseFormList,
+    public ServerResponse<Page<Course>> getCoursePageOfLevelByType(@Valid @RequestBody CourseList courseList,
                                                             BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             //System.out.println(bindingResult.toString());
             List<FieldError> errorList = bindingResult.getFieldErrors();
             for (FieldError error : errorList) {
                 return new ServerResponse<Page<Course>>(error.getDefaultMessage(),
-                        "Some form entry are not well filled in the courseFormList for save",
+                        "Some form entry are not well filled in the courseList for save",
                         ResponseCode.ERROR_IN_FORM_FILLED,
                         null);
             }
         }
-        Pageable sort = this.getCoursePageable(courseFormList);
-        String schoolName = courseFormList.getSchoolName();
-        String departmentName = courseFormList.getDepartmentName();
-        String optionName = courseFormList.getOptionName();
-        String levelName = courseFormList.getLevelName();
-        String courseType = courseFormList.getCourseType().trim();
+        Pageable sort = this.getCoursePageable(courseList);
+        String schoolName = courseList.getSchoolName();
+        String departmentName = courseList.getDepartmentName();
+        String optionName = courseList.getOptionName();
+        String levelName = courseList.getLevelName();
+        String courseType = courseList.getCourseType().trim();
+        String courseId = courseList.getCourseId();
 
         ServerResponse<Page<Course>> srCoursePage = new ServerResponse<>();
         try {
-            if(!courseFormList.getKeyword().equalsIgnoreCase("")){
+            if(!courseList.getKeyword().equalsIgnoreCase("")){
                 srCoursePage = courseService.findAllCourseOfLevel(schoolName, departmentName,
-                        optionName, levelName, courseFormList.getKeyword().trim(), sort);
+                        optionName, levelName, courseList.getKeyword().trim(), sort);
             }
             else if(courseType.trim().equalsIgnoreCase("ALL")){
-                srCoursePage = courseService.findAllCourseOfLevel(schoolName, departmentName,
+                srCoursePage = courseService.findAllCourseOfLevel(courseId, schoolName, departmentName,
                         optionName, levelName, sort);
             }
             else{
-                srCoursePage = courseService.findAllCourseOfLevelByType(schoolName, departmentName,
+                srCoursePage = courseService.findAllCourseOfLevelByType(courseId, schoolName, departmentName,
                         optionName, levelName, courseType, sort);
             }
         } catch (LevelNotFoundException e) {
@@ -123,33 +124,36 @@ public class CourseController {
     }
 
     @GetMapping(path = "/courseListOfLevelByType")
-    public ServerResponse<List<Course>> getCourseListOfLevelByType(@Valid @RequestBody CourseFormList courseFormList,
+    public ServerResponse<List<Course>> getCourseListOfLevelByType(@Valid @RequestBody CourseList courseList,
                                                             BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             //System.out.println(bindingResult.toString());
             List<FieldError> errorList = bindingResult.getFieldErrors();
             for (FieldError error : errorList) {
                 return new ServerResponse<List<Course>>(error.getDefaultMessage(),
-                        "Some form entry are not well filled in the CourseFormList for search",
+                        "Some form entry are not well filled in the CourseList for search",
                         ResponseCode.ERROR_IN_FORM_FILLED,
                         null);
             }
         }
-        String schoolName = courseFormList.getSchoolName().toLowerCase().trim();
-        String departmentName = courseFormList.getDepartmentName().toLowerCase().trim();
-        String optionName = courseFormList.getOptionName().toLowerCase().trim();
-        String levelName = courseFormList.getOptionName().toLowerCase().trim();
-        String courseType = courseFormList.getCourseType().trim();
+        String schoolName = courseList.getSchoolName().toLowerCase().trim();
+        String departmentName = courseList.getDepartmentName().toLowerCase().trim();
+        String optionName = courseList.getOptionName().toLowerCase().trim();
+        String levelName = courseList.getOptionName().toLowerCase().trim();
+        String courseType = courseList.getCourseType().trim();
+        String sortBy = courseList.getSortBy1();
+        String direction = courseList.getDirection1();
+        String courseId = courseList.getCourseId();
 
         ServerResponse<List<Course>> srCourseList = new ServerResponse<>();
         try {
             if(courseType.trim().equalsIgnoreCase("ALL")) {
-                srCourseList = courseService.findAllCourseOfLevel(schoolName, departmentName,
-                        optionName, levelName);
+                srCourseList = courseService.findAllCourseOfLevel(courseId, schoolName, departmentName,
+                        optionName, levelName, sortBy, direction);
             }
             else{
-                srCourseList = courseService.findAllCourseOfLevelByType(schoolName, departmentName,
-                        optionName, levelName, courseType);
+                srCourseList = courseService.findAllCourseOfLevelByType(courseId, schoolName, departmentName,
+                        optionName, levelName, courseType, sortBy, direction);
             }
         } catch (LevelNotFoundException e) {
             //e.printStackTrace();
@@ -162,12 +166,12 @@ public class CourseController {
 
 
     @GetMapping(path = "/course")
-    public ServerResponse<Course> getCourse(@Valid @RequestBody CourseFormList courseFormList){
+    public ServerResponse<Course> getCourse(@Valid @RequestBody CourseList courseList){
         ServerResponse<Course> srCourse = new ServerResponse<>();
         try {
-            srCourse = courseService.findCourseOfLevelByTitle(courseFormList.getSchoolName(),
-                    courseFormList.getDepartmentName(), courseFormList.getOptionName(),
-                    courseFormList.getLevelName(), courseFormList.getCourseTitle());
+            srCourse = courseService.findCourseOfLevelByTitle(courseList.getSchoolName(),
+                    courseList.getDepartmentName(), courseList.getOptionName(),
+                    courseList.getLevelName(), courseList.getCourseTitle());
         } catch (SchoolNotFoundException e) {
             //e.printStackTrace();
             srCourse.setErrorMessage("The associated school has not found");
@@ -210,7 +214,7 @@ public class CourseController {
     }
 
     @PostMapping(path = "/courseSaved")
-    public ServerResponse<Course> postCourseSaved(@Valid @RequestBody CourseForm courseForm,
+    public ServerResponse<Course> postCourseSaved(@Valid @RequestBody CourseSaved courseSaved,
                                                 BindingResult bindingResult) {
         ServerResponse<Course> srCourse = new ServerResponse("", "", ResponseCode.BAD_REQUEST, null);
 
@@ -219,17 +223,18 @@ public class CourseController {
             List<FieldError> errorList = bindingResult.getFieldErrors();
             for (FieldError error : errorList) {
                 return new ServerResponse<Course>(error.getDefaultMessage(),
-                        "Some entry are not well filled in the courseForm for save",
+                        "Some entry are not well filled in the courseSaved for save",
                         ResponseCode.ERROR_IN_FORM_FILLED,
                         null);
             }
         }
 
         try {
-            srCourse = courseService.saveCourse(courseForm.getTitle(), courseForm.getCourseCode(),
-                    courseForm.getNbreCredit(), courseForm.getCourseType(), courseForm.getOwnerLevel(),
-                    courseForm.getOwnerOption(), courseForm.getOwnerDepartment(),
-                    courseForm.getOwnerSchool(), courseForm.getCourseOutlineTitle());
+            srCourse = courseService.saveCourse(courseSaved.getTitle(), courseSaved.getCourseCode(),
+                    courseSaved.getNbreCredit(), courseSaved.getCourseType(), courseSaved.getLevelId(),
+                    courseSaved.getOwnerLevel(), courseSaved.getOwnerOption(),
+                    courseSaved.getOwnerDepartment(), courseSaved.getOwnerSchool(),
+                    courseSaved.getCourseOutlineTitle());
             srCourse.setErrorMessage("The course has been successfully created");
         } catch (DuplicateCourseInLevelException e) {
             //e.printStackTrace();
@@ -248,7 +253,7 @@ public class CourseController {
 
 
     @PutMapping(path = "/courseUpdated")
-    public ServerResponse<Course> postCourseUpdated(@Valid @RequestBody CourseForm courseForm,
+    public ServerResponse<Course> postCourseUpdated(@Valid @RequestBody CourseUpdated courseUpdated,
                                                   BindingResult bindingResult) {
         ServerResponse<Course> srCourse = new ServerResponse("", "", ResponseCode.BAD_REQUEST, null);
 
@@ -264,10 +269,11 @@ public class CourseController {
         }
 
         try {
-            srCourse = courseService.updateCourse(courseForm.getCourseId(), courseForm.getTitle(), courseForm.getCourseCode(),
-                    courseForm.getNbreCredit(), courseForm.getCourseType(), courseForm.getOwnerLevel(),
-                    courseForm.getOwnerOption(),
-                    courseForm.getOwnerDepartment(), courseForm.getOwnerSchool());
+            srCourse = courseService.updateCourse(courseUpdated.getCourseId(),
+                    courseUpdated.getTitle(), courseUpdated.getCourseCode(),
+                    courseUpdated.getNbreCredit(), courseUpdated.getCourseType(),
+                    courseUpdated.getOwnerLevel(), courseUpdated.getOwnerOption(),
+                    courseUpdated.getOwnerDepartment(), courseUpdated.getOwnerSchool());
             srCourse.setErrorMessage("The Course has been successfully updated");
         } catch (CourseNotFoundException e) {
             //e.printStackTrace();
@@ -285,7 +291,7 @@ public class CourseController {
     }
 
     @PutMapping(path = "/courseTitleUpdated")
-    public ServerResponse<Course> postCourseTitleUpdated(@Valid @RequestBody CourseForm courseForm,
+    public ServerResponse<Course> postCourseTitleUpdated(@Valid @RequestBody CourseTitleUpdated courseTitleUpdated,
                                                     BindingResult bindingResult) {
         ServerResponse<Course> srCourse = new ServerResponse("", "",
                 ResponseCode.BAD_REQUEST, null);
@@ -301,8 +307,8 @@ public class CourseController {
             }
         }
 
-        String newTitle = courseForm.getTitle();
-        String courseId = courseForm.getCourseId();
+        String newTitle = courseTitleUpdated.getNewCourseTitle();
+        String courseId = courseTitleUpdated.getCourseId();
 
         try {
             srCourse = courseService.updateCourseTitle(courseId, newTitle);
@@ -324,7 +330,8 @@ public class CourseController {
 
 
     @PutMapping(path = "/courseOutlineUpdated")
-    public ServerResponse<CourseOutline> postCourseOutlineUpdated(@Valid @RequestBody CourseForm courseForm,
+    public ServerResponse<CourseOutline> postCourseOutlineUpdated(
+            @Valid @RequestBody CourseOutlineUpdated courseOutlineUpdated,
                                                     BindingResult bindingResult) {
         ServerResponse<CourseOutline> srCourseOutline = new ServerResponse("", "", ResponseCode.BAD_REQUEST, null);
 
@@ -340,9 +347,11 @@ public class CourseController {
         }
 
         try {
-            srCourseOutline = courseService.updateCourseOutlineTitle(courseForm.getCourseOutlineTitle(),
-                    courseForm.getOwnerSchool(), courseForm.getOwnerDepartment(), courseForm.getOwnerOption(),
-                    courseForm.getOwnerLevel(), courseForm.getTitle());
+            srCourseOutline = courseService.updateCourseOutlineTitle(
+                    courseOutlineUpdated.getCourseOutlineTitle(), courseOutlineUpdated.getCourseId(),
+                    courseOutlineUpdated.getOwnerSchool(), courseOutlineUpdated.getOwnerDepartment(),
+                    courseOutlineUpdated.getOwnerOption(), courseOutlineUpdated.getOwnerLevel(),
+                    courseOutlineUpdated.getCourseTitle());
             srCourseOutline.setErrorMessage("The Course has been successfully updated");
         } catch (CourseNotFoundException e) {
             //e.printStackTrace();
@@ -355,7 +364,7 @@ public class CourseController {
     }
 
     @PostMapping(path = "/setLecturerToCourse")
-    public ServerResponse<Course> postSetLecturerToCourse(@Valid @RequestBody CourseStaffForm courseStaffForm,
+    public ServerResponse<Course> postSetLecturerToCourse(@Valid @RequestBody CourseStaff courseStaff,
                                                     BindingResult bindingResult) {
         ServerResponse<Course> srCourse = new ServerResponse("", "", ResponseCode.BAD_REQUEST, null);
 
@@ -371,10 +380,10 @@ public class CourseController {
         }
 
         try {
-            srCourse = courseService.setLecturerToCourse(courseStaffForm.getLecturerEmail(),
-                    courseStaffForm.getOwnerSchool(), courseStaffForm.getOwnerDepartment(),
-                    courseStaffForm.getOwnerOption(), courseStaffForm.getOwnerLevel(),
-                    courseStaffForm.getCourseTitle());
+            srCourse = courseService.setLecturerToCourse(courseStaff.getLecturerEmail(),
+                    courseStaff.getCourseId(), courseStaff.getOwnerSchool(),
+                    courseStaff.getOwnerDepartment(), courseStaff.getOwnerOption(),
+                    courseStaff.getOwnerLevel(), courseStaff.getCourseTitle());
             srCourse.setErrorMessage("The course is well assigned to the precised staff");
         } catch (StaffNotFoundException e) {
             //e.printStackTrace();
@@ -397,7 +406,7 @@ public class CourseController {
     }
 
     @PostMapping(path = "/removeLecturerToCourse")
-    public ServerResponse<Course> postRemoveLecturerToCourse(@Valid @RequestBody CourseStaffForm courseStaffForm,
+    public ServerResponse<Course> postRemoveLecturerToCourse(@Valid @RequestBody CourseStaff courseStaff,
                                                           BindingResult bindingResult) {
         ServerResponse<Course> srCourse = new ServerResponse("", "", ResponseCode.BAD_REQUEST, null);
 
@@ -413,10 +422,10 @@ public class CourseController {
         }
 
         try {
-            srCourse = courseService.removeLecturerToCourse(courseStaffForm.getLecturerEmail(),
-                    courseStaffForm.getOwnerSchool(), courseStaffForm.getOwnerDepartment(),
-                    courseStaffForm.getOwnerOption(), courseStaffForm.getOwnerLevel(),
-                    courseStaffForm.getCourseTitle());
+            srCourse = courseService.removeLecturerToCourse(courseStaff.getLecturerEmail(),
+                    courseStaff.getCourseId(), courseStaff.getOwnerSchool(),
+                    courseStaff.getOwnerDepartment(), courseStaff.getOwnerOption(),
+                    courseStaff.getOwnerLevel(), courseStaff.getCourseTitle());
             srCourse.setErrorMessage("The course is well assigned to the precised staff");
         } catch (StaffNotFoundException e) {
             //e.printStackTrace();
@@ -435,7 +444,7 @@ public class CourseController {
 
 
     @PostMapping(path = "/addContentToCourse")
-    public ServerResponse<Course> postAddContentToCourse(@Valid @RequestBody CourseContentForm courseContentForm,
+    public ServerResponse<Course> postAddContentToCourse(@Valid @RequestBody CourseContentSaved courseContentSaved,
                                                              BindingResult bindingResult) {
         ServerResponse<Course> srCourse = new ServerResponse("", "", ResponseCode.BAD_REQUEST, null);
 
@@ -451,10 +460,11 @@ public class CourseController {
         }
 
         try {
-            srCourse = courseService.addContentToCourse(courseContentForm.getValue(),
-                    courseContentForm.getContentType(), courseContentForm.getOwnerSchool(),
-                    courseContentForm.getOwnerDepartment(), courseContentForm.getOwnerOption(),
-                    courseContentForm.getOwnerLevel(), courseContentForm.getCourseTitle());
+            srCourse = courseService.addContentToCourse(courseContentSaved.getValue(),
+                    courseContentSaved.getContentType(), courseContentSaved.getCourseId(),
+                    courseContentSaved.getOwnerSchool(), courseContentSaved.getOwnerDepartment(),
+                    courseContentSaved.getOwnerOption(), courseContentSaved.getOwnerLevel(),
+                    courseContentSaved.getCourseTitle());
             srCourse.setErrorMessage("The content has been successfully added to the course");
         } catch (CourseNotFoundException e) {
             //e.printStackTrace();
@@ -467,7 +477,7 @@ public class CourseController {
     }
 
     @PutMapping(path = "/updateContentToCourse")
-    public ServerResponse<Course> putUpdateContentToCourse(@Valid @RequestBody CourseContentForm courseContentForm,
+    public ServerResponse<Course> putUpdateContentToCourse(@Valid @RequestBody CourseContentUpdated courseContentUpdated,
                                                          BindingResult bindingResult) {
         ServerResponse<Course> srCourse = new ServerResponse("", "", ResponseCode.BAD_REQUEST, null);
 
@@ -483,10 +493,11 @@ public class CourseController {
         }
 
         try {
-            srCourse = courseService.updateContentToCourse(courseContentForm.getContentId(), courseContentForm.getValue(),
-                    courseContentForm.getOwnerSchool(), courseContentForm.getOwnerDepartment(),
-                    courseContentForm.getOwnerOption(),
-                    courseContentForm.getOwnerLevel(), courseContentForm.getCourseTitle());
+            srCourse = courseService.updateContentToCourse(courseContentUpdated.getContentId(),
+                    courseContentUpdated.getValue(), courseContentUpdated.getCourseId(),
+                    courseContentUpdated.getOwnerSchool(), courseContentUpdated.getOwnerDepartment(),
+                    courseContentUpdated.getOwnerOption(), courseContentUpdated.getOwnerLevel(),
+                    courseContentUpdated.getCourseTitle());
             srCourse.setErrorMessage("The content has been successfully added to the course");
         } catch (CourseNotFoundException e) {
             //e.printStackTrace();
@@ -505,7 +516,7 @@ public class CourseController {
 
 
     @PostMapping(path = "/removeContentToCourse")
-    public ServerResponse<Course> postRemoveContentToCourse(@Valid @RequestBody CourseContentForm courseContentForm,
+    public ServerResponse<Course> postRemoveContentToCourse(@Valid @RequestBody CourseContentDeleted courseContentDeleted,
                                                             BindingResult bindingResult) {
         ServerResponse<Course> srCourse = new ServerResponse("", "", ResponseCode.BAD_REQUEST, null);
 
@@ -521,10 +532,10 @@ public class CourseController {
         }
 
         try {
-            srCourse = courseService.removeContentToCourse(courseContentForm.getContentId(),
-                    courseContentForm.getOwnerSchool(), courseContentForm.getOwnerDepartment(),
-                    courseContentForm.getOwnerOption(),
-                    courseContentForm.getOwnerLevel(), courseContentForm.getCourseTitle());
+            srCourse = courseService.removeContentToCourse(courseContentDeleted.getContentId(),
+                    courseContentDeleted.getCourseId(), courseContentDeleted.getOwnerSchool(),
+                    courseContentDeleted.getOwnerDepartment(), courseContentDeleted.getOwnerOption(),
+                    courseContentDeleted.getOwnerLevel(), courseContentDeleted.getCourseTitle());
             srCourse.setErrorMessage("The content has been successfully removed to the course");
         } catch (CourseNotFoundException e) {
             //e.printStackTrace();

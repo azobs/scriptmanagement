@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CourseRepository  extends MongoRepository<Course, String> {
+    Optional<Course> findById(String courseId);
     Optional<Course> findByOwnerLevelAndTitle(Level ownerLevel, String title);
     Optional<Course> findByCourseOutline(CourseOutline courseOutline);
     Page<Course> findAllByTitleContaining(String keyword, Pageable pageable);
@@ -20,6 +21,23 @@ public interface CourseRepository  extends MongoRepository<Course, String> {
     Page<Course> findAllByOwnerLevel(Level ownerLevel, Pageable pageable);
     Page<Course> findAllByOwnerLevelAndCourseType(Level ownerLevel, EnumCoursePartType courseType,
                                                   Pageable pageable);
-    List<Course> findAllByOwnerLevelAndCourseType(Level ownerLevel, EnumCoursePartType courseType);
-    List<Course> findAllByOwnerLevelOrderByTitle(Level ownerLevel);
+    List<Course> findAllByOwnerLevelAndCourseTypeOrderByTitleAsc(Level ownerLevel,
+                                                              EnumCoursePartType courseType);
+    List<Course> findAllByOwnerLevelAndCourseTypeOrderByTitleDesc(Level ownerLevel,
+                                                                 EnumCoursePartType courseType);
+    List<Course> findAllByOwnerLevelAndCourseTypeOrderByCourseCodeAsc(Level ownerLevel,
+                                                              EnumCoursePartType courseType);
+    List<Course> findAllByOwnerLevelAndCourseTypeOrderByCourseCodeDesc(Level ownerLevel,
+                                                                      EnumCoursePartType courseType);
+    List<Course> findAllByOwnerLevelAndCourseTypeOrderByNbreCreditAsc(Level ownerLevel,
+                                                              EnumCoursePartType courseType);
+    List<Course> findAllByOwnerLevelAndCourseTypeOrderByNbreCreditDesc(Level ownerLevel,
+                                                                      EnumCoursePartType courseType);
+
+    List<Course> findAllByOwnerLevelOrderByTitleAsc(Level ownerLevel);
+    List<Course> findAllByOwnerLevelOrderByTitleDesc(Level ownerLevel);
+    List<Course> findAllByOwnerLevelOrderByCourseCodeAsc(Level ownerLevel);
+    List<Course> findAllByOwnerLevelOrderByCourseCodeDesc(Level ownerLevel);
+    List<Course> findAllByOwnerLevelOrderByNbreCreditAsc(Level ownerLevel);
+    List<Course> findAllByOwnerLevelOrderByNbreCreditDesc(Level ownerLevel);
 }

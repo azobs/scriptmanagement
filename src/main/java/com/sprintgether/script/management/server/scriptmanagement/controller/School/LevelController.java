@@ -3,8 +3,10 @@ package com.sprintgether.script.management.server.scriptmanagement.controller.Sc
 import com.sprintgether.script.management.server.scriptmanagement.commonused.ResponseCode;
 import com.sprintgether.script.management.server.scriptmanagement.commonused.ServerResponse;
 import com.sprintgether.script.management.server.scriptmanagement.exception.school.*;
-import com.sprintgether.script.management.server.scriptmanagement.form.School.LevelForm;
-import com.sprintgether.script.management.server.scriptmanagement.form.School.LevelFormList;
+import com.sprintgether.script.management.server.scriptmanagement.form.school.level.LevelNameUpdated;
+import com.sprintgether.script.management.server.scriptmanagement.form.school.level.LevelSaved;
+import com.sprintgether.script.management.server.scriptmanagement.form.school.level.LevelList;
+import com.sprintgether.script.management.server.scriptmanagement.form.school.level.LevelUpdated;
 import com.sprintgether.script.management.server.scriptmanagement.model.school.Level;
 import com.sprintgether.script.management.server.scriptmanagement.service.school.LevelService;
 import org.springframework.data.domain.Page;
@@ -30,24 +32,24 @@ public class LevelController {
         this.levelService = levelService;
     }
 
-    public Pageable getLevelPageable(LevelFormList levelFormList){
+    public Pageable getLevelPageable(LevelList levelList){
 
-        Sort.Order order1 = new Sort.Order(levelFormList.getDirection1().equalsIgnoreCase("ASC")
-                ?Sort.Direction.ASC:Sort.Direction.DESC, levelFormList.getSortBy1());
+        Sort.Order order1 = new Sort.Order(levelList.getDirection1().equalsIgnoreCase("ASC")
+                ?Sort.Direction.ASC:Sort.Direction.DESC, levelList.getSortBy1());
 
-        Sort.Order order2 = new Sort.Order(levelFormList.getDirection2().equalsIgnoreCase("ASC")
-                ?Sort.Direction.ASC:Sort.Direction.DESC, levelFormList.getSortBy2());
+        Sort.Order order2 = new Sort.Order(levelList.getDirection2().equalsIgnoreCase("ASC")
+                ?Sort.Direction.ASC:Sort.Direction.DESC, levelList.getSortBy2());
 
         List<Sort.Order> orderList = new ArrayList<Sort.Order>();
         orderList.add(order1);
         orderList.add(order2);
-        Pageable sort = PageRequest.of(levelFormList.getPageNumber(), levelFormList.getPageSize(), Sort.by(orderList));
+        Pageable sort = PageRequest.of(levelList.getPageNumber(), levelList.getPageSize(), Sort.by(orderList));
 
         return sort;
     }
 
     @GetMapping(path = "/levelPage")
-    public ServerResponse<Page<Level>> getLevelPage(@Valid @RequestBody LevelFormList levelFormList,
+    public ServerResponse<Page<Level>> getLevelPage(@Valid @RequestBody LevelList levelList,
                                                     BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             //System.out.println(bindingResult.toString());
@@ -60,20 +62,20 @@ public class LevelController {
             }
         }
 
-        Pageable sort = this.getLevelPageable(levelFormList);
+        Pageable sort = this.getLevelPageable(levelList);
 
-        if(!levelFormList.getKeyword().equalsIgnoreCase("")){
+        if(!levelList.getKeyword().equalsIgnoreCase("")){
             /***
              * We must make research by keyword
              */
-            return levelService.findAllLevel(levelFormList.getKeyword(), sort);
+            return levelService.findAllLevel(levelList.getKeyword(), sort);
         }
 
         return levelService.findAllLevel(sort);
     }
 
     @GetMapping(path = "/levelPageOfOption")
-    public ServerResponse<Page<Level>> getLevelPageOfOption(@Valid @RequestBody LevelFormList levelFormList,
+    public ServerResponse<Page<Level>> getLevelPageOfOption(@Valid @RequestBody LevelList levelList,
                                                               BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             //System.out.println(bindingResult.toString());
@@ -85,19 +87,20 @@ public class LevelController {
                         null);
             }
         }
-        Pageable sort = this.getLevelPageable(levelFormList);
-        String schoolName = levelFormList.getSchoolName();
-        String departmentName = levelFormList.getDepartmentName();
-        String optionName = levelFormList.getOptionName();
+        Pageable sort = this.getLevelPageable(levelList);
+        String schoolName = levelList.getSchoolName();
+        String departmentName = levelList.getDepartmentName();
+        String optionName = levelList.getOptionName();
+        String levelId = levelList.getLevelId();
 
         ServerResponse<Page<Level>> srLevelPage = new ServerResponse<>();
         try {
-            if(!levelFormList.getKeyword().equalsIgnoreCase("")){
-                srLevelPage = levelService.findAllLevelOfOption(schoolName, departmentName,
-                        optionName, levelFormList.getKeyword(), sort);
+            if(!levelList.getKeyword().equalsIgnoreCase("")){
+                srLevelPage = levelService.findAllLevelOfOption(levelId, schoolName, departmentName,
+                        optionName, levelList.getKeyword(), sort);
             }
             else{
-                srLevelPage = levelService.findAllLevelOfOption(schoolName, departmentName,
+                srLevelPage = levelService.findAllLevelOfOption(levelId, schoolName, departmentName,
                         optionName, sort);
             }
         } catch (OptionNotFoundException e) {
@@ -111,7 +114,7 @@ public class LevelController {
     }
 
     @GetMapping(path = "/levelListOfOption")
-    public ServerResponse<List<Level>> getLevelListOfOption(@Valid @RequestBody LevelFormList levelFormList,
+    public ServerResponse<List<Level>> getLevelListOfOption(@Valid @RequestBody LevelList levelList,
                                                                   BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             //System.out.println(bindingResult.toString());
@@ -123,13 +126,15 @@ public class LevelController {
                         null);
             }
         }
-        String schoolName = levelFormList.getSchoolName();
-        String departmentName = levelFormList.getDepartmentName();
-        String optionName = levelFormList.getOptionName();
+        String schoolName = levelList.getSchoolName();
+        String departmentName = levelList.getDepartmentName();
+        String optionName = levelList.getOptionName();
+        String levelId = levelList.getLevelId();
 
         ServerResponse<List<Level>> srLevelList = new ServerResponse<>();
         try {
-            srLevelList = levelService.findAllLevelOfOption(schoolName, departmentName, optionName);
+            srLevelList = levelService.findAllLevelOfOption(levelId, schoolName, departmentName,
+                    optionName);
         } catch (OptionNotFoundException e) {
             //e.printStackTrace();
             srLevelList.setErrorMessage("The associated option has not found");
@@ -140,10 +145,10 @@ public class LevelController {
     }
 
     @GetMapping(path = "/level")
-    public ServerResponse<Level> getLevel(@Valid @RequestBody LevelFormList levelFormList){
+    public ServerResponse<Level> getLevel(@Valid @RequestBody LevelList levelList){
         ServerResponse<Level> srLevel = new ServerResponse<>();
         try {
-            srLevel = levelService.findLevelOfOptionByName(levelFormList.getSchoolName(), levelFormList.getDepartmentName(), levelFormList.getOptionName(), levelFormList.getLevelName());
+            srLevel = levelService.findLevelOfOptionByName(levelList.getSchoolName(), levelList.getDepartmentName(), levelList.getOptionName(), levelList.getLevelName());
         } catch (SchoolNotFoundException e) {
             //e.printStackTrace();
             srLevel.setErrorMessage("The associated school has not found");
@@ -182,7 +187,7 @@ public class LevelController {
 
 
     @PostMapping(path = "/levelSaved")
-    public ServerResponse<Level> postLevelSaved(@Valid @RequestBody LevelForm levelForm,
+    public ServerResponse<Level> postLevelSaved(@Valid @RequestBody LevelSaved levelSaved,
                                                   BindingResult bindingResult) {
         ServerResponse<Level> srLevel = new ServerResponse("", "", ResponseCode.BAD_REQUEST, null);
 
@@ -198,9 +203,10 @@ public class LevelController {
         }
 
         try {
-            srLevel = levelService.saveLevel(levelForm.getName(), levelForm.getAcronym(),
-                    levelForm.getOwnerOption(), levelForm.getEmailClassPerfect(),
-                    levelForm.getOwnerDepartment(), levelForm.getOwnerSchool());
+            srLevel = levelService.saveLevel(levelSaved.getName(), levelSaved.getAcronym(),
+                    levelSaved.getOwnerOption(), levelSaved.getEmailClassPerfect(),
+                    levelSaved.getOptionId(), levelSaved.getOwnerDepartment(),
+                    levelSaved.getOwnerSchool());
             srLevel.setErrorMessage("The Level has been successfully created");
         } catch (DuplicateLevelInOptionException e) {
             //e.printStackTrace();
@@ -218,7 +224,7 @@ public class LevelController {
     }
 
     @PutMapping(path = "/levelUpdated")
-    public ServerResponse<Level> postLevelUpdated(@Valid @RequestBody LevelForm levelForm,
+    public ServerResponse<Level> postLevelUpdated(@Valid @RequestBody LevelUpdated levelUpdated,
                                                     BindingResult bindingResult) {
         ServerResponse<Level> srLevel = new ServerResponse("", "", ResponseCode.BAD_REQUEST, null);
 
@@ -234,10 +240,10 @@ public class LevelController {
         }
 
         try {
-            srLevel = levelService.updateLevel(levelForm.getLevelId(), levelForm.getName(),
-                    levelForm.getAcronym(), levelForm.getOwnerOption(),
-                    levelForm.getEmailClassPerfect(), levelForm.getOwnerDepartment(),
-                    levelForm.getOwnerSchool());
+            srLevel = levelService.updateLevel(levelUpdated.getLevelId(), levelUpdated.getName(),
+                    levelUpdated.getAcronym(), levelUpdated.getOwnerOption(),
+                    levelUpdated.getEmailClassPerfect(), levelUpdated.getOwnerDepartment(),
+                    levelUpdated.getOwnerSchool());
             srLevel.setErrorMessage("The Level has been successfully updated");
         } catch (LevelNotFoundException e) {
             //e.printStackTrace();
@@ -255,7 +261,7 @@ public class LevelController {
     }
 
     @PutMapping(path = "/levelNameUpdated")
-    public ServerResponse<Level> postLevelNameUpdated(@Valid @RequestBody LevelForm levelForm,
+    public ServerResponse<Level> postLevelNameUpdated(@Valid @RequestBody LevelNameUpdated levelNameUpdated,
                                                   BindingResult bindingResult) {
         ServerResponse<Level> srLevel = new ServerResponse("", "", ResponseCode.BAD_REQUEST, null);
 
@@ -269,8 +275,8 @@ public class LevelController {
                         null);
             }
         }
-        String levelId = levelForm.getLevelId();
-        String newLevelName = levelForm.getName();
+        String levelId = levelNameUpdated.getLevelId();
+        String newLevelName = levelNameUpdated.getNewLevelName();
 
         try {
             srLevel = levelService.updateLevelName(levelId, newLevelName);

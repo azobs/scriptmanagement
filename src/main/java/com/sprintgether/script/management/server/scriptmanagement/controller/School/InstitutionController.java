@@ -4,10 +4,11 @@ import com.sprintgether.script.management.server.scriptmanagement.commonused.Res
 import com.sprintgether.script.management.server.scriptmanagement.commonused.ServerResponse;
 import com.sprintgether.script.management.server.scriptmanagement.exception.school.DuplicateInstitutionException;
 import com.sprintgether.script.management.server.scriptmanagement.exception.school.InstitutionNotFoundException;
-import com.sprintgether.script.management.server.scriptmanagement.form.School.InstitutionForm;
-import com.sprintgether.script.management.server.scriptmanagement.form.School.InstitutionFormList;
+import com.sprintgether.script.management.server.scriptmanagement.form.school.institution.InstitutionNameUpdated;
+import com.sprintgether.script.management.server.scriptmanagement.form.school.institution.InstitutionSaved;
+import com.sprintgether.script.management.server.scriptmanagement.form.school.institution.InstitutionList;
+import com.sprintgether.script.management.server.scriptmanagement.form.school.institution.InstitutionUpdated;
 import com.sprintgether.script.management.server.scriptmanagement.model.school.Institution;
-import com.sprintgether.script.management.server.scriptmanagement.model.school.School;
 import com.sprintgether.script.management.server.scriptmanagement.service.school.InstitutionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -32,24 +33,24 @@ public class InstitutionController {
         this.institutionService = institutionService;
     }
 
-    public Pageable getInstitutionPageable(InstitutionFormList institutionFormList){
+    public Pageable getInstitutionPageable(InstitutionList institutionList){
 
-        Sort.Order order1 = new Sort.Order(institutionFormList.getDirection1().equalsIgnoreCase("ASC")
-                ?Sort.Direction.ASC:Sort.Direction.DESC, institutionFormList.getSortBy1());
+        Sort.Order order1 = new Sort.Order(institutionList.getDirection1().equalsIgnoreCase("ASC")
+                ?Sort.Direction.ASC:Sort.Direction.DESC, institutionList.getSortBy1());
 
-        Sort.Order order2 = new Sort.Order(institutionFormList.getDirection2().equalsIgnoreCase("ASC")
-                ?Sort.Direction.ASC:Sort.Direction.DESC, institutionFormList.getSortBy2());
+        Sort.Order order2 = new Sort.Order(institutionList.getDirection2().equalsIgnoreCase("ASC")
+                ?Sort.Direction.ASC:Sort.Direction.DESC, institutionList.getSortBy2());
 
         List<Sort.Order> orderList = new ArrayList<Sort.Order>();
         orderList.add(order1);
         orderList.add(order2);
-        Pageable sort = PageRequest.of(institutionFormList.getPageNumber(), institutionFormList.getPageSize(), Sort.by(orderList));
+        Pageable sort = PageRequest.of(institutionList.getPageNumber(), institutionList.getPageSize(), Sort.by(orderList));
 
         return sort;
     }
 
     @GetMapping(path = "/institutionPage")
-    public ServerResponse<Page<Institution>> getInstitutionPage(@Valid @RequestBody InstitutionFormList institutionFormList,
+    public ServerResponse<Page<Institution>> getInstitutionPage(@Valid @RequestBody InstitutionList institutionList,
                                                           BindingResult bindingResult){
         if (bindingResult.hasErrors()) {
             //System.out.println(bindingResult.toString());
@@ -62,21 +63,21 @@ public class InstitutionController {
             }
         }
         //System.out.println("staffFormList "+staffFormList.toString());
-        Pageable sort = this.getInstitutionPageable(institutionFormList);
+        Pageable sort = this.getInstitutionPageable(institutionList);
 
-        if(!institutionFormList.getKeyword().equalsIgnoreCase("")){
+        if(!institutionList.getKeyword().equalsIgnoreCase("")){
             /***
              * We must make research by keyword
              */
-            return institutionService.findAllInstitution(institutionFormList.getKeyword(), sort);
+            return institutionService.findAllInstitution(institutionList.getKeyword(), sort);
         }
 
         return institutionService.findAllInstitution(sort);
     }
 
     @GetMapping(path = "/institution")
-    public ServerResponse<Institution> getInstitution(@Valid @RequestBody InstitutionFormList institutionFormList){
-        return institutionService.findInstitutionByName(institutionFormList.getName());
+    public ServerResponse<Institution> getInstitution(@Valid @RequestBody InstitutionList institutionList){
+        return institutionService.findInstitutionByName(institutionList.getInstitutionName());
     }
 
     @GetMapping(path = "/institutionList")
@@ -97,7 +98,7 @@ public class InstitutionController {
     }
 
     @PostMapping(path = "/institutionSaved")
-    public ServerResponse<Institution> postInstitutionSaved(@Valid @RequestBody InstitutionForm institutionForm,
+    public ServerResponse<Institution> postInstitutionSaved(@Valid @RequestBody InstitutionSaved institutionSaved,
                                                 BindingResult bindingResult) {
         ServerResponse<Institution> srInstitution = new ServerResponse("", "", ResponseCode.BAD_REQUEST, null);
 
@@ -113,10 +114,10 @@ public class InstitutionController {
         }
 
         try {
-            srInstitution = institutionService.saveInstitution(institutionForm.getName(),
-                    institutionForm.getAcronym(), institutionForm.getDescription(),
-                    institutionForm.getLocation(), institutionForm.getAddress(),
-                    institutionForm.getLogoInstitution());
+            srInstitution = institutionService.saveInstitution(institutionSaved.getName(),
+                    institutionSaved.getAcronym(), institutionSaved.getDescription(),
+                    institutionSaved.getLocation(), institutionSaved.getAddress(),
+                    institutionSaved.getLogoInstitution());
             srInstitution.setErrorMessage("The institution has been successfully created");
 
         } catch (DuplicateInstitutionException e) {
@@ -130,7 +131,7 @@ public class InstitutionController {
     }
 
     @PutMapping(path = "/institutionUpdated")
-    public ServerResponse<Institution> putInstitutionUpdated(@Valid @RequestBody InstitutionForm institutionForm,
+    public ServerResponse<Institution> putInstitutionUpdated(@Valid @RequestBody InstitutionUpdated institutionUpdated,
                                                 BindingResult bindingResult) {
         ServerResponse<Institution> srInstitution = new ServerResponse("", "", ResponseCode.BAD_REQUEST, null);
 
@@ -146,10 +147,10 @@ public class InstitutionController {
         }
 
         try {
-            srInstitution = institutionService.updateInstitution(institutionForm.getInstitutionId(),
-                    institutionForm.getName(), institutionForm.getAcronym(),
-                    institutionForm.getDescription(), institutionForm.getLocation(),
-                    institutionForm.getAddress(), institutionForm.getLogoInstitution());
+            srInstitution = institutionService.updateInstitution(institutionUpdated.getInstitutionId(),
+                    institutionUpdated.getName(), institutionUpdated.getAcronym(),
+                    institutionUpdated.getDescription(), institutionUpdated.getLocation(),
+                    institutionUpdated.getAddress(), institutionUpdated.getLogoInstitution());
             srInstitution.setErrorMessage("The institution has been successfully updated");
         } catch (InstitutionNotFoundException e) {
             //e.printStackTrace();
@@ -169,7 +170,7 @@ public class InstitutionController {
 
 
     @PutMapping(path = "/institutionNameUpdated")
-    public ServerResponse<Institution> putInstitutionNameUpdated(@Valid @RequestBody InstitutionForm institutionForm,
+    public ServerResponse<Institution> putInstitutionNameUpdated(@Valid @RequestBody InstitutionNameUpdated institutionNameUpdated,
                                                              BindingResult bindingResult) {
         ServerResponse<Institution> srInstitution = new ServerResponse("", "", ResponseCode.BAD_REQUEST, null);
 
@@ -184,8 +185,8 @@ public class InstitutionController {
             }
         }
 
-        String institutionId = institutionForm.getInstitutionId();
-        String newInstitutionName = institutionForm.getName();
+        String institutionId = institutionNameUpdated.getInstitutionId();
+        String newInstitutionName = institutionNameUpdated.getNewInstitutionName();
 
         try {
             srInstitution = institutionService.updateInstitutionName(institutionId, newInstitutionName);

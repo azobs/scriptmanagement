@@ -13,6 +13,7 @@ import java.util.List;
 public interface InstitutionService {
 
     ServerResponse<Institution> findInstitutionByName(String name);
+    ServerResponse<Institution> findInstitutionById(String id);
     ServerResponse<List<Institution>> findAllInstitution();
     ServerResponse<Page<Institution>> findAllInstitution(String keyword, Pageable pageable);
     ServerResponse<Page<Institution>> findAllInstitution(Pageable pageable);

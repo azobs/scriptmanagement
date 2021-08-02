@@ -41,6 +41,23 @@ public class InstitutionServiceImpl implements InstitutionService{
         return srInstitution;
     }
 
+    @Override
+    public ServerResponse<Institution> findInstitutionById(String id) {
+        id = id.trim();
+        ServerResponse<Institution> srInstitution = new ServerResponse<>();
+        Optional<Institution> optionalInstitution = institutionRepository.
+                findInstitutionByName(id);
+        if(optionalInstitution.isPresent()){
+            srInstitution.setErrorMessage("The institution has been found successfully");
+            srInstitution.setResponseCode(ResponseCode.INSTITUTION_FOUND);
+            srInstitution.setAssociatedObject(optionalInstitution.get());
+        }
+        else{
+            srInstitution.setErrorMessage("There is no institution with the id specified");
+            srInstitution.setResponseCode(ResponseCode.INSTITUTION_NOT_FOUND);
+        }
+        return srInstitution;
+    }
 
 
     @Override

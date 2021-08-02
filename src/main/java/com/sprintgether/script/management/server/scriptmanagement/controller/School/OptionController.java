@@ -6,8 +6,10 @@ import com.sprintgether.script.management.server.scriptmanagement.exception.scho
 import com.sprintgether.script.management.server.scriptmanagement.exception.school.DuplicateOptionInDepartmentException;
 import com.sprintgether.script.management.server.scriptmanagement.exception.school.OptionNotFoundException;
 import com.sprintgether.script.management.server.scriptmanagement.exception.school.SchoolNotFoundException;
-import com.sprintgether.script.management.server.scriptmanagement.form.School.OptionForm;
-import com.sprintgether.script.management.server.scriptmanagement.form.School.OptionFormList;
+import com.sprintgether.script.management.server.scriptmanagement.form.school.option.OptionNameUpdated;
+import com.sprintgether.script.management.server.scriptmanagement.form.school.option.OptionSaved;
+import com.sprintgether.script.management.server.scriptmanagement.form.school.option.OptionList;
+import com.sprintgether.script.management.server.scriptmanagement.form.school.option.OptionUpdated;
 import com.sprintgether.script.management.server.scriptmanagement.model.school.Option;
 import com.sprintgether.script.management.server.scriptmanagement.service.school.OptionService;
 import org.springframework.data.domain.Page;
@@ -33,24 +35,24 @@ public class OptionController {
         this.optionService = optionService;
     }
 
-    public Pageable getOptionPageable(OptionFormList optionFormList){
+    public Pageable getOptionPageable(OptionList optionList){
 
-        Sort.Order order1 = new Sort.Order(optionFormList.getDirection1().equalsIgnoreCase("ASC")
-                ?Sort.Direction.ASC:Sort.Direction.DESC, optionFormList.getSortBy1());
+        Sort.Order order1 = new Sort.Order(optionList.getDirection1().equalsIgnoreCase("ASC")
+                ?Sort.Direction.ASC:Sort.Direction.DESC, optionList.getSortBy1());
 
-        Sort.Order order2 = new Sort.Order(optionFormList.getDirection2().equalsIgnoreCase("ASC")
-                ?Sort.Direction.ASC:Sort.Direction.DESC, optionFormList.getSortBy2());
+        Sort.Order order2 = new Sort.Order(optionList.getDirection2().equalsIgnoreCase("ASC")
+                ?Sort.Direction.ASC:Sort.Direction.DESC, optionList.getSortBy2());
 
         List<Sort.Order> orderList = new ArrayList<Sort.Order>();
         orderList.add(order1);
         orderList.add(order2);
-        Pageable sort = PageRequest.of(optionFormList.getPageNumber(), optionFormList.getPageSize(), Sort.by(orderList));
+        Pageable sort = PageRequest.of(optionList.getPageNumber(), optionList.getPageSize(), Sort.by(orderList));
 
         return sort;
     }
 
     @GetMapping(path = "/optionPage")
-    public ServerResponse<Page<Option>> getOptionPage(@Valid @RequestBody OptionFormList optionFormList,
+    public ServerResponse<Page<Option>> getOptionPage(@Valid @RequestBody OptionList optionList,
                                                       BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             //System.out.println(bindingResult.toString());
@@ -63,20 +65,20 @@ public class OptionController {
             }
         }
 
-        Pageable sort = this.getOptionPageable(optionFormList);
+        Pageable sort = this.getOptionPageable(optionList);
 
-        if(!optionFormList.getKeyword().equalsIgnoreCase("")){
+        if(!optionList.getKeyword().equalsIgnoreCase("")){
             /***
              * We must make research by keyword
              */
-            return optionService.findAllOption(optionFormList.getKeyword(), sort);
+            return optionService.findAllOption(optionList.getKeyword(), sort);
         }
 
         return optionService.findAllOption(sort);
     }
 
     @GetMapping(path = "/optionPageOfDepartment")
-    public ServerResponse<Page<Option>> getOptionPageOfDepartment(@Valid @RequestBody OptionFormList optionFormList,
+    public ServerResponse<Page<Option>> getOptionPageOfDepartment(@Valid @RequestBody OptionList optionList,
                                                                       BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             //System.out.println(bindingResult.toString());
@@ -88,18 +90,19 @@ public class OptionController {
                         null);
             }
         }
-        Pageable sort = this.getOptionPageable(optionFormList);
-        String schoolName = optionFormList.getSchoolName();
-        String departmentName = optionFormList.getDepartmentName();
+        Pageable sort = this.getOptionPageable(optionList);
+        String optionId = optionList.getOptionId();
+        String schoolName = optionList.getSchoolName();
+        String departmentName = optionList.getDepartmentName();
 
         ServerResponse<Page<Option>> srOptionPage = new ServerResponse<>();
         try {
-            if(!optionFormList.getKeyword().equalsIgnoreCase("")){
-                srOptionPage = optionService.findAllOptionOfDepartment(schoolName, departmentName,
-                        optionFormList.getKeyword(), sort);
+            if(!optionList.getKeyword().equalsIgnoreCase("")){
+                srOptionPage = optionService.findAllOptionOfDepartment(optionId, schoolName,
+                        departmentName, optionList.getKeyword(), sort);
             }
             else{
-                srOptionPage = optionService.findAllOptionOfDepartment(schoolName,
+                srOptionPage = optionService.findAllOptionOfDepartment(optionId, schoolName,
                         departmentName, sort);
             }
         } catch (DepartmentNotFoundException e) {
@@ -114,7 +117,7 @@ public class OptionController {
 
 
     @GetMapping(path = "/optionListOfDepartment")
-    public ServerResponse<List<Option>> getOptionListOfDepartment(@Valid @RequestBody OptionFormList optionFormList,
+    public ServerResponse<List<Option>> getOptionListOfDepartment(@Valid @RequestBody OptionList optionList,
                                                                       BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             //System.out.println(bindingResult.toString());
@@ -126,12 +129,14 @@ public class OptionController {
                         null);
             }
         }
-        String schoolName = optionFormList.getSchoolName();
-        String departmentName = optionFormList.getDepartmentName();
+        String optionId = optionList.getOptionId();
+        String schoolName = optionList.getSchoolName();
+        String departmentName = optionList.getDepartmentName();
 
         ServerResponse<List<Option>> srOptionList = new ServerResponse<>();
         try {
-            srOptionList = optionService.findAllOptionOfDepartment(schoolName, departmentName);
+            srOptionList = optionService.findAllOptionOfDepartment(optionId, schoolName,
+                    departmentName);
         } catch (DepartmentNotFoundException e) {
             srOptionList.setErrorMessage("The associated department has not found");
             srOptionList.setResponseCode(ResponseCode.EXCEPTION_DEPARTMENT_FOUND);
@@ -141,10 +146,10 @@ public class OptionController {
     }
 
     @GetMapping(path = "/option")
-    public ServerResponse<Option> getOption(@Valid @RequestBody OptionFormList optionFormList){
+    public ServerResponse<Option> getOption(@Valid @RequestBody OptionList optionList){
         ServerResponse<Option> srOption = new ServerResponse<>();
         try {
-            srOption = optionService.findOptionOfDepartmentByName(optionFormList.getSchoolName(), optionFormList.getDepartmentName(), optionFormList.getOptionName());
+            srOption = optionService.findOptionOfDepartmentByName(optionList.getSchoolName(), optionList.getDepartmentName(), optionList.getOptionName());
         } catch (SchoolNotFoundException e) {
             //e.printStackTrace();
             srOption.setErrorMessage("The associated school has not found");
@@ -177,7 +182,7 @@ public class OptionController {
     }
 
     @PostMapping(path = "/optionSaved")
-    public ServerResponse<Option> postOptionSaved(@Valid @RequestBody OptionForm optionForm,
+    public ServerResponse<Option> postOptionSaved(@Valid @RequestBody OptionSaved optionSaved,
                                                           BindingResult bindingResult) {
         ServerResponse<Option> srOption = new ServerResponse("", "", ResponseCode.BAD_REQUEST, null);
 
@@ -193,9 +198,9 @@ public class OptionController {
         }
 
         try {
-            srOption = optionService.saveOption(optionForm.getName(), optionForm.getAcronym(),
-                    optionForm.getDescription(), optionForm.getOwnerDepartment(),
-                    optionForm.getOwnerSchool());
+            srOption = optionService.saveOption(optionSaved.getName(), optionSaved.getAcronym(),
+                    optionSaved.getDescription(), optionSaved.getOwnerDepartment(),
+                    optionSaved.getDepartmentId(), optionSaved.getOwnerSchool());
             srOption.setErrorMessage("The Option has been successfully created");
         } catch (DuplicateOptionInDepartmentException e) {
             //e.printStackTrace();
@@ -214,7 +219,7 @@ public class OptionController {
     }
 
     @PutMapping(path = "/optionUpdated")
-    public ServerResponse<Option> postOptionUpdated(@Valid @RequestBody OptionForm optionForm,
+    public ServerResponse<Option> postOptionUpdated(@Valid @RequestBody OptionUpdated optionUpdated,
                                                   BindingResult bindingResult) {
         ServerResponse<Option> srOption = new ServerResponse("", "", ResponseCode.BAD_REQUEST, null);
 
@@ -230,10 +235,10 @@ public class OptionController {
         }
 
         try {
-            srOption = optionService.updateOption(optionForm.getOptionId(), optionForm.getName(),
-                    optionForm.getAcronym(),
-                    optionForm.getDescription(), optionForm.getOwnerDepartment(),
-                    optionForm.getOwnerSchool());
+            srOption = optionService.updateOption(optionUpdated.getOptionId(), optionUpdated.getName(),
+                    optionUpdated.getAcronym(),
+                    optionUpdated.getDescription(), optionUpdated.getOwnerDepartment(),
+                    optionUpdated.getOwnerSchool());
             srOption.setErrorMessage("The Option has been successfully updated");
         } catch (OptionNotFoundException e) {
             //e.printStackTrace();
@@ -251,7 +256,7 @@ public class OptionController {
     }
 
     @PutMapping(path = "/optionNameUpdated")
-    public ServerResponse<Option> postOptionNameUpdated(@Valid @RequestBody OptionForm optionForm,
+    public ServerResponse<Option> postOptionNameUpdated(@Valid @RequestBody OptionNameUpdated optionNameUpdated,
                                                     BindingResult bindingResult) {
         ServerResponse<Option> srOption = new ServerResponse("", "",
                 ResponseCode.BAD_REQUEST, null);
@@ -267,8 +272,8 @@ public class OptionController {
             }
         }
 
-        String optionId = optionForm.getOptionId();
-        String newOptionName = optionForm.getName();
+        String optionId = optionNameUpdated.getOptionId();
+        String newOptionName = optionNameUpdated.getNewOptionName();
 
         try {
             srOption = optionService.updateOptionName(optionId, newOptionName);

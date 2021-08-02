@@ -2,10 +2,7 @@ package com.sprintgether.script.management.server.scriptmanagement.controller.us
 
 import com.sprintgether.script.management.server.scriptmanagement.commonused.ResponseCode;
 import com.sprintgether.script.management.server.scriptmanagement.commonused.ServerResponse;
-import com.sprintgether.script.management.server.scriptmanagement.exception.user.DuplicateStaffException;
-import com.sprintgether.script.management.server.scriptmanagement.exception.user.RoleNotExistForUserException;
-import com.sprintgether.script.management.server.scriptmanagement.exception.user.RoleNotFoundException;
-import com.sprintgether.script.management.server.scriptmanagement.exception.user.StaffNotFoundException;
+import com.sprintgether.script.management.server.scriptmanagement.exception.user.*;
 import com.sprintgether.script.management.server.scriptmanagement.form.user.StaffForm;
 import com.sprintgether.script.management.server.scriptmanagement.form.user.StaffFormList;
 import com.sprintgether.script.management.server.scriptmanagement.form.user.StaffRoleForm;
@@ -236,6 +233,42 @@ public class StaffController {
         return srStaff;
     }
 
+    @PutMapping(path = "/staffEmailUpdated")
+    public ServerResponse<Staff> putStaffEmailUpdated(@Valid @RequestBody StaffForm staffForm,
+                                                     BindingResult bindingResult) {
+        ServerResponse<Staff> srStaff = new ServerResponse("", "", ResponseCode.BAD_REQUEST, null);
+
+        if (bindingResult.hasErrors()) {
+            //System.out.println(bindingResult.toString());
+            List<FieldError> errorList = bindingResult.getFieldErrors();
+            for (FieldError error : errorList) {
+                return new ServerResponse<Staff>(error.getDefaultMessage(),
+                        "Some form entry are not well filled for staffType update",
+                        ResponseCode.ERROR_IN_FORM_FILLED,
+                        null);
+            }
+        }
+
+        //System.out.println("Just before enter in the try block code");
+        try{
+            //System.out.println("Tne execution of the code in the try block just started like this");
+            srStaff = staffService.updateStaffEmail(staffForm.getStaffId(), staffForm.getNewEmail());
+            srStaff.setErrorMessage("The staff type has been succefully updated");
+        }
+        catch (StaffNotFoundException e){
+            srStaff.setResponseCode(ResponseCode.EXCEPTION_UPDATED_STAFF);
+            srStaff.setErrorMessage("StaffNotFoundException");
+            srStaff.setMoreDetails(e.getMessage());
+        } catch (DuplicateStaffException e) {
+            //e.printStackTrace();
+            srStaff.setResponseCode(ResponseCode.EXCEPTION_UPDATED_STAFF);
+            srStaff.setErrorMessage("DuplicateStaffException");
+            srStaff.setMoreDetails(e.getMessage());
+        }
+
+        return srStaff;
+    }
+
     @PutMapping(path = "/staffPasswordUpdated")
     public ServerResponse<Staff> putStaffPasswordUpdated(@Valid @RequestBody StaffForm staffForm,
                                          BindingResult bindingResult) {
@@ -261,6 +294,43 @@ public class StaffController {
         catch (StaffNotFoundException e){
             srStaff.setResponseCode(ResponseCode.EXCEPTION_UPDATED_STAFF);
             srStaff.setErrorMessage("StaffNotFoundException");
+            srStaff.setMoreDetails(e.getMessage());
+        }
+
+        return srStaff;
+    }
+
+    @PutMapping(path = "/staffUsernameUpdated")
+    public ServerResponse<Staff> putStaffUsernameUpdated(@Valid @RequestBody StaffForm staffForm,
+                                                         BindingResult bindingResult) {
+        ServerResponse<Staff> srStaff = new ServerResponse("", "", ResponseCode.BAD_REQUEST, null);
+
+        if (bindingResult.hasErrors()) {
+            //System.out.println(bindingResult.toString());
+            List<FieldError> errorList = bindingResult.getFieldErrors();
+            for (FieldError error : errorList) {
+                return new ServerResponse<Staff>(error.getDefaultMessage(),
+                        "Some form entry are not well filled for Password update",
+                        ResponseCode.ERROR_IN_FORM_FILLED,
+                        null);
+            }
+        }
+
+        //System.out.println("Just before enter in the try block code");
+        try{
+            //System.out.println("Tne execution of the code in the try block just started like this");
+            srStaff = staffService.updateStaffUsername(staffForm.getStaffId(),
+                    staffForm.getNewUsername());
+            srStaff.setErrorMessage("The password of the staff has been succefully updated");
+        }
+        catch (StaffNotFoundException e){
+            srStaff.setResponseCode(ResponseCode.EXCEPTION_UPDATED_STAFF);
+            srStaff.setErrorMessage("StaffNotFoundException");
+            srStaff.setMoreDetails(e.getMessage());
+        } catch (DuplicateUserException e) {
+            //e.printStackTrace();
+            srStaff.setResponseCode(ResponseCode.EXCEPTION_UPDATED_STAFF);
+            srStaff.setErrorMessage("DuplicatedUserException");
             srStaff.setMoreDetails(e.getMessage());
         }
 

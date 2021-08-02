@@ -13,23 +13,43 @@ import java.util.List;
 
 public interface OptionService {
     ServerResponse<Option> findOptionOfDepartmentByName(String schoolName, String departmentName,
-                                                        String optionName) throws SchoolNotFoundException, DepartmentNotFoundException;
+                                                        String optionName)
+            throws SchoolNotFoundException, DepartmentNotFoundException;
+    ServerResponse<Option> findOptionOfDepartmentById(String optionId);
     ServerResponse<List<Option>> findAllOption();
     ServerResponse<Page<Option>> findAllOption(Pageable pageable);
     ServerResponse<Page<Option>> findAllOption(String keyword, Pageable pageable);
-    ServerResponse<Page<Option>> findAllOptionOfDepartment(String schoolName, String departmentName, String keyword, Pageable pageable) throws DepartmentNotFoundException;
-    ServerResponse<Page<Option>> findAllOptionOfDepartment(String schoolName, String departmentName, Pageable pageable) throws DepartmentNotFoundException;
-    ServerResponse<List<Option>> findAllOptionOfDepartment(String schoolName, String departmentName) throws DepartmentNotFoundException;
+
+    ServerResponse<Page<Option>> findAllOptionOfDepartment(String departmentId,
+                                                           String schoolName,
+                                                           String departmentName,
+                                                           String keyword,
+                                                           Pageable pageable)
+            throws DepartmentNotFoundException;
+
+    ServerResponse<Page<Option>> findAllOptionOfDepartment(String departmentId,
+                                                           String schoolName,
+                                                           String departmentName,
+                                                           Pageable pageable)
+            throws DepartmentNotFoundException;
+
+    ServerResponse<List<Option>> findAllOptionOfDepartment(String departmentId,
+                                                           String schoolName,
+                                                           String departmentName)
+            throws DepartmentNotFoundException;
+
     Option saveOption(Option option);
     ServerResponse<Option> saveOption(String name, String acronym, String description,
-                                      String departmentName, String schoolName)
+                                      String departmentId, String departmentName, String schoolName)
             throws DuplicateOptionInDepartmentException, DepartmentNotFoundException;
+
     ServerResponse<Option> updateOption(String optionId, String name, String acronym, String description,
                                       String departmentName, String schoolName)
             throws OptionNotFoundException, DuplicateOptionInDepartmentException;
+
     ServerResponse<Option> updateOptionName(String optionId, String optionName)
             throws OptionNotFoundException, DuplicateOptionInDepartmentException;
-    ServerResponse<Option> deleteOption(String schoolName, String departmentName, String optionName)
+
+    ServerResponse<Option> deleteOption(String optionId, String schoolName, String departmentName, String optionName)
             throws SchoolNotFoundException, DepartmentNotFoundException, OptionNotFoundException;
-    ServerResponse<Option> deleteOption(String optionId) throws OptionNotFoundException;
 }

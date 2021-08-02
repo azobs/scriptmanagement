@@ -3,8 +3,10 @@ package com.sprintgether.script.management.server.scriptmanagement.controller.Sc
 import com.sprintgether.script.management.server.scriptmanagement.commonused.ResponseCode;
 import com.sprintgether.script.management.server.scriptmanagement.commonused.ServerResponse;
 import com.sprintgether.script.management.server.scriptmanagement.exception.school.*;
-import com.sprintgether.script.management.server.scriptmanagement.form.School.SchoolForm;
-import com.sprintgether.script.management.server.scriptmanagement.form.School.SchoolFormList;
+import com.sprintgether.script.management.server.scriptmanagement.form.school.school.SchoolNameUpdated;
+import com.sprintgether.script.management.server.scriptmanagement.form.school.school.SchoolSaved;
+import com.sprintgether.script.management.server.scriptmanagement.form.school.school.SchoolList;
+import com.sprintgether.script.management.server.scriptmanagement.form.school.school.SchoolUpdated;
 import com.sprintgether.script.management.server.scriptmanagement.model.school.School;
 import com.sprintgether.script.management.server.scriptmanagement.service.school.SchoolService;
 import org.springframework.data.domain.Page;
@@ -30,24 +32,24 @@ public class SchoolController {
         this.schoolService = schoolService;
     }
 
-    public Pageable getSchoolPageable(SchoolFormList schoolFormList){
+    public Pageable getSchoolPageable(SchoolList schoolList){
 
-        Sort.Order order1 = new Sort.Order(schoolFormList.getDirection1().equalsIgnoreCase("ASC")
-                ?Sort.Direction.ASC:Sort.Direction.DESC, schoolFormList.getSortBy1());
+        Sort.Order order1 = new Sort.Order(schoolList.getDirection1().equalsIgnoreCase("ASC")
+                ?Sort.Direction.ASC:Sort.Direction.DESC, schoolList.getSortBy1());
 
-        Sort.Order order2 = new Sort.Order(schoolFormList.getDirection2().equalsIgnoreCase("ASC")
-                ?Sort.Direction.ASC:Sort.Direction.DESC, schoolFormList.getSortBy2());
+        Sort.Order order2 = new Sort.Order(schoolList.getDirection2().equalsIgnoreCase("ASC")
+                ?Sort.Direction.ASC:Sort.Direction.DESC, schoolList.getSortBy2());
 
         List<Sort.Order> orderList = new ArrayList<Sort.Order>();
         orderList.add(order1);
         orderList.add(order2);
-        Pageable sort = PageRequest.of(schoolFormList.getPageNumber(), schoolFormList.getPageSize(), Sort.by(orderList));
+        Pageable sort = PageRequest.of(schoolList.getPageNumber(), schoolList.getPageSize(), Sort.by(orderList));
 
         return sort;
     }
 
     @GetMapping(path = "/schoolPage")
-    public ServerResponse<Page<School>> getSchoolPage(@Valid @RequestBody SchoolFormList schoolFormList,
+    public ServerResponse<Page<School>> getSchoolPage(@Valid @RequestBody SchoolList schoolList,
                                                            BindingResult bindingResult){
         if (bindingResult.hasErrors()) {
             //System.out.println(bindingResult.toString());
@@ -60,20 +62,20 @@ public class SchoolController {
             }
         }
         //System.out.println("staffFormList "+staffFormList.toString());
-        Pageable sort = this.getSchoolPageable(schoolFormList);
+        Pageable sort = this.getSchoolPageable(schoolList);
 
-        if(!schoolFormList.getKeyword().equalsIgnoreCase("")){
+        if(!schoolList.getKeyword().equalsIgnoreCase("")){
             /***
              * We must make research by keyword
              */
-            return schoolService.findAllSchool(schoolFormList.getKeyword(), sort);
+            return schoolService.findAllSchool(schoolList.getKeyword(), sort);
         }
 
         return schoolService.findAllSchool(sort);
     }
 
     @GetMapping(path = "/schoolPageOfInstitution")
-    public ServerResponse<Page<School>> getSchoolPageOfInstitution(@Valid @RequestBody SchoolFormList schoolFormList,
+    public ServerResponse<Page<School>> getSchoolPageOfInstitution(@Valid @RequestBody SchoolList schoolList,
                                                       BindingResult bindingResult){
         if (bindingResult.hasErrors()) {
             //System.out.println(bindingResult.toString());
@@ -86,9 +88,9 @@ public class SchoolController {
             }
         }
         //System.out.println("staffFormList "+staffFormList.toString());
-        Pageable sort = this.getSchoolPageable(schoolFormList);
+        Pageable sort = this.getSchoolPageable(schoolList);
 
-        String instName = schoolFormList.getInstName();
+        String instName = schoolList.getInstName();
         ServerResponse<Page<School>> srSchoolPage = new ServerResponse<Page<School>>();
         try {
             srSchoolPage = schoolService.findSchoolOfInstitution(instName, sort);
@@ -102,7 +104,7 @@ public class SchoolController {
     }
 
     @GetMapping(path = "/schoolListOfInstitution")
-    public ServerResponse<List<School>> getSchoolListOfInstitution(@Valid @RequestBody SchoolFormList schoolFormList,
+    public ServerResponse<List<School>> getSchoolListOfInstitution(@Valid @RequestBody SchoolList schoolList,
                                                                    BindingResult bindingResult){
         if (bindingResult.hasErrors()) {
             //System.out.println(bindingResult.toString());
@@ -115,7 +117,7 @@ public class SchoolController {
             }
         }
 
-        String instName = schoolFormList.getInstName();
+        String instName = schoolList.getInstName();
         ServerResponse<List<School>> srSchoolList = new ServerResponse<List<School>>();
         try {
             srSchoolList = schoolService.findSchoolOfInstitution(instName);
@@ -129,8 +131,8 @@ public class SchoolController {
     }
 
     @GetMapping(path = "/school")
-    public ServerResponse<School> getSchool(@Valid @RequestBody SchoolFormList schoolFormList){
-        return schoolService.findSchoolByName(schoolFormList.getSchoolName());
+    public ServerResponse<School> getSchool(@Valid @RequestBody SchoolList schoolList){
+        return schoolService.findSchoolByName(schoolList.getSchoolName());
     }
 
     @GetMapping(path = "/schoolList")
@@ -151,7 +153,7 @@ public class SchoolController {
     }
 
     @PostMapping(path = "/schoolSaved")
-    public ServerResponse<School> postSchoolSaved(@Valid @RequestBody SchoolForm schoolForm,
+    public ServerResponse<School> postSchoolSaved(@Valid @RequestBody SchoolSaved schoolSaved,
                                                             BindingResult bindingResult) {
         ServerResponse<School> srSchool = new ServerResponse("", "", ResponseCode.BAD_REQUEST, null);
 
@@ -160,16 +162,16 @@ public class SchoolController {
             List<FieldError> errorList = bindingResult.getFieldErrors();
             for (FieldError error : errorList) {
                 return new ServerResponse<School>(error.getDefaultMessage(),
-                        "Some entry are not well filled in the schoolForm for save",
+                        "Some entry are not well filled in the schoolSaved for save",
                         ResponseCode.ERROR_IN_FORM_FILLED,
                         null);
             }
         }
 
         try {
-            srSchool = schoolService.saveSchool(schoolForm.getName(), schoolForm.getAcronym(),
-                    schoolForm.getDescription(), schoolForm.getLogoSchool(),
-                    schoolForm.getOwnerInstitution(), schoolForm.getParentInstitution());
+            srSchool = schoolService.saveSchool(schoolSaved.getName(), schoolSaved.getAcronym(),
+                    schoolSaved.getDescription(), schoolSaved.getLogoSchool(),
+                    schoolSaved.getOwnerInstitution(), schoolSaved.getParentInstitution());
             srSchool.setErrorMessage("The school has been successfully created");
 
         } catch (DuplicateSchoolException e) {
@@ -183,7 +185,7 @@ public class SchoolController {
     }
 
     @PutMapping(path = "/schoolUpdated")
-    public ServerResponse<School> putSchoolUpdated(@Valid @RequestBody SchoolForm schoolForm,
+    public ServerResponse<School> putSchoolUpdated(@Valid @RequestBody SchoolUpdated schoolUpdated,
                                                              BindingResult bindingResult) {
         ServerResponse<School> srSchool = new ServerResponse("", "", ResponseCode.BAD_REQUEST, null);
 
@@ -199,9 +201,10 @@ public class SchoolController {
         }
 
         try {
-            srSchool = schoolService.updateSchool(schoolForm.getSchoolId(), schoolForm.getName(), schoolForm.getAcronym(),
-                    schoolForm.getDescription(), schoolForm.getLogoSchool(),
-                    schoolForm.getOwnerInstitution(), schoolForm.getParentInstitution());
+            srSchool = schoolService.updateSchool(schoolUpdated.getSchoolId(),
+                    schoolUpdated.getName(), schoolUpdated.getAcronym(),
+                    schoolUpdated.getDescription(), schoolUpdated.getLogoSchool(),
+                    schoolUpdated.getOwnerInstitution(), schoolUpdated.getParentInstitution());
             srSchool.setErrorMessage("The school has been successfully updated");
         } catch (SchoolNotFoundException e) {
             //e.printStackTrace();
@@ -220,7 +223,7 @@ public class SchoolController {
 
 
     @PutMapping(path = "/schoolNameUpdated")
-    public ServerResponse<School> putSchoolNameUpdated(@Valid @RequestBody SchoolForm schoolForm,
+    public ServerResponse<School> putSchoolNameUpdated(@Valid @RequestBody SchoolNameUpdated schoolNameUpdated,
                                                    BindingResult bindingResult) {
         ServerResponse<School> srSchool = new ServerResponse("", "", ResponseCode.BAD_REQUEST, null);
 
@@ -235,8 +238,8 @@ public class SchoolController {
             }
         }
 
-        String schoolId = schoolForm.getSchoolId();
-        String newSchoolName = schoolForm.getName();
+        String schoolId = schoolNameUpdated.getSchoolId();
+        String newSchoolName = schoolNameUpdated.getNewSchoolName();
 
         try {
             srSchool = schoolService.updateSchoolName(schoolId, newSchoolName);

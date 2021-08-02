@@ -57,6 +57,27 @@ public class StaffServiceImpl implements StaffService{
     }
 
     @Override
+    public ServerResponse<Staff> findStaffById(String staffId) {
+        staffId = staffId.trim();
+        ServerResponse<Staff> serverResponse = new ServerResponse<>();
+        Optional<Staff> optionalStaff = staffRepository.findStaffById(staffId);
+        //System.out.println("dans le service email = "+email);
+        if(optionalStaff.isPresent()){
+            serverResponse.setErrorMessage("The staff research method has been successfull made");
+            serverResponse.setResponseCode(ResponseCode.STAFF_FOUND);
+            serverResponse.setAssociatedObject(optionalStaff.get());
+        }
+        else{
+            //Ceci signifie qu'on a pas trouver de user avec le username passe en parametre
+            serverResponse.setErrorMessage("There is no staff with the email specified");
+            serverResponse.setMoreDetails("");
+            serverResponse.setResponseCode(ResponseCode.STAFF_NOT_FOUND);
+            serverResponse.setAssociatedObject(null);
+        }
+        return serverResponse;
+    }
+
+    @Override
     public ServerResponse<Page<Staff>> findAllStaff(Pageable pageable) {
         Page<Staff> pageofStaff = staffRepository.findAll(pageable);
         ServerResponse<Page<Staff>> srlistStaff = new ServerResponse<>();
@@ -197,6 +218,11 @@ public class StaffServiceImpl implements StaffService{
     }
 
     @Override
+    public Staff saveStaff(Staff staff) {
+        return staffRepository.save(staff);
+    }
+
+    @Override
     public ServerResponse<Staff> updateStaff(String email, String newFirstName, String newLastName,
                                              String newAddress, String newPhoneNumber, String newDescription)
             throws StaffNotFoundException {
@@ -300,6 +326,80 @@ public class StaffServiceImpl implements StaffService{
         }
         else if(srStaff.getResponseCode() == ResponseCode.STAFF_NOT_FOUND){
             throw new StaffNotFoundException("The specified email does not match any staff in DB. Please check it");
+        }
+        return serverResponse;
+    }
+
+    @Override
+    public ServerResponse<Staff> updateStaffUsername(String staffId, String newUsername)
+            throws StaffNotFoundException, DuplicateUserException {
+        staffId = staffId.trim();
+        newUsername = newUsername.toLowerCase().trim();
+        ServerResponse<Staff> serverResponse = new ServerResponse<>();
+        serverResponse.setResponseCode(ResponseCode.STAFF_NOT_UPDATE);
+        serverResponse.setAssociatedObject(null);
+        /***
+         * Search for staff to update
+         */
+        ServerResponse<Staff> srStaff = this.findStaffById(staffId);
+        if(srStaff.getResponseCode() == ResponseCode.STAFF_FOUND){
+            Staff staffToUpdate = srStaff.getAssociatedObject();
+            User userAssociated = staffToUpdate.getUserAssociated();
+            try {
+                ServerResponse<User> srUser = userService.updateUsername(userAssociated.getId(),
+                        newUsername);
+                if(srUser.getResponseCode()==ResponseCode.USER_UPDATED){
+                    serverResponse.setResponseCode(ResponseCode.STAFF_UPDATE);
+                    serverResponse.setErrorMessage("The update password method has been successfull executed");
+                    serverResponse.setAssociatedObject(this.findStaffByEmail(staffToUpdate.getEmail()).getAssociatedObject());
+                }
+            } catch (UserNotFoundException e) {
+                //e.printStackTrace();
+                serverResponse.setResponseCode(ResponseCode.EXCEPTION_UPDATED_STAFF);
+                serverResponse.setErrorMessage("UserNotFoundException");
+                serverResponse.setMoreDetails(e.getMessage());
+            }
+        }
+        else if(srStaff.getResponseCode() == ResponseCode.STAFF_NOT_FOUND){
+            throw new StaffNotFoundException("The specified email does not match any staff in DB. Please check it");
+        }
+        return serverResponse;
+    }
+
+    @Override
+    public ServerResponse<Staff> updateStaffEmail(String staffId, String newEmail)
+            throws StaffNotFoundException, DuplicateStaffException {
+        staffId = staffId.trim();
+        newEmail = newEmail.trim();
+        ServerResponse<Staff> serverResponse = new ServerResponse<>();
+        serverResponse.setResponseCode(ResponseCode.STAFF_NOT_UPDATE);
+        serverResponse.setAssociatedObject(null);
+        /***
+         * Search for staff to update
+         */
+        ServerResponse<Staff> srStaff = this.findStaffById(staffId);
+        ServerResponse<Staff> srStaffDuplicated = this.findStaffByEmail(newEmail);
+        if(srStaff.getResponseCode() == ResponseCode.STAFF_FOUND){
+            Staff staffToUpdated = srStaff.getAssociatedObject();
+            if(srStaffDuplicated.getResponseCode() == ResponseCode.STAFF_FOUND){
+                Staff staffDuplicate = srStaffDuplicated.getAssociatedObject();
+                if(!staffToUpdated.getId().equalsIgnoreCase(staffDuplicate.getId())) {
+                    throw new DuplicateStaffException("The new email is already used by another " +
+                            "staff in the system");
+                }
+            }
+
+            staffToUpdated.setEmail(newEmail);
+            Staff staffUpdated = this.saveStaff(staffToUpdated);
+
+            serverResponse.setResponseCode(ResponseCode.STAFF_UPDATE);
+            serverResponse.setErrorMessage("The update password method has been successfull " +
+                    "executed");
+            serverResponse.setAssociatedObject(staffUpdated);
+        }
+        else if(srStaff.getResponseCode() == ResponseCode.STAFF_NOT_FOUND){
+            throw new StaffNotFoundException("The specified Id does not match any staff in DB. " +
+                    "Please check it");
         }
         return serverResponse;
     }

@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface LevelRepository extends MongoRepository<Level, String> {
+    Optional<Level> findById(String levelId);
     Optional<Level> findByOwnerOptionAndName(Option ownerOption, String levelName);
     Page<Level> findAllByNameContaining(String keyword, Pageable pageable);
     Page<Level> findAllByOwnerOptionAndNameContaining(Option option, String keyword, Pageable pageable);

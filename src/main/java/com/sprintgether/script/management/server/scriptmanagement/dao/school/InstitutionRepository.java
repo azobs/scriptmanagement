@@ -10,5 +10,6 @@ import java.util.Optional;
 
 public interface InstitutionRepository extends MongoRepository<Institution, String> {
     Optional<Institution> findInstitutionByName(String name);
+    Optional<Institution> findInstitutionById(String institutionId);
     Page<Institution> findByNameContaining(String keyword, Pageable pageable);
 }

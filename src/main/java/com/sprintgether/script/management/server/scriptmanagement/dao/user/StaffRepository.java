@@ -11,6 +11,7 @@ import java.util.Optional;
 
 public interface StaffRepository extends MongoRepository<Staff, String> {
     Optional<Staff> findStaffByEmail(String email);
+    Optional<Staff> findStaffById(String staffId);
     Page<Staff> findByFirstNameContaining(String firstName, Pageable pageable);
     List<Staff> findStaffByStaffType(EnumStaffType staffType);
     Page<Staff> findStaffByStaffType(EnumStaffType staffType, Pageable pageable);

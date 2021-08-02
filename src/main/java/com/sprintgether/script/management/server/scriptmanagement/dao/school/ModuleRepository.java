@@ -11,17 +11,31 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ModuleRepository extends MongoRepository<Module, String> {
-    Optional<Module> findByOwnerCourseOutlineAndTitle(CourseOutline courseOutline, String moduleTitle);
+    Optional<Module> findById(String moduleId);
+    Optional<Module> findByOwnerCourseOutlineAndTitle(CourseOutline courseOutline,
+                                                      String moduleTitle);
     Page<Module> findAllByOwnerCourseOutlineAndTitleContaining(CourseOutline courseOutline,
                                                                String keyword, Pageable pageable);
     Page<Module> findAllByOwnerCourseOutline(CourseOutline courseOutline, Pageable pageable);
-    Page<Module> findAllByModuleType(EnumCoursePartType moduleType);
+
     Page<Module> findAllByOwnerCourseOutlineAndModuleType(CourseOutline courseOutline,
                                                           EnumCoursePartType moduleType,
                                                           Pageable pageable);
-    List<Module> findAllByOwnerCourseOutlineAndModuleType(CourseOutline courseOutline,
+    List<Module> findAllByOwnerCourseOutlineAndModuleTypeOrderByTitleAsc(CourseOutline courseOutline,
                                                           EnumCoursePartType moduleType);
-    List<Module> findAllByOwnerCourseOutlineOrderByTitle(CourseOutline courseOutline);
+    List<Module> findAllByOwnerCourseOutlineAndModuleTypeOrderByModuleOrderAsc(
+                                                                    CourseOutline courseOutline,
+                                                                    EnumCoursePartType moduleType);
+    List<Module> findAllByOwnerCourseOutlineOrderByTitleAsc(CourseOutline courseOutline);
+    List<Module> findAllByOwnerCourseOutlineOrderByModuleOrderAsc(CourseOutline courseOutline);
+
+    List<Module> findAllByOwnerCourseOutlineAndModuleTypeOrderByTitleDesc(CourseOutline courseOutline,
+                                                                         EnumCoursePartType moduleType);
+    List<Module> findAllByOwnerCourseOutlineAndModuleTypeOrderByModuleOrderDesc(
+            CourseOutline courseOutline,
+            EnumCoursePartType moduleType);
+    List<Module> findAllByOwnerCourseOutlineOrderByTitleDesc(CourseOutline courseOutline);
+    List<Module> findAllByOwnerCourseOutlineOrderByModuleOrderDesc(CourseOutline courseOutline);
 
 
 }

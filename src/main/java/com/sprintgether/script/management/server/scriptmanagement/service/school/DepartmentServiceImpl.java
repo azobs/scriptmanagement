@@ -30,6 +30,24 @@ public class DepartmentServiceImpl implements DepartmentService{
     }
 
     @Override
+    public ServerResponse<Department> findDepartmentOfSchoolById(String departmentId) {
+        departmentId = departmentId.toLowerCase().trim();
+        ServerResponse<Department> srDepartment = new ServerResponse<>();
+
+        Optional<Department> optionalDepartment = departmentRepository.findById(departmentId);
+        if(optionalDepartment.isPresent()){
+            srDepartment.setErrorMessage("The department has been identified and returned");
+            srDepartment.setResponseCode(ResponseCode.DEPARTMENT_FOUND);
+            srDepartment.setAssociatedObject(optionalDepartment.get());
+        }
+        else{
+            srDepartment.setResponseCode(ResponseCode.DEPARTMENT_NOT_FOUND);
+            srDepartment.setErrorMessage("The department has not been found in the system");
+        }
+        return srDepartment;
+    }
+
+    @Override
     public ServerResponse<Department> findDepartmentOfSchoolByName(String schoolName,
                                                                    String departmentName) throws SchoolNotFoundException {
         schoolName = schoolName.toLowerCase().trim();
@@ -86,8 +104,10 @@ public class DepartmentServiceImpl implements DepartmentService{
     }
 
     @Override
-    public ServerResponse<Page<Department>> findAllDepartmentOfSchool(String schoolName, String keyword,
-                                                                      Pageable pageable) throws SchoolNotFoundException {
+    public ServerResponse<Page<Department>> findAllDepartmentOfSchool(String schoolName,
+                                                                      String keyword,
+                                                                      Pageable pageable)
+            throws SchoolNotFoundException {
         schoolName = schoolName.toLowerCase().trim();
         keyword = keyword.toLowerCase().trim();
         ServerResponse<Page<Department>> srPageDepartment = new ServerResponse<Page<Department>>();
@@ -164,8 +184,9 @@ public class DepartmentServiceImpl implements DepartmentService{
         ServerResponse<Department> srDepartment1 = new ServerResponse<>();
         School ownerSchool = srSchool.getAssociatedObject();
         srDepartment1 = this.findDepartmentOfSchoolByName(ownerSchool.getName(), name);
-        if(srDepartment.getResponseCode() == ResponseCode.DEPARTMENT_FOUND){
-            throw new DuplicateDepartmentInSchoolException("The department name specified is already used by another department in that school");
+        if(srDepartment1.getResponseCode() == ResponseCode.DEPARTMENT_FOUND){
+            throw new DuplicateDepartmentInSchoolException("The department name specified is " +
+                    "already used by another department in that school");
         }
         /**
          * There, we are sure that the department will be unique in that school

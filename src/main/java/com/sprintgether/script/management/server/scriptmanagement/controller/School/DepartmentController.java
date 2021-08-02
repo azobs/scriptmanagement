@@ -5,8 +5,10 @@ import com.sprintgether.script.management.server.scriptmanagement.commonused.Ser
 import com.sprintgether.script.management.server.scriptmanagement.exception.school.DepartmentNotFoundException;
 import com.sprintgether.script.management.server.scriptmanagement.exception.school.DuplicateDepartmentInSchoolException;
 import com.sprintgether.script.management.server.scriptmanagement.exception.school.SchoolNotFoundException;
-import com.sprintgether.script.management.server.scriptmanagement.form.School.DepartmentForm;
-import com.sprintgether.script.management.server.scriptmanagement.form.School.DepartmentFormList;
+import com.sprintgether.script.management.server.scriptmanagement.form.school.department.DepartmentNameUpdated;
+import com.sprintgether.script.management.server.scriptmanagement.form.school.department.DepartmentSaved;
+import com.sprintgether.script.management.server.scriptmanagement.form.school.department.DepartmentList;
+import com.sprintgether.script.management.server.scriptmanagement.form.school.department.DepartmentUpdated;
 import com.sprintgether.script.management.server.scriptmanagement.model.school.Department;
 import com.sprintgether.script.management.server.scriptmanagement.service.school.DepartmentService;
 import org.springframework.data.domain.Page;
@@ -32,24 +34,24 @@ public class DepartmentController {
         this.departmentService = departmentService;
     }
 
-    public Pageable getDepartmentPageable(DepartmentFormList departmentFormList){
+    public Pageable getDepartmentPageable(DepartmentList departmentList){
 
-        Sort.Order order1 = new Sort.Order(departmentFormList.getDirection1().equalsIgnoreCase("ASC")
-                ?Sort.Direction.ASC:Sort.Direction.DESC, departmentFormList.getSortBy1());
+        Sort.Order order1 = new Sort.Order(departmentList.getDirection1().equalsIgnoreCase("ASC")
+                ?Sort.Direction.ASC:Sort.Direction.DESC, departmentList.getSortBy1());
 
-        Sort.Order order2 = new Sort.Order(departmentFormList.getDirection2().equalsIgnoreCase("ASC")
-                ?Sort.Direction.ASC:Sort.Direction.DESC, departmentFormList.getSortBy2());
+        Sort.Order order2 = new Sort.Order(departmentList.getDirection2().equalsIgnoreCase("ASC")
+                ?Sort.Direction.ASC:Sort.Direction.DESC, departmentList.getSortBy2());
 
         List<Sort.Order> orderList = new ArrayList<Sort.Order>();
         orderList.add(order1);
         orderList.add(order2);
-        Pageable sort = PageRequest.of(departmentFormList.getPageNumber(), departmentFormList.getPageSize(), Sort.by(orderList));
+        Pageable sort = PageRequest.of(departmentList.getPageNumber(), departmentList.getPageSize(), Sort.by(orderList));
 
         return sort;
     }
 
     @GetMapping(path = "/departmentPage")
-    public ServerResponse<Page<Department>> getDepartmentPage(@Valid @RequestBody DepartmentFormList departmentFormList,
+    public ServerResponse<Page<Department>> getDepartmentPage(@Valid @RequestBody DepartmentList departmentList,
                                                           BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             //System.out.println(bindingResult.toString());
@@ -62,20 +64,20 @@ public class DepartmentController {
             }
         }
 
-        Pageable sort = this.getDepartmentPageable(departmentFormList);
+        Pageable sort = this.getDepartmentPageable(departmentList);
 
-        if(!departmentFormList.getKeyword().equalsIgnoreCase("")){
+        if(!departmentList.getKeyword().equalsIgnoreCase("")){
             /***
              * We must make research by keyword
              */
-            return departmentService.findAllDepartment(departmentFormList.getKeyword(), sort);
+            return departmentService.findAllDepartment(departmentList.getKeyword(), sort);
         }
 
         return departmentService.findAllDepartment(sort);
     }
 
     @GetMapping(path = "/departmentPageOfSchool")
-    public ServerResponse<Page<Department>> getDepartmentPageOfSchool(@Valid @RequestBody DepartmentFormList departmentFormList,
+    public ServerResponse<Page<Department>> getDepartmentPageOfSchool(@Valid @RequestBody DepartmentList departmentList,
                                                                    BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             //System.out.println(bindingResult.toString());
@@ -87,14 +89,14 @@ public class DepartmentController {
                         null);
             }
         }
-        Pageable sort = this.getDepartmentPageable(departmentFormList);
+        Pageable sort = this.getDepartmentPageable(departmentList);
 
-        String schoolName = departmentFormList.getSchoolName();
+        String schoolName = departmentList.getSchoolName();
         ServerResponse<Page<Department>> srDepartmentPage = new ServerResponse<Page<Department>>();
         try {
-            if(!departmentFormList.getKeyword().equalsIgnoreCase("")){
+            if(!departmentList.getKeyword().equalsIgnoreCase("")){
                 srDepartmentPage = departmentService.findAllDepartmentOfSchool(schoolName,
-                        departmentFormList.getKeyword(), sort);
+                        departmentList.getKeyword(), sort);
             }
             else{
                 srDepartmentPage = departmentService.findAllDepartmentOfSchool(schoolName, sort);
@@ -109,7 +111,7 @@ public class DepartmentController {
     }
 
     @GetMapping(path = "/departmentListOfSchool")
-    public ServerResponse<List<Department>> getDepartmentListOfSchool(@Valid @RequestBody DepartmentFormList departmentFormList,
+    public ServerResponse<List<Department>> getDepartmentListOfSchool(@Valid @RequestBody DepartmentList departmentList,
                                                                    BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             //System.out.println(bindingResult.toString());
@@ -122,7 +124,7 @@ public class DepartmentController {
             }
         }
 
-        String schoolName = departmentFormList.getSchoolName();
+        String schoolName = departmentList.getSchoolName();
         ServerResponse<List<Department>> srDepartmentList = new ServerResponse<List<Department>>();
         try {
             srDepartmentList = departmentService.findAllDepartmentOfSchool(schoolName);
@@ -137,11 +139,11 @@ public class DepartmentController {
     }
 
     @GetMapping(path = "/department")
-    public ServerResponse<Department> getDepartment(@Valid @RequestBody DepartmentFormList departmentFormList){
+    public ServerResponse<Department> getDepartment(@Valid @RequestBody DepartmentList departmentList){
         ServerResponse<Department> srDepartment = new ServerResponse<>();
         try {
             srDepartment = departmentService.findDepartmentOfSchoolByName(
-                    departmentFormList.getSchoolName(),departmentFormList.getDepartmentName());
+                    departmentList.getSchoolName(), departmentList.getDepartmentName());
         } catch (SchoolNotFoundException e) {
             //e.printStackTrace();
             srDepartment.setErrorMessage("The specified School name does not match any school");
@@ -169,7 +171,7 @@ public class DepartmentController {
     }
 
     @PostMapping(path = "/departmentSaved")
-    public ServerResponse<Department> postDepartmentSaved(@Valid @RequestBody DepartmentForm departmentForm,
+    public ServerResponse<Department> postDepartmentSaved(@Valid @RequestBody DepartmentSaved departmentSaved,
                                                   BindingResult bindingResult) {
         ServerResponse<Department> srDepartment = new ServerResponse("", "", ResponseCode.BAD_REQUEST, null);
 
@@ -185,9 +187,9 @@ public class DepartmentController {
         }
 
         try {
-            srDepartment = departmentService.saveDepartment(departmentForm.getName(),
-                    departmentForm.getAcronym(), departmentForm.getDescription(),
-                    departmentForm.getOwnerSchoolName());
+            srDepartment = departmentService.saveDepartment(departmentSaved.getName(),
+                    departmentSaved.getAcronym(), departmentSaved.getDescription(),
+                    departmentSaved.getOwnerSchoolName());
             srDepartment.setErrorMessage("The department has been successfully created");
         } catch (DuplicateDepartmentInSchoolException e) {
             srDepartment.setErrorMessage("The specified Department name identify another department " +
@@ -205,7 +207,7 @@ public class DepartmentController {
     }
 
     @PutMapping(path = "/departmentUpdated")
-    public ServerResponse<Department> putDepartmentUpdated(@Valid @RequestBody DepartmentForm departmentForm,
+    public ServerResponse<Department> putDepartmentUpdated(@Valid @RequestBody DepartmentUpdated departmentUpdated,
                                                    BindingResult bindingResult) {
         ServerResponse<Department> srDepartment = new ServerResponse("", "", ResponseCode.BAD_REQUEST, null);
 
@@ -220,10 +222,10 @@ public class DepartmentController {
             }
         }
         try {
-            srDepartment = departmentService.updateDepartment(departmentForm.getDepartmentId(),
-                    departmentForm.getName(),
-                    departmentForm.getAcronym(), departmentForm.getDescription(),
-                    departmentForm.getOwnerSchoolName());
+            srDepartment = departmentService.updateDepartment(departmentUpdated.getDepartmentId(),
+                    departmentUpdated.getName(),
+                    departmentUpdated.getAcronym(), departmentUpdated.getDescription(),
+                    departmentUpdated.getOwnerSchoolName());
             srDepartment.setErrorMessage("The department has been successfully updated");
         } catch (DepartmentNotFoundException e) {
             srDepartment.setErrorMessage("The specified department name does not identify any department in the system");
@@ -239,7 +241,7 @@ public class DepartmentController {
     }
 
     @PutMapping(path = "/departmentNameUpdated")
-    public ServerResponse<Department> putDepartmentNameUpdated(@Valid @RequestBody DepartmentForm departmentForm,
+    public ServerResponse<Department> putDepartmentNameUpdated(@Valid @RequestBody DepartmentNameUpdated departmentNameUpdated,
                                                            BindingResult bindingResult) {
         ServerResponse<Department> srDepartment = new ServerResponse("", "", ResponseCode.BAD_REQUEST, null);
 
@@ -254,8 +256,8 @@ public class DepartmentController {
             }
         }
 
-        String departmentId = departmentForm.getDepartmentId();
-        String newDepartmentName = departmentForm.getName();
+        String departmentId = departmentNameUpdated.getDepartmentId();
+        String newDepartmentName = departmentNameUpdated.getNewDepartmentName();
 
         try {
             srDepartment = departmentService.updateDepartmentName(departmentId, newDepartmentName);

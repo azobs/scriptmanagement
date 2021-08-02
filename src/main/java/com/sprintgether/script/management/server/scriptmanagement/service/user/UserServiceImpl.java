@@ -44,6 +44,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public ServerResponse<User> findUserById(String userId) {
+        //return null;
+        userId = userId.trim();
+        ServerResponse<User> serverResponse = new ServerResponse<>();
+        serverResponse.setResponseCode(ResponseCode.USER_NOT_FOUND);
+        serverResponse.setAssociatedObject(null);
+
+        serverResponse.setAssociatedObject(null);
+        Optional<User> optionalUser = userRepository.findUserById(userId);
+        if(optionalUser.isPresent()){
+            serverResponse.setResponseCode(ResponseCode.USER_FOUND);
+            serverResponse.setAssociatedObject(optionalUser.get());
+        }
+        return serverResponse;
+    }
+
+    @Override
     public ServerResponse<User> saveUser(String username, String password) throws DuplicateUserException {
         username = username.trim();
         password = password.trim();
@@ -97,6 +114,42 @@ public class UserServiceImpl implements UserService {
             serverResponse.setResponseCode(ResponseCode.USER_UPDATED);
             serverResponse.setAssociatedObject(userUpdated);
         }
+        return serverResponse;
+    }
+
+    @Override
+    public ServerResponse<User> updateUsername(String userId, String newUsername)
+            throws UserNotFoundException, DuplicateUserException {
+
+        userId = userId.trim();
+        newUsername = newUsername.trim();
+
+        ServerResponse<User> serverResponse = new ServerResponse<>();
+        serverResponse.setResponseCode(ResponseCode.USER_NOT_UPDATED);
+        serverResponse.setAssociatedObject(null);
+
+        ServerResponse<User> srUserExist = this.findUserById(userId);
+        if(srUserExist.getResponseCode()==ResponseCode.USER_NOT_FOUND){
+            throw new UserNotFoundException("The username specified is not found. Please check it");
+        }
+        User userFound = srUserExist.getAssociatedObject();
+        ServerResponse<User> srUserDuplicate = this.findUserByUsername(newUsername);
+        if(srUserDuplicate.getResponseCode() == ResponseCode.USER_FOUND){
+            User userDuplicate = srUserDuplicate.getAssociatedObject();
+            if(!userFound.getId().equalsIgnoreCase(userDuplicate.getId())){
+                throw new DuplicateUserException("The new username is already used by another " +
+                        "user in the system ");
+            }
+        }
+
+        userFound.setUsername(newUsername);
+        User userUpdated = userRepository.save(userFound);
+
+        serverResponse.setErrorMessage("Username Updated successfully");
+        serverResponse.setResponseCode(ResponseCode.USER_UPDATED);
+        serverResponse.setAssociatedObject(userUpdated);
+
+
         return serverResponse;
     }
 

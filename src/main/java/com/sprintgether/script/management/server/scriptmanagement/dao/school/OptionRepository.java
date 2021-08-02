@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface OptionRepository extends MongoRepository<Option, String> {
+    Optional<Option> findById(String optionId);
     Optional<Option> findByOwnerDepartmentAndName(Department department, String optionName);
     Page<Option> findAllByNameContaining(String keyword, Pageable pageable);
     Page<Option> findAllByOwnerDepartmentAndNameContaining(Department department, String keyword, Pageable pageable);

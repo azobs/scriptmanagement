@@ -42,6 +42,26 @@ public class RoleServiceImpl implements RoleService{
     }
 
     @Override
+    public ServerResponse<Role> findByRoleId(String roleId) {
+        roleId = roleId.trim();
+        ServerResponse<Role> srRole = new ServerResponse<>();
+        Optional<Role> optionalRole = roleRepository.findRoleById(roleId);
+        if(optionalRole.isPresent()){
+            srRole.setErrorMessage("The staff research method has been successfull made");
+            srRole.setResponseCode(ResponseCode.ROLE_FOUND);
+            srRole.setAssociatedObject(optionalRole.get());
+        }
+        else{
+            //Ceci signifie qu'on a pas trouver de role avec le roleName passe en parametre
+            srRole.setErrorMessage("There is no role with the roleName specified");
+            srRole.setMoreDetails("");
+            srRole.setResponseCode(ResponseCode.ROLE_NOT_FOUND);
+            srRole.setAssociatedObject(null);
+        }
+        return srRole;
+    }
+
+    @Override
     public ServerResponse<Role> saveRole(String roleName, String roleAlias, String roleDescription)
             throws DuplicateRoleException {
         roleName = roleName.toLowerCase().trim();
@@ -74,9 +94,10 @@ public class RoleServiceImpl implements RoleService{
     }
 
     @Override
-    public ServerResponse<Role> updateRole(String roleName, String roleAlias, String roleDescription)
+    public ServerResponse<Role> updateRole(String roleNameOrId, String roleAlias, String roleDescription)
             throws RoleNotFoundException {
-        roleName = roleName.toLowerCase().trim();
+        String roleName = roleNameOrId.toLowerCase().trim();
+        roleNameOrId = roleNameOrId.trim();
         roleAlias = roleAlias.trim();
         roleDescription = roleDescription.trim();
 
@@ -85,19 +106,28 @@ public class RoleServiceImpl implements RoleService{
         srRole.setAssociatedObject(null);
 
         ServerResponse<Role> srRoleExist = this.findByRoleName(roleName);
-        if(srRoleExist.getResponseCode()==ResponseCode.ROLE_NOT_FOUND){
-            throw new RoleNotFoundException("The roleName specified is not found. Please check it");
+        ServerResponse<Role> srRoleExist1 = this.findByRoleId(roleNameOrId);
+        if(srRoleExist.getResponseCode()==ResponseCode.ROLE_NOT_FOUND &&
+                srRoleExist1.getResponseCode()==ResponseCode.ROLE_NOT_FOUND){
+            throw new RoleNotFoundException("The roleName or roleId specified is not found. " +
+                    "Please check it");
         }
+        Role roleFound = null;
         if(srRoleExist.getResponseCode()==ResponseCode.ROLE_FOUND){
-            Role roleFound = srRoleExist.getAssociatedObject();
-            roleFound.setRoleAlias(roleAlias);
-            roleFound.setRoleDescription(roleDescription);
-            Role roleUpdated = roleRepository.save(roleFound);
-
-            srRole.setErrorMessage("Role Updated successfully");
-            srRole.setResponseCode(ResponseCode.ROLE_UPDATED);
-            srRole.setAssociatedObject(roleUpdated);
+            roleFound = srRoleExist.getAssociatedObject();
         }
+        else if(srRoleExist1.getResponseCode()==ResponseCode.ROLE_FOUND){
+            roleFound = srRoleExist.getAssociatedObject();
+        }
+
+        roleFound.setRoleAlias(roleAlias);
+        roleFound.setRoleDescription(roleDescription);
+        Role roleUpdated = roleRepository.save(roleFound);
+
+        srRole.setErrorMessage("Role Updated successfully");
+        srRole.setResponseCode(ResponseCode.ROLE_UPDATED);
+        srRole.setAssociatedObject(roleUpdated);
+
         return srRole;
     }
 

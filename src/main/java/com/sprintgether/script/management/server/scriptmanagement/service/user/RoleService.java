@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface RoleService {
     ServerResponse<Role> findByRoleName(String roleName);
+    ServerResponse<Role> findByRoleId(String roleId);
     ServerResponse<Role> saveRole(String roleName, String roleAlias, String roleDescription)
             throws DuplicateRoleException;
     ServerResponse<Role> updateRole(String roleName, String roleAlias, String roleDescription)

@@ -3,8 +3,7 @@ package com.sprintgether.script.management.server.scriptmanagement.controller.Sc
 import com.sprintgether.script.management.server.scriptmanagement.commonused.ResponseCode;
 import com.sprintgether.script.management.server.scriptmanagement.commonused.ServerResponse;
 import com.sprintgether.script.management.server.scriptmanagement.exception.school.*;
-import com.sprintgether.script.management.server.scriptmanagement.form.School.*;
-import com.sprintgether.script.management.server.scriptmanagement.model.school.Course;
+import com.sprintgether.script.management.server.scriptmanagement.form.school.module.*;
 import com.sprintgether.script.management.server.scriptmanagement.model.school.Module;
 import com.sprintgether.script.management.server.scriptmanagement.service.school.ModuleService;
 import org.springframework.data.domain.Page;
@@ -28,24 +27,24 @@ public class ModuleController {
         this.moduleService = moduleService;
     }
 
-    public Pageable getModulePageable(ModuleFormList moduleFormList){
+    public Pageable getModulePageable(ModuleList moduleList){
 
-        Sort.Order order1 = new Sort.Order(moduleFormList.getDirection1().equalsIgnoreCase("ASC")
-                ?Sort.Direction.ASC:Sort.Direction.DESC, moduleFormList.getSortBy1());
+        Sort.Order order1 = new Sort.Order(moduleList.getDirection1().equalsIgnoreCase("ASC")
+                ?Sort.Direction.ASC:Sort.Direction.DESC, moduleList.getSortBy1());
 
-        Sort.Order order2 = new Sort.Order(moduleFormList.getDirection2().equalsIgnoreCase("ASC")
-                ?Sort.Direction.ASC:Sort.Direction.DESC, moduleFormList.getSortBy2());
+        Sort.Order order2 = new Sort.Order(moduleList.getDirection2().equalsIgnoreCase("ASC")
+                ?Sort.Direction.ASC:Sort.Direction.DESC, moduleList.getSortBy2());
 
         List<Sort.Order> orderList = new ArrayList<Sort.Order>();
         orderList.add(order1);
         orderList.add(order2);
-        Pageable sort = PageRequest.of(moduleFormList.getPageNumber(), moduleFormList.getPageSize(), Sort.by(orderList));
+        Pageable sort = PageRequest.of(moduleList.getPageNumber(), moduleList.getPageSize(), Sort.by(orderList));
 
         return sort;
     }
 
     @GetMapping(path = "/modulePageOfCourse")
-    public ServerResponse<Page<Module>> getModulePageOfCourse(@Valid @RequestBody ModuleFormList moduleFormList,
+    public ServerResponse<Page<Module>> getModulePageOfCourse(@Valid @RequestBody ModuleList moduleList,
                                                       BindingResult bindingResult) {
         ServerResponse<Page<Module>> srModulepage = new ServerResponse<>();
         if (bindingResult.hasErrors()) {
@@ -53,27 +52,28 @@ public class ModuleController {
             List<FieldError> errorList = bindingResult.getFieldErrors();
             for (FieldError error : errorList) {
                 return new ServerResponse<Page<Module>>(error.getDefaultMessage(),
-                        "Some form entry are not well filled in the CourseFormList for selection",
+                        "Some form entry are not well filled in the CourseList for selection",
                         ResponseCode.ERROR_IN_FORM_FILLED,
                         null);
             }
         }
 
-        Pageable sort = this.getModulePageable(moduleFormList);
-        String schoolName = moduleFormList.getSchoolName();
-        String departmentName = moduleFormList.getDepartmentName();
-        String optionName = moduleFormList.getOptionName();
-        String levelName = moduleFormList.getLevelName();
-        String courseTitle = moduleFormList.getCourseTitle();
-        String keyword = moduleFormList.getKeyword();
+        Pageable sort = this.getModulePageable(moduleList);
+        String moduleId = moduleList.getModuleId();
+        String schoolName = moduleList.getSchoolName();
+        String departmentName = moduleList.getDepartmentName();
+        String optionName = moduleList.getOptionName();
+        String levelName = moduleList.getLevelName();
+        String courseTitle = moduleList.getCourseTitle();
+        String keyword = moduleList.getKeyword();
 
-        if(!moduleFormList.getKeyword().equalsIgnoreCase("")){
+        if(!moduleList.getKeyword().equalsIgnoreCase("")){
             /***
              * We must make research by keyword
              */
             try {
-                srModulepage = moduleService.findAllModuleOfCourseOutline(schoolName, departmentName,
-                        optionName, levelName, courseTitle, keyword, sort);
+                srModulepage = moduleService.findAllModuleOfCourseOutline(moduleId, schoolName,
+                        departmentName, optionName, levelName, courseTitle, keyword, sort);
 
             } catch (CourseNotFoundException e) {
                 //e.printStackTrace();
@@ -84,8 +84,8 @@ public class ModuleController {
         }
 
         try {
-            srModulepage =  moduleService.findAllModuleOfCourseOutline(schoolName, departmentName,
-                    optionName, levelName, courseTitle, sort);
+            srModulepage =  moduleService.findAllModuleOfCourseOutline(moduleId, schoolName,
+                    departmentName, optionName, levelName, courseTitle, sort);
         } catch (CourseNotFoundException e) {
             //e.printStackTrace();
             srModulepage.setErrorMessage("The course has not found in the system");
@@ -98,40 +98,41 @@ public class ModuleController {
 
 
     @GetMapping(path = "/modulePageOfCourseByType")
-    public ServerResponse<Page<Module>> getModulePageOfCourseByType(@Valid @RequestBody ModuleFormList moduleFormList,
+    public ServerResponse<Page<Module>> getModulePageOfCourseByType(@Valid @RequestBody ModuleList moduleList,
                                                                    BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             //System.out.println(bindingResult.toString());
             List<FieldError> errorList = bindingResult.getFieldErrors();
             for (FieldError error : errorList) {
                 return new ServerResponse<Page<Module>>(error.getDefaultMessage(),
-                        "Some form entry are not well filled in the moduleFormList for save",
+                        "Some form entry are not well filled in the moduleList for save",
                         ResponseCode.ERROR_IN_FORM_FILLED,
                         null);
             }
         }
 
-        Pageable sort = this.getModulePageable(moduleFormList);
-        String schoolName = moduleFormList.getSchoolName();
-        String departmentName = moduleFormList.getDepartmentName();
-        String optionName = moduleFormList.getOptionName();
-        String levelName = moduleFormList.getLevelName();
-        String courseTitle = moduleFormList.getCourseTitle();
-        String moduleType = moduleFormList.getModuleType().trim();
-        String keyword = moduleFormList.getKeyword();
+        Pageable sort = this.getModulePageable(moduleList);
+        String moduleId = moduleList.getModuleId();
+        String schoolName = moduleList.getSchoolName();
+        String departmentName = moduleList.getDepartmentName();
+        String optionName = moduleList.getOptionName();
+        String levelName = moduleList.getLevelName();
+        String courseTitle = moduleList.getCourseTitle();
+        String moduleType = moduleList.getModuleType().trim();
+        String keyword = moduleList.getKeyword();
 
         ServerResponse<Page<Module>> srModulePage = new ServerResponse<>();
         try {
-            if(!moduleFormList.getKeyword().equalsIgnoreCase("")){
+            if(!moduleList.getKeyword().equalsIgnoreCase("")){
                 srModulePage = moduleService.findAllModuleOfCourseOutline(schoolName,
                         departmentName, optionName, levelName, courseTitle, keyword, sort);
             }
             else if(moduleType.trim().equalsIgnoreCase("ALL")){
-                srModulePage = moduleService.findAllModuleOfCourseOutline(schoolName, departmentName,
-                        optionName, levelName, courseTitle, sort);
+                srModulePage = moduleService.findAllModuleOfCourseOutline(moduleId, schoolName,
+                        departmentName, optionName, levelName, courseTitle, sort);
             }
             else{
-                srModulePage = moduleService.findAllModuleOfCourseOutlineByType(schoolName,
+                srModulePage = moduleService.findAllModuleOfCourseOutlineByType(moduleId, schoolName,
                         departmentName, optionName, levelName, courseTitle, moduleType, sort);
             }
         } catch (CourseNotFoundException e) {
@@ -145,35 +146,38 @@ public class ModuleController {
     }
 
     @GetMapping(path = "/moduleListOfCourseByType")
-    public ServerResponse<List<Module>> getModuleListOfCourseByType(@Valid @RequestBody ModuleFormList moduleFormList,
+    public ServerResponse<List<Module>> getModuleListOfCourseByType(@Valid @RequestBody ModuleList moduleList,
                                                                     BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             //System.out.println(bindingResult.toString());
             List<FieldError> errorList = bindingResult.getFieldErrors();
             for (FieldError error : errorList) {
                 return new ServerResponse<List<Module>>(error.getDefaultMessage(),
-                        "Some form entry are not well filled in the moduleFormList for save",
+                        "Some form entry are not well filled in the moduleList for save",
                         ResponseCode.ERROR_IN_FORM_FILLED,
                         null);
             }
         }
 
-        String schoolName = moduleFormList.getSchoolName().toLowerCase().trim();
-        String departmentName = moduleFormList.getDepartmentName().toLowerCase().trim();
-        String optionName = moduleFormList.getOptionName().toLowerCase().trim();
-        String levelName = moduleFormList.getLevelName().toLowerCase().trim();
-        String courseTitle = moduleFormList.getCourseTitle().toLowerCase().trim();
-        String moduleType = moduleFormList.getModuleType().trim();
+        String moduleId = moduleList.getModuleId();
+        String schoolName = moduleList.getSchoolName().toLowerCase().trim();
+        String departmentName = moduleList.getDepartmentName().toLowerCase().trim();
+        String optionName = moduleList.getOptionName().toLowerCase().trim();
+        String levelName = moduleList.getLevelName().toLowerCase().trim();
+        String courseTitle = moduleList.getCourseTitle().toLowerCase().trim();
+        String moduleType = moduleList.getModuleType().trim();
 
         ServerResponse<List<Module>> srModuleList = new ServerResponse<>();
         try {
             if(moduleType.trim().equalsIgnoreCase("ALL")){
-                srModuleList = moduleService.findAllModuleOfCourseOutline(schoolName, departmentName,
-                        optionName, levelName, courseTitle);
+                srModuleList = moduleService.findAllModuleOfCourseOutline(moduleId, schoolName,
+                        departmentName, optionName, levelName, courseTitle,
+                        moduleList.getSortBy1(), moduleList.getDirection1());
             }
             else{
-                srModuleList = moduleService.findAllModuleOfCourseOutlineByType(schoolName,
-                        departmentName, optionName, levelName, courseTitle, moduleType);
+                srModuleList = moduleService.findAllModuleOfCourseOutlineByType(moduleId, schoolName,
+                        departmentName, optionName, levelName, courseTitle, moduleType,
+                        moduleList.getSortBy1(), moduleList.getDirection1());
             }
         } catch (CourseNotFoundException e) {
             //e.printStackTrace();
@@ -186,14 +190,14 @@ public class ModuleController {
     }
 
     @GetMapping(path = "/module")
-    public ServerResponse<Module> getModule(@Valid @RequestBody ModuleFormList moduleFormList){
+    public ServerResponse<Module> getModule(@Valid @RequestBody ModuleList moduleList){
         ServerResponse<Module> srModule = new ServerResponse<>();
-        String schoolName = moduleFormList.getSchoolName();
-        String departmentName = moduleFormList.getDepartmentName();
-        String optionName = moduleFormList.getOptionName();
-        String levelName = moduleFormList.getLevelName();
-        String courseTitle = moduleFormList.getCourseTitle();
-        String moduleTitle = moduleFormList.getModuleTitle();
+        String schoolName = moduleList.getSchoolName();
+        String departmentName = moduleList.getDepartmentName();
+        String optionName = moduleList.getOptionName();
+        String levelName = moduleList.getLevelName();
+        String courseTitle = moduleList.getCourseTitle();
+        String moduleTitle = moduleList.getModuleTitle();
         try {
             srModule = moduleService.findModuleOfCourseOutlineByTitle(schoolName, departmentName,
                     optionName, levelName, courseTitle, moduleTitle);
@@ -227,7 +231,7 @@ public class ModuleController {
     }
 
     @PostMapping(path = "/moduleSaved")
-    public ServerResponse<Module> postModuleSaved(@Valid @RequestBody ModuleForm moduleForm,
+    public ServerResponse<Module> postModuleSaved(@Valid @RequestBody ModuleSaved moduleSaved,
                                                   BindingResult bindingResult) {
         ServerResponse<Module> srModule = new ServerResponse("", "",
                 ResponseCode.BAD_REQUEST, null);
@@ -237,25 +241,26 @@ public class ModuleController {
             List<FieldError> errorList = bindingResult.getFieldErrors();
             for (FieldError error : errorList) {
                 return new ServerResponse<Module>(error.getDefaultMessage(),
-                        "Some entry are not well filled in the moduleForm for save",
+                        "Some entry are not well filled in the moduleSaved for save",
                         ResponseCode.ERROR_IN_FORM_FILLED,
                         null);
             }
         }
 
-        String title = moduleForm.getTitle();
-        int moduleOrder = moduleForm.getModuleOrder();
-        String moduleType = moduleForm.getModuleType();
-        String courseTitle = moduleForm.getCourseTitle();
-        String levelName = moduleForm.getOwnerLevel();
-        String optionName = moduleForm.getOwnerOption();
-        String departmentName = moduleForm.getOwnerDepartment();
-        String schoolName = moduleForm.getOwnerSchool();
+        String title = moduleSaved.getTitle();
+        int moduleOrder = moduleSaved.getModuleOrder();
+        String moduleType = moduleSaved.getModuleType();
+        String courseId = moduleSaved.getCourseId();
+        String courseTitle = moduleSaved.getCourseTitle();
+        String levelName = moduleSaved.getOwnerLevel();
+        String optionName = moduleSaved.getOwnerOption();
+        String departmentName = moduleSaved.getOwnerDepartment();
+        String schoolName = moduleSaved.getOwnerSchool();
 
 
         try {
 
-            srModule = moduleService.saveModule(title, moduleOrder, moduleType, courseTitle, levelName, optionName, departmentName, schoolName);
+            srModule = moduleService.saveModule(title, moduleOrder, moduleType, courseId, courseTitle, levelName, optionName, departmentName, schoolName);
             srModule.setErrorMessage("The course has beenh successfully created");
         }  catch (CourseNotFoundException e) {
             //e.printStackTrace();
@@ -274,7 +279,7 @@ public class ModuleController {
 
 
     @PutMapping(path = "/moduleUpdated")
-    public ServerResponse<Module> postModuleUpdated(@Valid @RequestBody ModuleForm moduleForm,
+    public ServerResponse<Module> postModuleUpdated(@Valid @RequestBody ModuleUpdated moduleUpdated,
                                                   BindingResult bindingResult) {
         ServerResponse<Module> srModule = new ServerResponse("", "",
                 ResponseCode.BAD_REQUEST, null);
@@ -284,21 +289,21 @@ public class ModuleController {
             List<FieldError> errorList = bindingResult.getFieldErrors();
             for (FieldError error : errorList) {
                 return new ServerResponse<Module>(error.getDefaultMessage(),
-                        "Some entry are not well filled in the moduleForm for save",
+                        "Some entry are not well filled in the moduleSaved for save",
                         ResponseCode.ERROR_IN_FORM_FILLED,
                         null);
             }
         }
 
-        String moduleId = moduleForm.getModuleId();
-        String title = moduleForm.getTitle();
-        int moduleOrder = moduleForm.getModuleOrder();
-        String moduleType = moduleForm.getModuleType();
-        String courseTitle = moduleForm.getCourseTitle();
-        String levelName = moduleForm.getOwnerLevel();
-        String optionName = moduleForm.getOwnerOption();
-        String departmentName = moduleForm.getOwnerDepartment();
-        String schoolName = moduleForm.getOwnerSchool();
+        String moduleId = moduleUpdated.getModuleId();
+        String title = moduleUpdated.getTitle();
+        int moduleOrder = moduleUpdated.getModuleOrder();
+        String moduleType = moduleUpdated.getModuleType();
+        String courseTitle = moduleUpdated.getCourseTitle();
+        String levelName = moduleUpdated.getOwnerLevel();
+        String optionName = moduleUpdated.getOwnerOption();
+        String departmentName = moduleUpdated.getOwnerDepartment();
+        String schoolName = moduleUpdated.getOwnerSchool();
 
         try {
             srModule = moduleService.updateModule(moduleId, title, moduleOrder, moduleType,
@@ -321,7 +326,7 @@ public class ModuleController {
 
 
     @PutMapping(path = "/moduleTitleUpdated")
-    public ServerResponse<Module> postModuleTitleUpdated(@Valid @RequestBody ModuleForm moduleForm,
+    public ServerResponse<Module> postModuleTitleUpdated(@Valid @RequestBody ModuleTitleUpdated moduleTitleUpdated,
                                                     BindingResult bindingResult) {
         ServerResponse<Module> srModule = new ServerResponse("", "",
                 ResponseCode.BAD_REQUEST, null);
@@ -331,14 +336,14 @@ public class ModuleController {
             List<FieldError> errorList = bindingResult.getFieldErrors();
             for (FieldError error : errorList) {
                 return new ServerResponse<Module>(error.getDefaultMessage(),
-                        "Some entry are not well filled in the moduleForm for save",
+                        "Some entry are not well filled in the moduleSaved for save",
                         ResponseCode.ERROR_IN_FORM_FILLED,
                         null);
             }
         }
 
-        String moduleId = moduleForm.getModuleId();
-        String newTitle = moduleForm.getTitle();
+        String moduleId = moduleTitleUpdated.getModuleId();
+        String newTitle = moduleTitleUpdated.getNewModuleTitle();
 
         try {
             srModule = moduleService.updateModuleTitle(moduleId, newTitle);
@@ -359,7 +364,7 @@ public class ModuleController {
     }
 
     @PostMapping(path = "/addContentToModule")
-    public ServerResponse<Module> postAddContentToModule(@Valid @RequestBody ModuleContentForm moduleContentForm,
+    public ServerResponse<Module> postAddContentToModule(@Valid @RequestBody ModuleContentSaved moduleContentSaved,
                                                          BindingResult bindingResult) {
         ServerResponse<Module> srModule = new ServerResponse("", "", ResponseCode.BAD_REQUEST, null);
 
@@ -368,23 +373,24 @@ public class ModuleController {
             List<FieldError> errorList = bindingResult.getFieldErrors();
             for (FieldError error : errorList) {
                 return new ServerResponse<Module>(error.getDefaultMessage(),
-                        "Some entry are not well filled in the moduleContentForm for save",
+                        "Some entry are not well filled in the moduleContentSaved for save",
                         ResponseCode.ERROR_IN_FORM_FILLED,
                         null);
             }
         }
 
-        String value = moduleContentForm.getValue();
-        String contentType = moduleContentForm.getContentType();
-        String schoolName = moduleContentForm.getOwnerSchool();
-        String departmentName = moduleContentForm.getOwnerDepartment();
-        String optionName = moduleContentForm.getOwnerOption();
-        String levelName = moduleContentForm.getOwnerLevel();
-        String courseTitle = moduleContentForm.getCourseTitle();
-        String moduleTitle = moduleContentForm.getModuleTitle();
+        String value = moduleContentSaved.getValue();
+        String contentType = moduleContentSaved.getContentType();
+        String moduleId = moduleContentSaved.getModuleId();
+        String schoolName = moduleContentSaved.getOwnerSchool();
+        String departmentName = moduleContentSaved.getOwnerDepartment();
+        String optionName = moduleContentSaved.getOwnerOption();
+        String levelName = moduleContentSaved.getOwnerLevel();
+        String courseTitle = moduleContentSaved.getCourseTitle();
+        String moduleTitle = moduleContentSaved.getModuleTitle();
 
         try {
-            srModule = moduleService.addContentToModule(value, contentType, schoolName,
+            srModule = moduleService.addContentToModule(value, contentType, moduleId, schoolName,
                     departmentName, optionName, levelName, courseTitle, moduleTitle);
             srModule.setErrorMessage("The content has been successfully added to the module");
         } catch (ModuleNotFoundException e) {
@@ -398,7 +404,7 @@ public class ModuleController {
     }
 
     @PutMapping(path = "/updateContentToModule")
-    public ServerResponse<Module> putUpdateContentToModule(@Valid @RequestBody ModuleContentForm moduleContentForm,
+    public ServerResponse<Module> putUpdateContentToModule(@Valid @RequestBody ModuleContentUpdated moduleContentUpdated,
                                                          BindingResult bindingResult) {
         ServerResponse<Module> srModule = new ServerResponse("", "", ResponseCode.BAD_REQUEST, null);
 
@@ -407,23 +413,25 @@ public class ModuleController {
             List<FieldError> errorList = bindingResult.getFieldErrors();
             for (FieldError error : errorList) {
                 return new ServerResponse<Module>(error.getDefaultMessage(),
-                        "Some entry are not well filled in the moduleContentForm for save",
+                        "Some entry are not well filled in the moduleContentSaved for save",
                         ResponseCode.ERROR_IN_FORM_FILLED,
                         null);
             }
         }
 
-        String value = moduleContentForm.getValue();
-        String contentId = moduleContentForm.getContentId();
-        String schoolName = moduleContentForm.getOwnerSchool();
-        String departmentName = moduleContentForm.getOwnerDepartment();
-        String optionName = moduleContentForm.getOwnerOption();
-        String levelName = moduleContentForm.getOwnerLevel();
-        String courseTitle = moduleContentForm.getCourseTitle();
-        String moduleTitle = moduleContentForm.getModuleTitle();
+        String value = moduleContentUpdated.getValue();
+        String contentId = moduleContentUpdated.getContentId();
+        String moduleId = moduleContentUpdated.getModuleId();
+        String schoolName = moduleContentUpdated.getOwnerSchool();
+        String departmentName = moduleContentUpdated.getOwnerDepartment();
+        String optionName = moduleContentUpdated.getOwnerOption();
+        String levelName = moduleContentUpdated.getOwnerLevel();
+        String courseTitle = moduleContentUpdated.getCourseTitle();
+        String moduleTitle = moduleContentUpdated.getModuleTitle();
 
         try {
-            srModule = moduleService.updateContentToCourse(contentId, value, schoolName, departmentName, optionName, levelName, courseTitle, moduleTitle);
+            srModule = moduleService.updateContentToCourse(contentId, value, moduleId, schoolName,
+                    departmentName, optionName, levelName, courseTitle, moduleTitle);
             srModule.setErrorMessage("The content has been successfully added to the module");
         } catch (ModuleNotFoundException e) {
             //e.printStackTrace();
@@ -442,7 +450,7 @@ public class ModuleController {
 
 
     @PostMapping(path = "/removeContentToModule")
-    public ServerResponse<Module> postRemoveContentToModule(@Valid @RequestBody ModuleContentForm moduleContentForm,
+    public ServerResponse<Module> postRemoveContentToModule(@Valid @RequestBody ModuleContentDeleted moduleContentDeleted,
                                                             BindingResult bindingResult) {
         ServerResponse<Module> srModule = new ServerResponse("", "", ResponseCode.BAD_REQUEST, null);
 
@@ -457,16 +465,17 @@ public class ModuleController {
             }
         }
 
-        String contentId = moduleContentForm.getContentId();
-        String schoolName = moduleContentForm.getOwnerSchool();
-        String departmentName = moduleContentForm.getOwnerDepartment();
-        String optionName = moduleContentForm.getOwnerOption();
-        String levelName = moduleContentForm.getOwnerLevel();
-        String courseTitle = moduleContentForm.getCourseTitle();
-        String moduleTitle = moduleContentForm.getModuleTitle();
+        String contentId = moduleContentDeleted.getContentId();
+        String moduleId = moduleContentDeleted.getModuleId();
+        String schoolName = moduleContentDeleted.getOwnerSchool();
+        String departmentName = moduleContentDeleted.getOwnerDepartment();
+        String optionName = moduleContentDeleted.getOwnerOption();
+        String levelName = moduleContentDeleted.getOwnerLevel();
+        String courseTitle = moduleContentDeleted.getCourseTitle();
+        String moduleTitle = moduleContentDeleted.getModuleTitle();
 
         try {
-            srModule = moduleService.removeContentToModule(contentId, schoolName,
+            srModule = moduleService.removeContentToModule(contentId, moduleId, schoolName,
                     departmentName, optionName, levelName, courseTitle, moduleTitle);
             srModule.setErrorMessage("The content has been successfully removed to the module");
         } catch (ContentNotFoundException e) {

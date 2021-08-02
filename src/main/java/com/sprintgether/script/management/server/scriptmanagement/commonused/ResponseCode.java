@@ -105,6 +105,53 @@ public  class ResponseCode {
     public static final int MODULE_UPDATED = 186;
     public static final int MODULE_NOT_DELETED = 187;
     public static final int MODULE_DELETED = 188;
+    //Concerning Chapter objet
+    public static final int CHAPTER_NOT_FOUND = 189;
+    public static final int CHAPTER_FOUND = 190;
+    public static final int CHAPTER_NOT_CREATED = 191;
+    public static final int CHAPTER_CREATED = 192;
+    public static final int CHAPTER_NOT_UPDATED = 193;
+    public static final int CHAPTER_UPDATED = 194;
+    public static final int CHAPTER_NOT_DELETED = 195;
+    public static final int CHAPTER_DELETED = 196;
+    //Concerning Section objet
+    public static final int SECTION_NOT_FOUND = 197;
+    public static final int SECTION_FOUND = 198;
+    public static final int SECTION_NOT_CREATED = 199;
+    public static final int SECTION_CREATED = 200;
+    public static final int SECTION_NOT_UPDATED = 201;
+    public static final int SECTION_UPDATED = 202;
+    public static final int SECTION_NOT_DELETED = 203;
+    public static final int SECTION_DELETED = 204;
+    //Concerning SubSection objet
+    public static final int SUBSECTION_NOT_FOUND = 205;
+    public static final int SUBSECTION_FOUND = 206;
+    public static final int SUBSECTION_NOT_CREATED = 207;
+    public static final int SUBSECTION_CREATED = 208;
+    public static final int SUBSECTION_NOT_UPDATED = 209;
+    public static final int SUBSECTION_UPDATED = 210;
+    public static final int SUBSECTION_NOT_DELETED = 211;
+    public static final int SUBSECTION_DELETED = 212;
+    //Concerning Paragraph objet
+    public static final int PARAGRAPH_NOT_FOUND = 205;
+    public static final int PARAGRAPH_FOUND = 206;
+    public static final int PARAGRAPH_NOT_CREATED = 207;
+    public static final int PARAGRAPH_CREATED = 208;
+    public static final int PARAGRAPH_NOT_UPDATED = 209;
+    public static final int PARAGRAPH_UPDATED = 210;
+    public static final int PARAGRAPH_NOT_DELETED = 211;
+    public static final int PARAGRAPH_DELETED = 212;
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -147,6 +194,9 @@ public  class ResponseCode {
     public static final int EXCEPTION_COURSE_DUPLICATED = 632;
     public static final int EXCEPTION_MOUDULE_DUPLICATED = 633;
     public static final int EXCEPTION_MODULE_FOUND = 634;
+    public static final int EXCEPTION_CHAPTER_FOUND = 635;
+    public static final int EXCEPTION_SECTION_FOUND = 636;
+    public static final int EXCEPTION_SUBSECTION_FOUND = 637;
 
     public static final int ERROR_IN_FORM_FILLED = 800;
 

@@ -25,7 +25,7 @@ public class SubSection {
      */
     @DBRef
     List<Content> listofContent = new ArrayList<>();
-    EnumCoursePartType subsectionType;
+    EnumCoursePartType subSectionType;
     @DBRef
     Section ownerSection;
 
