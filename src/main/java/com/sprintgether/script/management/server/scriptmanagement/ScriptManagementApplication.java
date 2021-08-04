@@ -1,23 +1,15 @@
 package com.sprintgether.script.management.server.scriptmanagement;
 
+import com.sprintgether.script.management.server.scriptmanagement.dao.program.*;
 import com.sprintgether.script.management.server.scriptmanagement.dao.school.*;
 import com.sprintgether.script.management.server.scriptmanagement.dao.user.RoleRepository;
 import com.sprintgether.script.management.server.scriptmanagement.dao.user.StaffRepository;
 import com.sprintgether.script.management.server.scriptmanagement.dao.user.TokenRepository;
 import com.sprintgether.script.management.server.scriptmanagement.dao.user.UserRepository;
-import com.sprintgether.script.management.server.scriptmanagement.model.school.*;
-import com.sprintgether.script.management.server.scriptmanagement.model.user.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Stream;
 
 @SpringBootApplication
 public class ScriptManagementApplication {

@@ -22,8 +22,5 @@ public class SchoolList {
         this.sortBy1 = "name";
         this.direction2 = "ASC";
         this.sortBy2 = "acronym";
-        this.schoolName = "";
-        this.instName = "";
-        this.keyword = "";
     }
 }

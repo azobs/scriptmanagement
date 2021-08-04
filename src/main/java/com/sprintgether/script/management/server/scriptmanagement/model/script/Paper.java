@@ -1,6 +1,6 @@
 package com.sprintgether.script.management.server.scriptmanagement.model.script;
 
-import com.sprintgether.script.management.server.scriptmanagement.model.school.Course;
+import com.sprintgether.script.management.server.scriptmanagement.model.program.Course;
 import com.sprintgether.script.management.server.scriptmanagement.model.user.Staff;
 import lombok.Data;
 import lombok.NoArgsConstructor;

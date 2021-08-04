@@ -192,11 +192,16 @@ public  class ResponseCode {
     public static final int EXCEPTION_OPTION_DUPLICATED = 630;
     public static final int EXCEPTION_LEVEL_DUPLICATED = 631;
     public static final int EXCEPTION_COURSE_DUPLICATED = 632;
-    public static final int EXCEPTION_MOUDULE_DUPLICATED = 633;
+    public static final int EXCEPTION_MODULE_DUPLICATED = 633;
     public static final int EXCEPTION_MODULE_FOUND = 634;
     public static final int EXCEPTION_CHAPTER_FOUND = 635;
     public static final int EXCEPTION_SECTION_FOUND = 636;
     public static final int EXCEPTION_SUBSECTION_FOUND = 637;
+    public static final int EXCEPTION_CHAPTER_DUPLICATED = 638;
+    public static final int EXCEPTION_SECTION_DUPLICATED = 639;
+    public static final int EXCEPTION_SUBSECTION_DUPLICATED = 640;
+    public static final int EXCEPTION_PARAGRAPH_DUPLICATED = 641;
+    public static final int EXCEPTION_PARAGRAPH_FOUND = 642;
 
     public static final int ERROR_IN_FORM_FILLED = 800;
 

@@ -1,10 +1,9 @@
 package com.sprintgether.script.management.server.scriptmanagement.model.script;
 
-import com.sprintgether.script.management.server.scriptmanagement.model.school.*;
+import com.sprintgether.script.management.server.scriptmanagement.model.program.*;
 import com.sprintgether.script.management.server.scriptmanagement.model.user.Staff;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.el.stream.Optional;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;

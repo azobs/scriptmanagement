@@ -11,7 +11,7 @@ import javax.validation.constraints.Size;
 @Data
 @NoArgsConstructor
 public class InstitutionSaved {
-    String institutionId;
+
     @NotNull(message = "The institution name cannot be null")
     @NotBlank(message = "The institution name cannot be blank caracter")
     @NotEmpty(message = "The institution name cannot be empty")
