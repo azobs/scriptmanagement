@@ -29,23 +29,13 @@ public class ChapterServiceImpl implements ChapterService {
     ContentRepository contentRepository;
     ModuleService moduleService;
     CourseService courseService;
-    LevelService levelService;
-    OptionService optionService;
-    DepartmentService departmentService;
-    SchoolService schoolService;
 
     public ChapterServiceImpl(ChapterRepository chapterRepository, ContentRepository contentRepository,
-                              ModuleService moduleService, CourseService courseService,
-                              LevelService levelService, OptionService optionService,
-                              DepartmentService departmentService, SchoolService schoolService) {
+                              ModuleService moduleService, CourseService courseService) {
         this.chapterRepository = chapterRepository;
         this.contentRepository = contentRepository;
         this.moduleService = moduleService;
         this.courseService = courseService;
-        this.levelService = levelService;
-        this.optionService = optionService;
-        this.departmentService = departmentService;
-        this.schoolService = schoolService;
     }
 
     @Override
@@ -320,6 +310,23 @@ public class ChapterServiceImpl implements ChapterService {
         srChapterList.setAssociatedObject(listofChapter);
 
         return srChapterList;
+    }
+
+    @Override
+    public boolean isChapterofModule(String chapterId, String moduleId)
+            throws ModuleNotFoundException {
+
+        ServerResponse<List<Chapter>> srListofChapterofModule =
+                this.findAllChapterOfModule(moduleId, null, null,
+                        null, null, null, null,
+                        "chapterOrder", "ASC");
+        if(srListofChapterofModule.getResponseCode() == ResponseCode.NORMAL_RESPONSE){
+            List<Chapter> listofChapterofModule = srListofChapterofModule.getAssociatedObject();
+            for(Chapter chapter : listofChapterofModule){
+                if(chapter.getId().equalsIgnoreCase(chapterId)) return true;
+            }
+        }
+        return false;
     }
 
     @Override

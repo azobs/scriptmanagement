@@ -24,7 +24,7 @@ public class Question {
      * for any course.
      */
     @DBRef
-    Staff ownerQuestion;
+    Staff ownerStaff;
     /******
      * A question can concerned a paragraph, a subsection, a section, a module, a chapter or
      * a whole course.
@@ -76,16 +76,25 @@ public class Question {
     @DBRef
     List<Content> listofContent = new ArrayList<>();
 
+    /****************************************************
+     * A question can be related to a problem. In that fact
+     * the question can be display if and only if the problem will be
+     * This field can be null because all the question ne 
+     */
+    @DBRef
+    Problem concernedProblem;
+
+
 
 
     public Question(EnumQuestionType questionType, EnumLevelofDifficulty levelofDifficulty,
-                    Staff ownerQuestion, Course concernedCourse, Module concernedModule,
+                    Staff ownerStaff, Course concernedCourse, Module concernedModule,
                     Chapter concernedChapter, Section concernedSection, SubSection concernedSubSection,
                     Paragraph concernedParagraph, List<Proposition> listofProposition,
                     List<Indication> listofIndication, List<Content> listofContent) {
         this.questionType = questionType;
         this.levelofDifficulty = levelofDifficulty;
-        this.ownerQuestion = ownerQuestion;
+        this.ownerStaff = ownerStaff;
         this.concernedCourse = concernedCourse;
         this.concernedModule = concernedModule;
         this.concernedChapter = concernedChapter;

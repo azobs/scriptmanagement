@@ -77,6 +77,9 @@ public interface SubSectionService {
                                                                 String direction)
             throws SectionNotFoundException;
 
+    boolean isSubSectionofSection(String subSectionId, String sectionId)
+            throws SectionNotFoundException;
+
     ServerResponse<List<SubSection>> findAllSubSectionOfSectionByType(String sectionId,
                                                                       String schoolName,
                                                                       String departmentName,

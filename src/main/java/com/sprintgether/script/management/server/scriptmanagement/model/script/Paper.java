@@ -22,7 +22,7 @@ public class Paper {
     @DBRef
     Course concernedCourse;
     @DBRef
-    Staff ownerPaper;
+    Staff ownerStaff;
     @DBRef
     List<Question> listofQuestion = new ArrayList<Question>();
     @DBRef
@@ -30,11 +30,11 @@ public class Paper {
     @DBRef
     List<Indication> listofIndication = new ArrayList<Indication>();
 
-    public Paper(String title, EnumPaperType paperType, Course concernedCourse, Staff ownerPaper) {
+    public Paper(String title, EnumPaperType paperType, Course concernedCourse, Staff ownerStaff) {
         this.title = title;
         this.paperType = paperType;
         this.concernedCourse = concernedCourse;
-        this.ownerPaper = ownerPaper;
+        this.ownerStaff = ownerStaff;
     }
 
     @Override

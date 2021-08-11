@@ -82,6 +82,9 @@ public interface ParagraphService {
                                                                 String direction)
             throws SubSectionNotFoundException;
 
+    boolean isParagraphofSubSection(String paragraphId, String subSectionId)
+            throws SubSectionNotFoundException;
+
     ServerResponse<List<Paragraph>> findAllParagraphOfSubSectionByType(String subSectionId,
                                                                       String schoolName,
                                                                       String departmentName,

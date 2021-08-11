@@ -1,5 +1,6 @@
 package com.sprintgether.script.management.server.scriptmanagement.model.script;
 
+import com.sprintgether.script.management.server.scriptmanagement.model.user.Staff;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
@@ -15,11 +16,13 @@ import java.util.List;
 public class Proposition {
     @Id
     String id;
-    Boolean valid;
+    boolean valid;
+    @DBRef
+    Staff ownerStaff;
     @DBRef
     List<Content> listofContent = new ArrayList<>();
 
-    public Proposition(Boolean valid, List<Content> listofContent) {
+    public Proposition(boolean valid, List<Content> listofContent) {
         this.valid = valid;
         this.listofContent = listofContent;
     }

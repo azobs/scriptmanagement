@@ -314,6 +314,22 @@ public class SectionServiceImpl implements SectionService {
     }
 
     @Override
+    public boolean isSectionofChapter(String sectionId, String chapterId)
+            throws ChapterNotFoundException {
+        ServerResponse<List<Section>> srListofSectionofChapter =
+                this.findAllSectionOfChapter(chapterId, null, null,
+                        null, null, null, null,
+                        null, "sectionOrder", "ASC");
+        if(srListofSectionofChapter.getResponseCode() == ResponseCode.NORMAL_RESPONSE){
+            List<Section> listofSectionofChapter = srListofSectionofChapter.getAssociatedObject();
+            for(Section section : listofSectionofChapter){
+                if(section.getId().equalsIgnoreCase(sectionId)) return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public ServerResponse<List<Section>> findAllSectionOfChapterByType(String chapterId,
                                                                        String schoolName,
                                                                        String departmentName,

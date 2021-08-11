@@ -35,6 +35,7 @@ public class ModuleServiceImpl implements ModuleService {
         this.courseService = courseService;
     }
 
+
     @Override
     public ServerResponse<Module> findModuleOfCourseOutlineById(String moduleId) {
         moduleId = moduleId.trim();
@@ -274,13 +275,30 @@ public class ModuleServiceImpl implements ModuleService {
             }
         }
 
-        srModuleList.setErrorMessage("The module list of courseOutline has been successfully listed");
+        srModuleList.setErrorMessage("The module list of courseOutline has been " +
+                "successfully listed");
         srModuleList.setResponseCode(ResponseCode.NORMAL_RESPONSE);
         srModuleList.setAssociatedObject(listofModule);
 
         return srModuleList;
     }
 
+    @Override
+    public boolean isModuleofCourse(String moduleId, String courseId)
+            throws CourseNotFoundException {
+
+        ServerResponse<List<Module>> srListofModuleofCourse =
+                this.findAllModuleOfCourseOutline(courseId, null,
+                        null, null, null, null,
+                        "moduleOrder", "ASC");
+        if(srListofModuleofCourse.getResponseCode() == ResponseCode.NORMAL_RESPONSE){
+            List<Module> listofModuleofCourse = srListofModuleofCourse.getAssociatedObject();
+            for(Module module : listofModuleofCourse){
+                if(module.getId().equalsIgnoreCase(moduleId)) return true;
+            }
+        }
+        return false;
+    }
 
     @Override
     public ServerResponse<Page<Module>> findAllModuleOfCourseOutlineByType(String courseId,

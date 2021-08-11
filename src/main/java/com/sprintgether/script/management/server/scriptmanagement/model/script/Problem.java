@@ -24,7 +24,7 @@ public class Problem {
      * for any course.
      */
     @DBRef
-    Staff ownerProblem;
+    Staff ownerStaff;
     /******
      * A question can concerned a paragraph, a subsection, a section, a chapter or
      * a whole course. Refer to question class to complete explanation about those field.
@@ -59,14 +59,14 @@ public class Problem {
     @DBRef
     List<Indication> listofIndication = new ArrayList<Indication>();
 
-    public Problem(EnumProblemType problemType, EnumLevelofDifficulty levelofDifficulty, Staff ownerProblem,
-                   Course concernedCourse,
-                   Module concernedModule, Chapter concernedChapter, Section concernedSection,
-                   SubSection concernedSubSection, Paragraph concernedParagraph, List<Content> listofContent,
+    public Problem(EnumProblemType problemType, EnumLevelofDifficulty levelofDifficulty,
+                   Staff ownerStaff, Course concernedCourse, Module concernedModule,
+                   Chapter concernedChapter, Section concernedSection, SubSection concernedSubSection,
+                   Paragraph concernedParagraph, List<Content> listofContent,
                    List<Question> listofQuestion, List<Indication> listofIndication) {
         this.problemType = problemType;
         this.levelofDifficulty = levelofDifficulty;
-        this.ownerProblem = ownerProblem;
+        this.ownerStaff = ownerStaff;
         this.concernedCourse = concernedCourse;
         this.concernedModule = concernedModule;
         this.concernedChapter = concernedChapter;

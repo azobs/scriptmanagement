@@ -1,5 +1,6 @@
 package com.sprintgether.script.management.server.scriptmanagement.model.script;
 
+import com.sprintgether.script.management.server.scriptmanagement.model.user.Staff;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
@@ -17,6 +18,8 @@ public class Indication {
     String id;
     @DBRef
     List<Content> listofContent = new ArrayList<>();
+    @DBRef
+    Staff ownerStaff;
 
     public Indication(List<Content> listofContent) {
         this.listofContent = listofContent;

@@ -72,6 +72,8 @@ public interface SectionService {
                                                          String direction)
             throws ChapterNotFoundException;
 
+    boolean isSectionofChapter(String sectionId, String chapterId) throws ChapterNotFoundException;
+
     ServerResponse<List<Section>> findAllSectionOfChapterByType(String chapterId,
                                                                String schoolName,
                                                                String departmentName,

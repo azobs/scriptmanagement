@@ -393,6 +393,24 @@ public class ParagraphServiceImpl implements ParagraphService {
     }
 
     @Override
+    public boolean isParagraphofSubSection(String paragraphId, String subSectionId)
+            throws SubSectionNotFoundException {
+        ServerResponse<List<Paragraph>> srListofParagraphofSubSection =
+                this.findAllParagraphOfSubSection(subSectionId, null,
+                        null, null, null, null,
+                        null, null, null, null,
+                        "paragraphOrder", "ASC");
+        if(srListofParagraphofSubSection.getResponseCode() == ResponseCode.NORMAL_RESPONSE){
+            List<Paragraph> listofParagraphofSubsection =
+                    srListofParagraphofSubSection.getAssociatedObject();
+            for(Paragraph paragraph : listofParagraphofSubsection){
+                if(paragraph.getId().equalsIgnoreCase(paragraphId)) return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public ServerResponse<List<Paragraph>> findAllParagraphOfSubSectionByType(String subSectionId,
                                                                               String schoolName,
                                                                               String departmentName,

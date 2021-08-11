@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface ChapterService {
+
     ServerResponse<Chapter> findChapterOfModuleById(String chapterId);
 
     ServerResponse<Chapter> findChapterOfModuleByTitle(String schoolName,
@@ -65,6 +66,8 @@ public interface ChapterService {
                                                          String sortBy,
                                                          String direction)
             throws ModuleNotFoundException;
+
+    boolean isChapterofModule(String chapterId, String moduleId) throws ModuleNotFoundException;
 
     ServerResponse<List<Chapter>> findAllChapterOfModuleByType(String moduleId,
                                                                String schoolName,

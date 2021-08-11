@@ -347,6 +347,23 @@ public class SubSectionServiceImpl implements SubSectionService {
     }
 
     @Override
+    public boolean isSubSectionofSection(String subSectionId, String sectionId)
+            throws SectionNotFoundException {
+        ServerResponse<List<SubSection>> srListofSubSectionofSection =
+                this.findAllSubSectionOfSection(sectionId, null, null,
+                        null, null, null, null,
+                        null, null, "subSectionOrder", "ASC");
+        if(srListofSubSectionofSection.getResponseCode() == ResponseCode.NORMAL_RESPONSE){
+            List<SubSection> listofSubSectionofSection =
+                    srListofSubSectionofSection.getAssociatedObject();
+            for(SubSection subSection : listofSubSectionofSection){
+                if(subSection.getId().equalsIgnoreCase(subSectionId)) return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public ServerResponse<List<SubSection>> findAllSubSectionOfSectionByType(String sectionId,
                                                                              String schoolName,
                                                                              String departmentName,
