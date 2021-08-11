@@ -7,6 +7,7 @@ import com.sprintgether.script.management.server.scriptmanagement.exception.prog
 import com.sprintgether.script.management.server.scriptmanagement.exception.program.DuplicateCourseInLevelException;
 import com.sprintgether.script.management.server.scriptmanagement.exception.program.StaffAlreadySetToCourseException;
 import com.sprintgether.script.management.server.scriptmanagement.exception.school.*;
+import com.sprintgether.script.management.server.scriptmanagement.exception.script.ContentNotBelongingToException;
 import com.sprintgether.script.management.server.scriptmanagement.exception.user.StaffNotFoundException;
 import com.sprintgether.script.management.server.scriptmanagement.form.program.course.*;
 import com.sprintgether.script.management.server.scriptmanagement.model.program.*;
@@ -507,7 +508,7 @@ public class CourseController {
             srCourse.setResponseCode(ResponseCode.EXCEPTION_COURSE_FOUND);
             srCourse.setErrorMessage("There is problem during the creation of content");
             srCourse.setMoreDetails(e.getMessage());
-        } catch (ContentNotFoundException e) {
+        } catch (ContentNotBelongingToException e) {
             //e.printStackTrace();
             srCourse.setResponseCode(ResponseCode.EXCEPTION_CONTENT_FOUND);
             srCourse.setErrorMessage("The content id does not match any content in the system");
@@ -545,7 +546,7 @@ public class CourseController {
             srCourse.setResponseCode(ResponseCode.EXCEPTION_CONTENT_ADDED);
             srCourse.setErrorMessage("There is proble during the creation of content");
             srCourse.setMoreDetails(e.getMessage());
-        } catch (ContentNotFoundException e) {
+        } catch (ContentNotBelongingToException e) {
             //e.printStackTrace();
             srCourse.setResponseCode(ResponseCode.EXCEPTION_CONTENT_FOUND);
             srCourse.setErrorMessage("The content id does not match any content in the system");

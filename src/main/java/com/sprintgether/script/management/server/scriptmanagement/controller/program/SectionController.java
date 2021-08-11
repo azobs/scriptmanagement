@@ -4,6 +4,7 @@ import com.sprintgether.script.management.server.scriptmanagement.commonused.Res
 import com.sprintgether.script.management.server.scriptmanagement.commonused.ServerResponse;
 import com.sprintgether.script.management.server.scriptmanagement.exception.commonused.ContentNotFoundException;
 import com.sprintgether.script.management.server.scriptmanagement.exception.school.*;
+import com.sprintgether.script.management.server.scriptmanagement.exception.script.ContentNotBelongingToException;
 import com.sprintgether.script.management.server.scriptmanagement.service.program.*;
 import com.sprintgether.script.management.server.scriptmanagement.model.program.*;
 import com.sprintgether.script.management.server.scriptmanagement.exception.program.*;
@@ -483,7 +484,7 @@ public class SectionController {
             srSection.setResponseCode(ResponseCode.EXCEPTION_SECTION_FOUND);
             srSection.setErrorMessage("The section does not found in the system");
             srSection.setMoreDetails(e.getMessage());
-        } catch (ContentNotFoundException e) {
+        } catch (ContentNotBelongingToException e) {
             //e.printStackTrace();
             srSection.setResponseCode(ResponseCode.EXCEPTION_CONTENT_FOUND);
             srSection.setErrorMessage("There is problem during the modification of content");
@@ -531,7 +532,7 @@ public class SectionController {
             srSection.setResponseCode(ResponseCode.EXCEPTION_SECTION_FOUND);
             srSection.setErrorMessage("The section does not found in the system");
             srSection.setMoreDetails(e.getMessage());
-        } catch (ContentNotFoundException e) {
+        } catch (ContentNotBelongingToException e) {
             //e.printStackTrace();
             srSection.setResponseCode(ResponseCode.EXCEPTION_CONTENT_FOUND);
             srSection.setErrorMessage("The content id does not match any content in the system");

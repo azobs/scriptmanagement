@@ -4,6 +4,7 @@ import com.sprintgether.script.management.server.scriptmanagement.commonused.Ser
 import com.sprintgether.script.management.server.scriptmanagement.exception.commonused.ContentNotFoundException;
 import com.sprintgether.script.management.server.scriptmanagement.exception.program.*;
 import com.sprintgether.script.management.server.scriptmanagement.exception.school.*;
+import com.sprintgether.script.management.server.scriptmanagement.exception.script.ContentNotBelongingToException;
 import com.sprintgether.script.management.server.scriptmanagement.model.program.Chapter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -109,13 +110,13 @@ public interface ChapterService {
                                                 String schoolName, String departmentName,
                                                 String optionName, String levelName, String courseTitle,
                                                 String moduleTitle, String chapterTitle)
-            throws ChapterNotFoundException, ContentNotFoundException;
+            throws ChapterNotFoundException, ContentNotBelongingToException;
 
     ServerResponse<Chapter> updateContentToChapter(String contentId, String value, String chapterId,
                                                 String schoolName, String departmentName,
                                                 String optionName, String levelName, String courseTitle,
                                                 String moduleTitle, String chapterTitle)
-            throws ChapterNotFoundException, ContentNotFoundException;
+            throws ChapterNotFoundException, ContentNotBelongingToException;
 
     ServerResponse<Chapter> deleteChapter(String chapterId, String schoolName,
                                           String departmentName, String optionName,

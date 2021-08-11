@@ -32,9 +32,9 @@ public interface PropositionService {
 
     ServerResponse<Proposition> updateContentToProposition(String contentId, String value,
                                                         String propositionId)
-            throws ContentNotFoundException, PropositionNotFoundException, ContentNotBelongingToException;
+            throws PropositionNotFoundException, ContentNotBelongingToException;
 
-    ServerResponse<Proposition> removeContentToProposition(String value, String contentType,
+    ServerResponse<Proposition> removeContentToProposition(String contentId,
                                                         String propositionId)
             throws PropositionNotFoundException, ContentNotBelongingToException;
 }

@@ -5,6 +5,7 @@ import com.sprintgether.script.management.server.scriptmanagement.commonused.Ser
 import com.sprintgether.script.management.server.scriptmanagement.exception.commonused.ContentNotFoundException;
 import com.sprintgether.script.management.server.scriptmanagement.exception.program.*;
 import com.sprintgether.script.management.server.scriptmanagement.exception.school.*;
+import com.sprintgether.script.management.server.scriptmanagement.exception.script.ContentNotBelongingToException;
 import com.sprintgether.script.management.server.scriptmanagement.form.program.chapter.*;
 import com.sprintgether.script.management.server.scriptmanagement.model.program.*;
 import com.sprintgether.script.management.server.scriptmanagement.service.program.*;
@@ -455,7 +456,7 @@ public class ChapterController {
             srChapter.setResponseCode(ResponseCode.EXCEPTION_CHAPTER_FOUND);
             srChapter.setErrorMessage("The chapter does not found in the system");
             srChapter.setMoreDetails(e.getMessage());
-        } catch (ContentNotFoundException e) {
+        } catch (ContentNotBelongingToException e) {
             //e.printStackTrace();
             srChapter.setResponseCode(ResponseCode.EXCEPTION_CONTENT_FOUND);
             srChapter.setErrorMessage("The content does not found in the system");
@@ -496,7 +497,7 @@ public class ChapterController {
             srChapter = chapterService.removeContentToChapter(contentId, chapterId, schoolName,
                     departmentName, optionName, levelName, courseTitle, moduleTitle, chapterTitle);
             srChapter.setErrorMessage("The content has been successfully removed to the chapter");
-        } catch (ContentNotFoundException e) {
+        } catch (ContentNotBelongingToException e) {
             //e.printStackTrace();
             srChapter.setResponseCode(ResponseCode.EXCEPTION_CONTENT_FOUND);
             srChapter.setErrorMessage("The content id does not match any content in the system");

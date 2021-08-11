@@ -7,6 +7,7 @@ import com.sprintgether.script.management.server.scriptmanagement.dao.script.Con
 import com.sprintgether.script.management.server.scriptmanagement.exception.commonused.ContentNotFoundException;
 import com.sprintgether.script.management.server.scriptmanagement.exception.program.*;
 import com.sprintgether.script.management.server.scriptmanagement.exception.school.*;
+import com.sprintgether.script.management.server.scriptmanagement.exception.script.ContentNotBelongingToException;
 import com.sprintgether.script.management.server.scriptmanagement.model.program.*;
 import com.sprintgether.script.management.server.scriptmanagement.model.script.Content;
 import com.sprintgether.script.management.server.scriptmanagement.model.script.EnumContentType;
@@ -960,6 +961,17 @@ public class ParagraphServiceImpl implements ParagraphService {
         return srParagraph;
     }
 
+    public Optional<Content> findContentInContentParagraphList(String contentId, Paragraph paragraph){
+        Content contentSearch = null;
+        for(Content content : paragraph.getListofContent()){
+            if(content.getId().equalsIgnoreCase(contentId)){
+                contentSearch = content;
+                break;
+            }
+        }
+        return Optional.ofNullable(contentSearch);
+    }
+
     @Override
     public ServerResponse<Paragraph> removeContentToParagraph(String contentId,
                                                               String paragraphId,
@@ -973,7 +985,7 @@ public class ParagraphServiceImpl implements ParagraphService {
                                                               String sectionTitle,
                                                               String subSectionTitle,
                                                               String paragraphTitle)
-            throws ParagraphNotFoundException, ContentNotFoundException {
+            throws ParagraphNotFoundException, ContentNotBelongingToException {
         ServerResponse<Paragraph> srParagraph = new ServerResponse<>();
 
         contentId = contentId.trim();
@@ -989,14 +1001,6 @@ public class ParagraphServiceImpl implements ParagraphService {
         moduleTitle = moduleTitle.toLowerCase().trim();
         chapterTitle = chapterTitle.toLowerCase().trim();
 
-        Optional<Content> optionalContent = contentRepository.findById(contentId);
-
-        if(!optionalContent.isPresent()){
-            throw new ContentNotFoundException("The content id specified does not match any " +
-                    "content in the system");
-        }
-        contentRepository.deleteById(contentId);
-
         Paragraph concernedParagraph = null;
 
         Optional<Paragraph> optionalParagraph = this.findConcernedParagraph(paragraphId,
@@ -1006,6 +1010,15 @@ public class ParagraphServiceImpl implements ParagraphService {
             throw new ParagraphNotFoundException("The paragraph title does not found in the system");
         }
         concernedParagraph = optionalParagraph.get();
+
+        Optional<Content> optionalContent = this.findContentInContentParagraphList(contentId,
+                concernedParagraph);
+
+        if(!optionalContent.isPresent()){
+            throw new ContentNotBelongingToException("The content id specified does not match any " +
+                    "content in the system");
+        }
+        contentRepository.delete(optionalContent.get());
 
         srParagraph.setErrorMessage("A content has been removed in the list of content of " +
                 "the section");
@@ -1029,7 +1042,7 @@ public class ParagraphServiceImpl implements ParagraphService {
                                                               String sectionTitle,
                                                               String subSectionTitle,
                                                               String paragraphTitle)
-            throws ParagraphNotFoundException, ContentNotFoundException {
+            throws ParagraphNotFoundException, ContentNotBelongingToException {
         ServerResponse<Paragraph> srParagraph = new ServerResponse<>();
         value = value.trim();
         contentId = contentId.trim();
@@ -1045,16 +1058,6 @@ public class ParagraphServiceImpl implements ParagraphService {
         moduleTitle = moduleTitle.toLowerCase().trim();
         chapterTitle = chapterTitle.toLowerCase().trim();
 
-        Optional<Content> optionalContent = contentRepository.findById(contentId);
-
-        if(!optionalContent.isPresent()){
-            throw new ContentNotFoundException("The content id specified does not match any " +
-                    "content in the system");
-        }
-
-        Content content = optionalContent.get();
-        content.setValue(value);
-        contentRepository.save(content);
 
         Paragraph concernedParagraph = null;
         Optional<Paragraph> optionalParagraph = this.findConcernedParagraph(paragraphId, schoolName, departmentName,
@@ -1064,6 +1067,19 @@ public class ParagraphServiceImpl implements ParagraphService {
             throw new ParagraphNotFoundException("The paragraph title does not found in the system");
         }
         concernedParagraph = optionalParagraph.get();
+
+
+        Optional<Content> optionalContent = this.findContentInContentParagraphList(contentId,
+                concernedParagraph);
+
+        if(!optionalContent.isPresent()){
+            throw new ContentNotBelongingToException("The content id specified does not match any " +
+                    "content in the system");
+        }
+
+        Content content = optionalContent.get();
+        content.setValue(value);
+        contentRepository.save(content);
 
         srParagraph.setErrorMessage("A content has been removed in the list of content of " +
                 "the section");

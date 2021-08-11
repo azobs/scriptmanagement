@@ -7,6 +7,7 @@ import com.sprintgether.script.management.server.scriptmanagement.exception.prog
 import com.sprintgether.script.management.server.scriptmanagement.exception.program.DuplicateCourseInLevelException;
 import com.sprintgether.script.management.server.scriptmanagement.exception.program.StaffAlreadySetToCourseException;
 import com.sprintgether.script.management.server.scriptmanagement.exception.school.*;
+import com.sprintgether.script.management.server.scriptmanagement.exception.script.ContentNotBelongingToException;
 import com.sprintgether.script.management.server.scriptmanagement.exception.user.StaffNotFoundException;
 import com.sprintgether.script.management.server.scriptmanagement.model.program.Course;
 import com.sprintgether.script.management.server.scriptmanagement.model.program.CourseOutline;
@@ -115,13 +116,13 @@ public interface CourseService {
                                                  String schoolName, String departmentName,
                                                  String optionName, String levelName,
                                                  String courseTitle)
-            throws CourseNotFoundException, ContentNotFoundException;
+            throws CourseNotFoundException, ContentNotBelongingToException;
 
     ServerResponse<Course> updateContentToCourse(String contentId, String value, String courseId,
                                                  String schoolName, String departmentName,
                                                  String optionName, String levelName,
                                                  String courseTitle)
-            throws CourseNotFoundException, ContentNotFoundException;
+            throws CourseNotFoundException, ContentNotBelongingToException;
 
     ServerResponse<Course> deleteCourse(String courseId, String schoolName, String departmentName,
                                         String optionName,

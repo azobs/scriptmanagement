@@ -4,6 +4,7 @@ import com.sprintgether.script.management.server.scriptmanagement.commonused.Ser
 import com.sprintgether.script.management.server.scriptmanagement.exception.commonused.ContentNotFoundException;
 import com.sprintgether.script.management.server.scriptmanagement.exception.program.*;
 import com.sprintgether.script.management.server.scriptmanagement.exception.school.*;
+import com.sprintgether.script.management.server.scriptmanagement.exception.script.ContentNotBelongingToException;
 import com.sprintgether.script.management.server.scriptmanagement.model.program.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -103,13 +104,13 @@ public interface ModuleService {
                                                  String departmentName, String optionName,
                                                  String levelName, String courseTitle,
                                                  String moduleTitle)
-            throws ModuleNotFoundException, ContentNotFoundException;
+            throws ModuleNotFoundException, ContentNotBelongingToException;
 
     ServerResponse<Module> updateContentToModule(String contentId, String value, String moduleId,
                                                  String schoolName,String departmentName,
                                                  String optionName, String levelName,
                                                  String courseTitle, String moduleTitle)
-            throws ModuleNotFoundException, ContentNotFoundException;
+            throws ModuleNotFoundException, ContentNotBelongingToException;
 
     ServerResponse<Module> deleteModule(String moduleId, String schoolName, String departmentName,
                                         String optionName, String levelName, String courseTitle,

@@ -3,6 +3,7 @@ package com.sprintgether.script.management.server.scriptmanagement.service.progr
 import com.sprintgether.script.management.server.scriptmanagement.commonused.ServerResponse;
 import com.sprintgether.script.management.server.scriptmanagement.exception.commonused.ContentNotFoundException;
 import com.sprintgether.script.management.server.scriptmanagement.exception.school.*;
+import com.sprintgether.script.management.server.scriptmanagement.exception.script.ContentNotBelongingToException;
 import com.sprintgether.script.management.server.scriptmanagement.model.program.*;
 import com.sprintgether.script.management.server.scriptmanagement.exception.program.*;
 import org.springframework.data.domain.Page;
@@ -128,7 +129,7 @@ public interface SubSectionService {
                                                          String courseTitle, String moduleTitle,
                                                          String chapterTitle, String sectionTitle,
                                                          String subSectionTitle)
-            throws SubSectionNotFoundException, ContentNotFoundException;
+            throws SubSectionNotFoundException, ContentNotBelongingToException;
 
     ServerResponse<SubSection> updateContentToSubSection(String contentId, String value,
                                                          String subSectionId, String schoolName,
@@ -136,7 +137,7 @@ public interface SubSectionService {
                                                          String levelName, String courseTitle,
                                                          String moduleTitle, String chapterTitle,
                                                          String sectionTitle, String subSectionTitle)
-            throws SubSectionNotFoundException, ContentNotFoundException;
+            throws SubSectionNotFoundException, ContentNotBelongingToException;
 
     ServerResponse<SubSection> deleteSubSection(String subSectionId, String schoolName,
                                                 String departmentName, String optionName,

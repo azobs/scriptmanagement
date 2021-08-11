@@ -3,7 +3,6 @@ package com.sprintgether.script.management.server.scriptmanagement.service.commo
 import com.sprintgether.script.management.server.scriptmanagement.commonused.ResponseCode;
 import com.sprintgether.script.management.server.scriptmanagement.commonused.ServerResponse;
 import com.sprintgether.script.management.server.scriptmanagement.exception.program.*;
-import com.sprintgether.script.management.server.scriptmanagement.form.program.course.CourseContentDeleted;
 import com.sprintgether.script.management.server.scriptmanagement.model.program.*;
 import com.sprintgether.script.management.server.scriptmanagement.service.program.*;
 import org.springframework.stereotype.Service;

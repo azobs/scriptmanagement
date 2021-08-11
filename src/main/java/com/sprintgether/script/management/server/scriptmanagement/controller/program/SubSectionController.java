@@ -4,6 +4,7 @@ import com.sprintgether.script.management.server.scriptmanagement.commonused.Res
 import com.sprintgether.script.management.server.scriptmanagement.commonused.ServerResponse;
 import com.sprintgether.script.management.server.scriptmanagement.exception.commonused.ContentNotFoundException;
 import com.sprintgether.script.management.server.scriptmanagement.exception.school.*;
+import com.sprintgether.script.management.server.scriptmanagement.exception.script.ContentNotBelongingToException;
 import com.sprintgether.script.management.server.scriptmanagement.service.program.*;
 import com.sprintgether.script.management.server.scriptmanagement.model.program.*;
 import com.sprintgether.script.management.server.scriptmanagement.exception.program.*;
@@ -500,7 +501,7 @@ public class SubSectionController {
             srSubSection.setErrorMessage("The associated subsection has not found");
             srSubSection.setResponseCode(ResponseCode.EXCEPTION_SUBSECTION_FOUND);
             srSubSection.setMoreDetails(e.getMessage());
-        } catch (ContentNotFoundException e) {
+        } catch (ContentNotBelongingToException e) {
             //e.printStackTrace();
             srSubSection.setResponseCode(ResponseCode.EXCEPTION_CONTENT_FOUND);
             srSubSection.setErrorMessage("There is problem during the modification of content");
@@ -550,7 +551,7 @@ public class SubSectionController {
             srSubSection.setErrorMessage("The associated subsection has not found");
             srSubSection.setResponseCode(ResponseCode.EXCEPTION_SUBSECTION_FOUND);
             srSubSection.setMoreDetails(e.getMessage());
-        } catch (ContentNotFoundException e) {
+        } catch (ContentNotBelongingToException e) {
             //e.printStackTrace();
             srSubSection.setResponseCode(ResponseCode.EXCEPTION_CONTENT_FOUND);
             srSubSection.setErrorMessage("There is problem during the modification of content");

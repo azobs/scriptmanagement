@@ -142,6 +142,14 @@ public  class ResponseCode {
     public static final int PARAGRAPH_NOT_DELETED = 211;
     public static final int PARAGRAPH_DELETED = 212;
 
+    public static final int INDICATION_NOT_FOUND = 213;
+    public static final int INDICATION_FOUND = 214;
+    public static final int INDICATION_NOT_CREATED = 215;
+    public static final int INDICATION_CREATED = 217;
+    public static final int INDICATION_NOT_UPDATED = 218;
+    public static final int INDICATION_UPDATED = 219;
+    public static final int INDICATION_NOT_DELETED = 220;
+    public static final int INDICATION_DELETED = 221;
 
 
 
@@ -202,6 +210,7 @@ public  class ResponseCode {
     public static final int EXCEPTION_SUBSECTION_DUPLICATED = 640;
     public static final int EXCEPTION_PARAGRAPH_DUPLICATED = 641;
     public static final int EXCEPTION_PARAGRAPH_FOUND = 642;
+    public static final int EXCEPTION_ENUM_CONTENT_TYPE = 643;
 
     public static final int ERROR_IN_FORM_FILLED = 800;
 

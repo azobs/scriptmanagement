@@ -4,6 +4,7 @@ import com.sprintgether.script.management.server.scriptmanagement.commonused.Ser
 import com.sprintgether.script.management.server.scriptmanagement.exception.commonused.ContentNotFoundException;
 import com.sprintgether.script.management.server.scriptmanagement.exception.program.*;
 import com.sprintgether.script.management.server.scriptmanagement.exception.school.*;
+import com.sprintgether.script.management.server.scriptmanagement.exception.script.ContentNotBelongingToException;
 import com.sprintgether.script.management.server.scriptmanagement.model.program.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -138,7 +139,7 @@ public interface ParagraphService {
                                                        String courseTitle, String moduleTitle,
                                                        String chapterTitle, String sectionTitle,
                                                        String subSectionTitle, String paragraphTitle)
-            throws ParagraphNotFoundException, ContentNotFoundException;
+            throws ParagraphNotFoundException, ContentNotBelongingToException;
 
     ServerResponse<Paragraph> updateContentToParagraph(String contentId, String value,
                                                        String paragraphId, String schoolName,
@@ -147,7 +148,7 @@ public interface ParagraphService {
                                                        String moduleTitle, String chapterTitle,
                                                        String sectionTitle, String subSectionTitle,
                                                        String paragraphTitle)
-            throws ParagraphNotFoundException, ContentNotFoundException;
+            throws ParagraphNotFoundException, ContentNotBelongingToException;
 
     ServerResponse<Paragraph> deleteParagraph(String paragraphId, String schoolName,
                                               String departmentName, String optionName,

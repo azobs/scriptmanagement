@@ -161,10 +161,10 @@ public interface QuestionService {
 
     ServerResponse<Question> updateContentToQuestion(String contentId, String value,
                                                      String questionId)
-            throws ContentNotFoundException, QuestionNotFoundException;
+            throws ContentNotBelongingToException, QuestionNotFoundException;
 
     ServerResponse<Question> removeContentToQuestion(String contentId, String questionId)
-            throws ContentNotFoundException, QuestionNotFoundException;
+            throws ContentNotBelongingToException, QuestionNotFoundException;
 
     ServerResponse<Question> addIndicationToQuestion(String value, String contentType,
                                                      String staffId, String questionId)

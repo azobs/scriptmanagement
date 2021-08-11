@@ -8,6 +8,7 @@ import com.sprintgether.script.management.server.scriptmanagement.dao.script.Con
 import com.sprintgether.script.management.server.scriptmanagement.exception.commonused.ContentNotFoundException;
 import com.sprintgether.script.management.server.scriptmanagement.exception.program.*;
 import com.sprintgether.script.management.server.scriptmanagement.exception.school.*;
+import com.sprintgether.script.management.server.scriptmanagement.exception.script.ContentNotBelongingToException;
 import com.sprintgether.script.management.server.scriptmanagement.exception.user.StaffNotFoundException;
 import com.sprintgether.script.management.server.scriptmanagement.model.program.*;
 import com.sprintgether.script.management.server.scriptmanagement.model.school.Level;
@@ -1004,12 +1005,23 @@ public class CourseServiceImpl implements CourseService {
         return srCourse;
     }
 
+    public Optional<Content> findContentInContentCourseList(String contentId, Course course){
+        Content contentSearch = null;
+        for(Content content : course.getListofContent()){
+            if(content.getId().equalsIgnoreCase(contentId)){
+                contentSearch = content;
+                break;
+            }
+        }
+        return Optional.ofNullable(contentSearch);
+    }
+
     @Override
     public ServerResponse<Course> removeContentToCourse(String contentId, String courseId,
                                                         String schoolName, String departmentName,
                                                         String optionName, String levelName,
                                                         String courseTitle)
-            throws CourseNotFoundException, ContentNotFoundException {
+            throws CourseNotFoundException, ContentNotBelongingToException {
         contentId = contentId.trim();
         courseId = courseId.trim();
         levelName = levelName.toLowerCase().trim();
@@ -1020,13 +1032,6 @@ public class CourseServiceImpl implements CourseService {
 
         ServerResponse<Course> srCourse = new ServerResponse<>();
 
-        Optional<Content> optionalContent = contentRepository.findById(contentId);
-
-        if(!optionalContent.isPresent()){
-            throw new ContentNotFoundException("The content id specified does not match any content in the system");
-        }
-        contentRepository.deleteById(contentId);
-
         Course concernedCourse = null;
         Optional<Course> optionalCourse = this.findConcernedCourse(courseId, schoolName, departmentName, optionName,
                 levelName, courseTitle);
@@ -1035,6 +1040,15 @@ public class CourseServiceImpl implements CourseService {
             throw new CourseNotFoundException("The specified course does not found in the system");
         }
         concernedCourse = optionalCourse.get();
+
+        Optional<Content> optionalContent = this.findContentInContentCourseList(contentId,
+                concernedCourse);
+
+        if(!optionalContent.isPresent()){
+            throw new ContentNotBelongingToException("The content id specified does " +
+                    "not match any content in the list of the content of course");
+        }
+        contentRepository.delete(optionalContent.get());
 
         srCourse.setErrorMessage("A content has been removed in the list of content of the course");
         srCourse.setResponseCode(ResponseCode.CONTENT_DELETED);
@@ -1048,7 +1062,7 @@ public class CourseServiceImpl implements CourseService {
                                                         String courseId, String schoolName,
                                                         String departmentName, String optionName,
                                                         String levelName, String courseTitle)
-            throws CourseNotFoundException, ContentNotFoundException{
+            throws CourseNotFoundException, ContentNotBelongingToException{
 
         ServerResponse<Course> srCourse = new ServerResponse<>();
         contentId = contentId.trim();
@@ -1059,15 +1073,6 @@ public class CourseServiceImpl implements CourseService {
         departmentName = departmentName.toLowerCase().trim();
         schoolName = schoolName.toLowerCase().trim();
         courseTitle = courseTitle.toLowerCase().trim();
-        Optional<Content> optionalContent = contentRepository.findById(contentId);
-
-        if(!optionalContent.isPresent()){
-            throw new ContentNotFoundException("The content id specified does not match any content in the system");
-        }
-
-        Content content = optionalContent.get();
-        content.setValue(value);
-        contentRepository.save(content);
 
         Course concernedCourse = null;
         Optional<Course> optionalCourse = this.findConcernedCourse(courseId, schoolName, departmentName, optionName,
@@ -1077,6 +1082,18 @@ public class CourseServiceImpl implements CourseService {
             throw new CourseNotFoundException("The specified course does not found in the system");
         }
         concernedCourse = optionalCourse.get();
+
+        Optional<Content> optionalContent = this.findContentInContentCourseList(contentId,
+                concernedCourse);
+
+        if(!optionalContent.isPresent()){
+            throw new ContentNotBelongingToException("The content id specified does " +
+                    "not match any content in the list of content of the course");
+        }
+
+        Content content = optionalContent.get();
+        content.setValue(value);
+        contentRepository.save(content);
 
         srCourse.setErrorMessage("A content has been updated in the list of content of the course");
         srCourse.setResponseCode(ResponseCode.CONTENT_UPDATED);

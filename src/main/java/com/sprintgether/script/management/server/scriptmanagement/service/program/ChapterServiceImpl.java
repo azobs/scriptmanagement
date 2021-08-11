@@ -7,9 +7,11 @@ import com.sprintgether.script.management.server.scriptmanagement.dao.script.Con
 import com.sprintgether.script.management.server.scriptmanagement.exception.commonused.ContentNotFoundException;
 import com.sprintgether.script.management.server.scriptmanagement.exception.program.*;
 import com.sprintgether.script.management.server.scriptmanagement.exception.school.*;
+import com.sprintgether.script.management.server.scriptmanagement.exception.script.ContentNotBelongingToException;
 import com.sprintgether.script.management.server.scriptmanagement.model.program.*;
 import com.sprintgether.script.management.server.scriptmanagement.model.script.Content;
 import com.sprintgether.script.management.server.scriptmanagement.model.script.EnumContentType;
+import com.sprintgether.script.management.server.scriptmanagement.model.script.Indication;
 import com.sprintgether.script.management.server.scriptmanagement.service.school.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -480,6 +482,10 @@ public class ChapterServiceImpl implements ChapterService {
             srChapter.setErrorMessage("The specified course does not found in the system");
             srChapter.setResponseCode(ResponseCode.EXCEPTION_COURSE_FOUND);
             srChapter.setMoreDetails(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            srChapter.setResponseCode(ResponseCode.EXCEPTION_ENUM_COURSE_PART_TYPE);
+            srChapter.setErrorMessage("IllegalArgumentException");
+            srChapter.setMoreDetails(e.getMessage());
         }
 
 
@@ -759,11 +765,23 @@ public class ChapterServiceImpl implements ChapterService {
         return srChapter;
     }
 
+
+    public Optional<Content> findContentInContentChapterList(String contentId, Chapter chapter){
+        Content contentSearch = null;
+        for(Content content : chapter.getListofContent()){
+            if(content.getId().equalsIgnoreCase(contentId)){
+                contentSearch = content;
+                break;
+            }
+        }
+        return Optional.ofNullable(contentSearch);
+    }
+
     @Override
     public ServerResponse<Chapter> removeContentToChapter(String contentId, String chapterId, String schoolName,
                                                           String departmentName, String optionName, String levelName,
                                                           String courseTitle, String moduleTitle, String chapterTitle)
-            throws ChapterNotFoundException, ContentNotFoundException {
+            throws ChapterNotFoundException, ContentNotBelongingToException {
         ServerResponse<Chapter> srChapter = new ServerResponse<>();
 
         contentId = contentId.trim();
@@ -776,14 +794,6 @@ public class ChapterServiceImpl implements ChapterService {
         moduleTitle = moduleTitle.toLowerCase().trim();
         chapterTitle = chapterTitle.toLowerCase().trim();
 
-        Optional<Content> optionalContent = contentRepository.findById(contentId);
-
-        if(!optionalContent.isPresent()){
-            throw new ContentNotFoundException("The content id specified does not match any " +
-                    "content in the system");
-        }
-        contentRepository.deleteById(contentId);
-
         Chapter concernedChapter = null;
         Optional<Chapter> optionalChapter = this.findConcernedChapter(chapterId, schoolName, departmentName, optionName,
                 levelName, courseTitle, moduleTitle, chapterTitle);
@@ -791,6 +801,15 @@ public class ChapterServiceImpl implements ChapterService {
             throw new ChapterNotFoundException("The specified chapter does not found in the system");
         }
         concernedChapter = optionalChapter.get();
+
+        Optional<Content> optionalContent = this.findContentInContentChapterList(contentId,
+                concernedChapter);
+
+        if(!optionalContent.isPresent()){
+            throw new ContentNotBelongingToException("The content id specified does not match any " +
+                    "content in the list of content of chapter");
+        }
+        contentRepository.delete(optionalContent.get());
 
         srChapter.setErrorMessage("A content has been removed in the list of content of " +
                 "the chapter");
@@ -800,13 +819,14 @@ public class ChapterServiceImpl implements ChapterService {
         return srChapter;
     }
 
+
     @Override
     public ServerResponse<Chapter> updateContentToChapter(String contentId, String value,
                                                           String chapterId, String schoolName,
                                                           String departmentName, String optionName,
                                                           String levelName, String courseTitle,
                                                           String moduleTitle, String chapterTitle)
-            throws ChapterNotFoundException, ContentNotFoundException {
+            throws ChapterNotFoundException, ContentNotBelongingToException {
         ServerResponse<Chapter> srChapter = new ServerResponse<>();
         contentId = contentId.trim();
         value = value.trim();
@@ -819,16 +839,6 @@ public class ChapterServiceImpl implements ChapterService {
         moduleTitle = moduleTitle.toLowerCase().trim();
         chapterTitle = chapterTitle.toLowerCase().trim();
 
-        Optional<Content> optionalContent = contentRepository.findById(contentId);
-
-        if(!optionalContent.isPresent()){
-            throw new ContentNotFoundException("The content id specified does not match any " +
-                    "content in the system");
-        }
-
-        Content content = optionalContent.get();
-        content.setValue(value);
-        contentRepository.save(content);
 
         Chapter concernedChapter = null;
 
@@ -838,6 +848,20 @@ public class ChapterServiceImpl implements ChapterService {
             throw new ChapterNotFoundException("The specified chapter does not found in the system");
         }
         concernedChapter = optionalChapter.get();
+
+        Optional<Content> optionalContent = this.findContentInContentChapterList(contentId,
+                concernedChapter);
+
+        if(!optionalContent.isPresent()){
+            throw new ContentNotBelongingToException("The content id specified does not match any " +
+                    "content in the content chapter list");
+        }
+
+
+        Content content = optionalContent.get();
+        content.setValue(value);
+        contentRepository.save(content);
+
 
         srChapter.setErrorMessage("A content has been updated in the list of content of " +
                 "the chapter");

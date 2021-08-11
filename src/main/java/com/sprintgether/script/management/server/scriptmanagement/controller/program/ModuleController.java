@@ -5,6 +5,7 @@ import com.sprintgether.script.management.server.scriptmanagement.commonused.Ser
 import com.sprintgether.script.management.server.scriptmanagement.exception.commonused.ContentNotFoundException;
 import com.sprintgether.script.management.server.scriptmanagement.exception.program.*;
 import com.sprintgether.script.management.server.scriptmanagement.exception.school.*;
+import com.sprintgether.script.management.server.scriptmanagement.exception.script.ContentNotBelongingToException;
 import com.sprintgether.script.management.server.scriptmanagement.form.program.module.*;
 import com.sprintgether.script.management.server.scriptmanagement.model.program.*;
 import com.sprintgether.script.management.server.scriptmanagement.service.program.*;
@@ -442,7 +443,7 @@ public class ModuleController {
             srModule.setResponseCode(ResponseCode.EXCEPTION_MODULE_FOUND);
             srModule.setErrorMessage("There is proble during the creation of content");
             srModule.setMoreDetails(e.getMessage());
-        } catch (ContentNotFoundException e) {
+        } catch (ContentNotBelongingToException e) {
             //e.printStackTrace();
             srModule.setResponseCode(ResponseCode.EXCEPTION_CONTENT_FOUND);
             srModule.setErrorMessage("There is proble during the creation of content");
@@ -482,7 +483,7 @@ public class ModuleController {
             srModule = moduleService.removeContentToModule(contentId, moduleId, schoolName,
                     departmentName, optionName, levelName, courseTitle, moduleTitle);
             srModule.setErrorMessage("The content has been successfully removed to the module");
-        } catch (ContentNotFoundException e) {
+        } catch (ContentNotBelongingToException e) {
             //e.printStackTrace();
             srModule.setResponseCode(ResponseCode.EXCEPTION_CONTENT_FOUND);
             srModule.setErrorMessage("The content id does not match any content in the system");

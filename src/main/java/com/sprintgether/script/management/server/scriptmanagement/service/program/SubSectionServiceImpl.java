@@ -7,6 +7,7 @@ import com.sprintgether.script.management.server.scriptmanagement.dao.script.Con
 import com.sprintgether.script.management.server.scriptmanagement.exception.commonused.ContentNotFoundException;
 import com.sprintgether.script.management.server.scriptmanagement.exception.school.*;
 import com.sprintgether.script.management.server.scriptmanagement.exception.program.*;
+import com.sprintgether.script.management.server.scriptmanagement.exception.script.ContentNotBelongingToException;
 import com.sprintgether.script.management.server.scriptmanagement.model.program.*;
 import com.sprintgether.script.management.server.scriptmanagement.model.script.Content;
 import com.sprintgether.script.management.server.scriptmanagement.model.script.EnumContentType;
@@ -873,6 +874,18 @@ public class SubSectionServiceImpl implements SubSectionService {
         return srSubSection;
     }
 
+    public Optional<Content> findContentInContentSubSectionList(String contentId,
+                                                                SubSection subSection){
+        Content contentSearch = null;
+        for(Content content : subSection.getListofContent()){
+            if(content.getId().equalsIgnoreCase(contentId)){
+                contentSearch = content;
+                break;
+            }
+        }
+        return Optional.ofNullable(contentSearch);
+    }
+
     @Override
     public ServerResponse<SubSection> removeContentToSubSection(String contentId,
                                                                 String subSectionId,
@@ -885,7 +898,7 @@ public class SubSectionServiceImpl implements SubSectionService {
                                                                 String chapterTitle,
                                                                 String sectionTitle,
                                                                 String subSectionTitle)
-            throws SubSectionNotFoundException, ContentNotFoundException {
+            throws SubSectionNotFoundException, ContentNotBelongingToException {
         ServerResponse<SubSection> srSubSection = new ServerResponse<>();
 
         contentId = contentId.trim();
@@ -900,13 +913,6 @@ public class SubSectionServiceImpl implements SubSectionService {
         subSectionId = subSectionId.trim();
         subSectionTitle = subSectionTitle.trim();
 
-        Optional<Content> optionalContent = contentRepository.findById(contentId);
-
-        if(!optionalContent.isPresent()){
-            throw new ContentNotFoundException("The content id specified does not match any " +
-                    "content in the system");
-        }
-        contentRepository.deleteById(contentId);
 
         SubSection concernedSubSection = null;
         Optional<SubSection> optionalSubSection = this.findConcernedSubSection(subSectionId, schoolName,
@@ -916,6 +922,15 @@ public class SubSectionServiceImpl implements SubSectionService {
             throw new SubSectionNotFoundException("The sub section title does not found in the system");
         }
         concernedSubSection = optionalSubSection.get();
+
+        Optional<Content> optionalContent = this.findContentInContentSubSectionList(contentId,
+                concernedSubSection);
+
+        if(!optionalContent.isPresent()){
+            throw new ContentNotBelongingToException("The content id specified does not match any " +
+                    "content in the system");
+        }
+        contentRepository.delete(optionalContent.get());
 
         srSubSection.setErrorMessage("A content has been removed in the list of content of " +
                 "the section");
@@ -939,7 +954,7 @@ public class SubSectionServiceImpl implements SubSectionService {
                                                                 String chapterTitle,
                                                                 String sectionTitle,
                                                                 String subSectionTitle)
-            throws SubSectionNotFoundException, ContentNotFoundException {
+            throws SubSectionNotFoundException, ContentNotBelongingToException {
         ServerResponse<SubSection> srSubSection = new ServerResponse<>();
         value = value.trim();
         sectionTitle = sectionTitle.toLowerCase().trim();
@@ -953,17 +968,6 @@ public class SubSectionServiceImpl implements SubSectionService {
         subSectionId = subSectionId.trim();
         subSectionTitle = subSectionTitle.trim();
 
-        Optional<Content> optionalContent = contentRepository.findById(contentId);
-
-        if(!optionalContent.isPresent()){
-            throw new ContentNotFoundException("The content id specified does not match any " +
-                    "content in the system");
-        }
-
-        Content content = optionalContent.get();
-        content.setValue(value);
-        contentRepository.save(content);
-
         SubSection concernedSubSection = null;
         Optional<SubSection> optionalSubSection = this.findConcernedSubSection(subSectionId, schoolName,
                 departmentName, optionName, levelName, courseTitle, moduleTitle, chapterTitle,
@@ -972,6 +976,17 @@ public class SubSectionServiceImpl implements SubSectionService {
             throw new SubSectionNotFoundException("The sub section title does not found in the system");
         }
         concernedSubSection = optionalSubSection.get();
+
+        Optional<Content> optionalContent = this.findContentInContentSubSectionList(contentId, concernedSubSection);
+
+        if(!optionalContent.isPresent()){
+            throw new ContentNotBelongingToException("The content id specified does not match any " +
+                    "content in the system");
+        }
+
+        Content content = optionalContent.get();
+        content.setValue(value);
+        contentRepository.save(content);
 
         srSubSection.setErrorMessage("A content has been removed in the list of content of " +
                 "the section");

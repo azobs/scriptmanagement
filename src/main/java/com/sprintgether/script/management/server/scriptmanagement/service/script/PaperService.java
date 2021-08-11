@@ -6,7 +6,6 @@ import com.sprintgether.script.management.server.scriptmanagement.exception.prog
 import com.sprintgether.script.management.server.scriptmanagement.exception.script.*;
 import com.sprintgether.script.management.server.scriptmanagement.exception.user.StaffNotFoundException;
 import com.sprintgether.script.management.server.scriptmanagement.model.script.Paper;
-import com.sprintgether.script.management.server.scriptmanagement.model.user.Staff;
 
 import java.util.List;
 

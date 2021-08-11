@@ -4,6 +4,7 @@ import com.sprintgether.script.management.server.scriptmanagement.commonused.Res
 import com.sprintgether.script.management.server.scriptmanagement.commonused.ServerResponse;
 import com.sprintgether.script.management.server.scriptmanagement.exception.commonused.ContentNotFoundException;
 import com.sprintgether.script.management.server.scriptmanagement.exception.school.*;
+import com.sprintgether.script.management.server.scriptmanagement.exception.script.ContentNotBelongingToException;
 import com.sprintgether.script.management.server.scriptmanagement.service.program.*;
 import com.sprintgether.script.management.server.scriptmanagement.exception.program.*;
 import com.sprintgether.script.management.server.scriptmanagement.form.program.paragraph.*;
@@ -510,7 +511,7 @@ public class ParagraphController {
             srParagraph.setErrorMessage("The associated paragraph has not found");
             srParagraph.setResponseCode(ResponseCode.EXCEPTION_PARAGRAPH_FOUND);
             srParagraph.setMoreDetails(e.getMessage());
-        } catch (ContentNotFoundException e) {
+        } catch (ContentNotBelongingToException e) {
             //e.printStackTrace();
             srParagraph.setResponseCode(ResponseCode.EXCEPTION_CONTENT_FOUND);
             srParagraph.setErrorMessage("There is problem during the modification of content");
@@ -560,7 +561,7 @@ public class ParagraphController {
             srParagraph.setErrorMessage("The associated paragraph has not found");
             srParagraph.setResponseCode(ResponseCode.EXCEPTION_PARAGRAPH_FOUND);
             srParagraph.setMoreDetails(e.getMessage());
-        } catch (ContentNotFoundException e) {
+        } catch (ContentNotBelongingToException e) {
             //e.printStackTrace();
             srParagraph.setResponseCode(ResponseCode.EXCEPTION_CONTENT_FOUND);
             srParagraph.setErrorMessage("There is problem during the modification of content");

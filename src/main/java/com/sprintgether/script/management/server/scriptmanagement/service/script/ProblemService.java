@@ -160,10 +160,10 @@ public interface ProblemService {
 
     ServerResponse<Problem> updateContentToProblem(String contentId, String value,
                                                      String problemId)
-            throws ContentNotFoundException, ProblemNotFoundException;
+            throws ContentNotBelongingToException, ProblemNotFoundException;
 
     ServerResponse<Problem> removeContentToProblem(String contentId, String problemId)
-            throws ContentNotFoundException, ProblemNotFoundException;
+            throws ContentNotBelongingToException, ProblemNotFoundException;
 
     ServerResponse<Problem> addIndicationToProblem(String value, String contentType,
                                                      String staffId, String problemId)
