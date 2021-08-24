@@ -1,7 +1,6 @@
 package com.sprintgether.script.management.server.scriptmanagement.service.script;
 
 import com.sprintgether.script.management.server.scriptmanagement.commonused.ServerResponse;
-import com.sprintgether.script.management.server.scriptmanagement.exception.commonused.ContentNotFoundException;
 import com.sprintgether.script.management.server.scriptmanagement.exception.script.ContentNotBelongingToException;
 import com.sprintgether.script.management.server.scriptmanagement.exception.script.PropositionNotBelongingToStaffException;
 import com.sprintgether.script.management.server.scriptmanagement.exception.script.PropositionNotFoundException;
@@ -11,6 +10,7 @@ import com.sprintgether.script.management.server.scriptmanagement.model.script.P
 public interface PropositionService {
     ServerResponse<Proposition> findPropositionById(String propositionId);
 
+    Proposition saveProposition(Proposition proposition);
     ServerResponse<Proposition> saveProposition(String staffId, String value, String contentType,
                                                 boolean valid) throws StaffNotFoundException;
 

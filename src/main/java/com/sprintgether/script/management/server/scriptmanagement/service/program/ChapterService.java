@@ -4,12 +4,14 @@ import com.sprintgether.script.management.server.scriptmanagement.commonused.Ser
 import com.sprintgether.script.management.server.scriptmanagement.exception.commonused.ContentNotFoundException;
 import com.sprintgether.script.management.server.scriptmanagement.exception.program.*;
 import com.sprintgether.script.management.server.scriptmanagement.exception.school.*;
+import com.sprintgether.script.management.server.scriptmanagement.exception.script.ConcernedPartNotBelongingToCourseException;
 import com.sprintgether.script.management.server.scriptmanagement.exception.script.ContentNotBelongingToException;
 import com.sprintgether.script.management.server.scriptmanagement.model.program.Chapter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ChapterService {
 

@@ -131,29 +131,32 @@ public interface QuestionService {
             throws ParagraphNotFoundException, StaffNotFoundException;
     /////
 
-
+    Question saveQuestion(Question question);
     /***************************************************************************
      * The concernedPartId parameter identify the program part of the course associated
      *   to the question. It can be module, chapter, section, subsection or paragraph.
      * If concernedPartId  designate a Module, it must be a module in the courseOutline
      * associated to the course specified.
+     * The question can be for a problem or not. if not the problem will be null.
      * @param questionType
      * @param levelofDifficulty
-     * @param ownerStaff
+     * @param ownerStaffId
      * @param courseId
      * @param concernedPartId
+     * @param problemId
      * @return
      */
-    ServerResponse<Question> saveQuestion(EnumQuestionType questionType,
-                                          EnumLevelofDifficulty levelofDifficulty,
-                                          Staff ownerStaff,
+    ServerResponse<Question> saveQuestion(String questionType,
+                                          String levelofDifficulty,
+                                          String ownerStaffId,
                                           String courseId,
-                                          String concernedPartId)
-            throws ConcernedPartNotBelongingToCourseException;
+                                          String concernedPartId,
+                                          String problemId)
+            throws ConcernedPartNotBelongingToCourseException, StaffNotFoundException,
+            CourseNotFoundException;
 
-    ServerResponse<Question> duplicateQuestionForStaff(String questionId, Staff staffId)
-            throws QuestionNotFoundException, StaffNotFoundException,
-            QuestionAlreadyBelongingToStaffException;
+    ServerResponse<Question> duplicateQuestionForStaff(String questionId, String staffId)
+            throws QuestionNotFoundException, StaffNotFoundException;
 
     ServerResponse<Question> addContentToQuestion(String value, String contentType,
                                                   String questionId)
@@ -173,8 +176,8 @@ public interface QuestionService {
     ServerResponse<Question> updateIndicationToQuestion(String indicationId, String contentId,
                                                         String value, String questionId,
                                                         String staffId)
-            throws IndicationNotFoundException, ContentNotFoundException,
-            QuestionNotFoundException, IndicationNotBelongingToStaffException;
+            throws IndicationNotFoundException, QuestionNotFoundException,
+            IndicationNotBelongingToStaffException;
 
     ServerResponse<Question> removeIndicationToQuestion(String indicationId, String questionId,
                                                         String staffId)

@@ -1,7 +1,8 @@
 package com.sprintgether.script.management.server.scriptmanagement.service.commonused;
 
 import com.sprintgether.script.management.server.scriptmanagement.exception.program.*;
-import com.sprintgether.script.management.server.scriptmanagement.model.program.Course;
+import com.sprintgether.script.management.server.scriptmanagement.exception.script.ConcernedPartNotBelongingToCourseException;
+import com.sprintgether.script.management.server.scriptmanagement.model.program.*;
 
 import java.util.Optional;
 
@@ -25,7 +26,17 @@ public interface CommonService {
      * @param course
      * @return
      */
-    boolean isConcernedPartBelongingToCourse(String concernedPartId, Course course)
-            throws CourseNotFoundException, ModuleNotFoundException, ChapterNotFoundException,
-            SectionNotFoundException, SubSectionNotFoundException, ParagraphNotFoundException;
+    boolean isConcernedPartBelongingToCourse(String concernedPartId, Course course);
+
+    Optional<Module> findModuleofCourse(String moduleId, String courseId)
+            throws CourseNotFoundException, ConcernedPartNotBelongingToCourseException;
+    Optional<Chapter> findChapterOfCourse(String chapterId, String courseId)
+            throws CourseNotFoundException, ConcernedPartNotBelongingToCourseException;
+    Optional<Section> findSectionOfCourse(String sectionId, String courseId)
+            throws CourseNotFoundException, ConcernedPartNotBelongingToCourseException;
+    Optional<SubSection> findSubSectionOfCourse(String subSectionId, String courseId)
+            throws CourseNotFoundException, ConcernedPartNotBelongingToCourseException;
+    Optional<Paragraph> findParagraphOfCourse(String paragraphId, String courseId)
+            throws CourseNotFoundException, ConcernedPartNotBelongingToCourseException;
+
 }

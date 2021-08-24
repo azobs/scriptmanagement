@@ -141,7 +141,7 @@ public  class ResponseCode {
     public static final int PARAGRAPH_UPDATED = 210;
     public static final int PARAGRAPH_NOT_DELETED = 211;
     public static final int PARAGRAPH_DELETED = 212;
-
+    //Concerning Indication Objet
     public static final int INDICATION_NOT_FOUND = 213;
     public static final int INDICATION_FOUND = 214;
     public static final int INDICATION_NOT_CREATED = 215;
@@ -150,9 +150,35 @@ public  class ResponseCode {
     public static final int INDICATION_UPDATED = 219;
     public static final int INDICATION_NOT_DELETED = 220;
     public static final int INDICATION_DELETED = 221;
-
-
-
+    //Concerning Proposition Objet
+    public static final int PROPOSITION_NOT_FOUND = 222;
+    public static final int PROPOSITION_FOUND = 223;
+    public static final int PROPOSITION_NOT_CREATED = 224;
+    public static final int PROPOSITION_CREATED = 225;
+    public static final int PROPOSITION_NOT_UPDATED = 226;
+    public static final int PROPOSITION_UPDATED = 227;
+    public static final int PROPOSITION_NOT_DELETED = 228;
+    public static final int PROPOSITION_DELETED = 229;
+    //Concerning Problem Objet
+    public static final int PROBLEM_NOT_FOUND = 230;
+    public static final int PROBLEM_FOUND = 231;
+    public static final int PROBLEM_NOT_CREATED = 232;
+    public static final int PROBLEM_CREATED = 233;
+    public static final int PROBLEM_NOT_UPDATED = 234;
+    public static final int PROBLEM_UPDATED = 235;
+    public static final int PROBLEM_NOT_DELETED = 236;
+    public static final int PROBLEM_DELETED = 237;
+    //Concerning Question Objet
+    public static final int QUESTION_NOT_FOUND = 238;
+    public static final int QUESTION_FOUND = 239;
+    public static final int QUESTION_NOT_CREATED = 240;
+    public static final int QUESTION_CREATED = 241;
+    public static final int QUESTION_NOT_UPDATED = 242;
+    public static final int QUESTION_UPDATED = 243;
+    public static final int QUESTION_NOT_DELETED = 244;
+    public static final int QUESTION_DELETED = 245;
+    public static final int INDICATIION_ADDED_TO_QUESTION = 246;
+    public static final int CONTENT_OF_INDICATION_UPDATED = 247;
 
 
 
@@ -211,6 +237,8 @@ public  class ResponseCode {
     public static final int EXCEPTION_PARAGRAPH_DUPLICATED = 641;
     public static final int EXCEPTION_PARAGRAPH_FOUND = 642;
     public static final int EXCEPTION_ENUM_CONTENT_TYPE = 643;
+    public static final int EXCEPTION_ENUM_QUESTION_OR_LEVELOFDIFFICULTY_TYPE = 644;
+    public static final int CONTENT_OF_INDICATION_EXCEPTION = 645;
 
     public static final int ERROR_IN_FORM_FILLED = 800;
 

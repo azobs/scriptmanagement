@@ -4,13 +4,10 @@ import com.sprintgether.script.management.server.scriptmanagement.commonused.Res
 import com.sprintgether.script.management.server.scriptmanagement.commonused.ServerResponse;
 import com.sprintgether.script.management.server.scriptmanagement.dao.script.ContentRepository;
 import com.sprintgether.script.management.server.scriptmanagement.dao.script.IndicationRepository;
-import com.sprintgether.script.management.server.scriptmanagement.exception.commonused.ContentNotFoundException;
 import com.sprintgether.script.management.server.scriptmanagement.exception.script.ContentNotBelongingToException;
-import com.sprintgether.script.management.server.scriptmanagement.exception.script.IndicationAlreadyBelongingToStaffException;
 import com.sprintgether.script.management.server.scriptmanagement.exception.script.IndicationNotBelongingToStaffException;
 import com.sprintgether.script.management.server.scriptmanagement.exception.script.IndicationNotFoundException;
 import com.sprintgether.script.management.server.scriptmanagement.exception.user.StaffNotFoundException;
-import com.sprintgether.script.management.server.scriptmanagement.model.program.EnumCoursePartType;
 import com.sprintgether.script.management.server.scriptmanagement.model.script.Content;
 import com.sprintgether.script.management.server.scriptmanagement.model.script.EnumContentType;
 import com.sprintgether.script.management.server.scriptmanagement.model.script.Indication;
@@ -48,7 +45,7 @@ public class IndicationServiceImpl implements IndicationService {
         srInd.setResponseCode(ResponseCode.INDICATION_NOT_FOUND);
         Optional<Indication> optionalInd = indicationRepository.findById(indicationId);
         if(optionalInd.isPresent()){
-            srInd.setResponseCode(ResponseCode.INDICATION_NOT_FOUND);
+            srInd.setResponseCode(ResponseCode.INDICATION_FOUND);
             srInd.setErrorMessage("The indication is successfully found in the system");
             srInd.setAssociatedObject(optionalInd.get());
         }
@@ -113,7 +110,7 @@ public class IndicationServiceImpl implements IndicationService {
         indicationId = indicationId.trim();
         staffId = staffId.trim();
         ServerResponse<Indication> srInd1 = this.findIndicationById(indicationId);
-        if(srInd1.getResponseCode() != ResponseCode.INSTITUTION_FOUND){
+        if(srInd1.getResponseCode() != ResponseCode.INDICATION_FOUND){
             throw new IndicationNotFoundException("the indication id does not match any " +
                     "indication in the system");
         }
@@ -147,7 +144,7 @@ public class IndicationServiceImpl implements IndicationService {
         indicationId = indicationId.trim();
 
         ServerResponse<Indication> srInd1 = this.findIndicationById(indicationId);
-        if(srInd1.getResponseCode() != ResponseCode.INSTITUTION_FOUND){
+        if(srInd1.getResponseCode() != ResponseCode.INDICATION_FOUND){
             throw new IndicationNotFoundException("The indication id does not match any " +
                     "indication in the system");
         }
@@ -199,7 +196,7 @@ public class IndicationServiceImpl implements IndicationService {
 
         ServerResponse<Indication> srIndicationToUpdateContent =
                 this.findIndicationById(indicationId);
-        if(srIndicationToUpdateContent.getResponseCode() != ResponseCode.INSTITUTION_FOUND){
+        if(srIndicationToUpdateContent.getResponseCode() != ResponseCode.INDICATION_FOUND){
             throw new IndicationNotFoundException("The indication id does not match any " +
                     "indication in the system");
         }
@@ -229,16 +226,16 @@ public class IndicationServiceImpl implements IndicationService {
         contentId = contentId.trim();
         indicationId = indicationId.trim();
 
-        ServerResponse<Indication> srIndicationToUpdateContent =
+        ServerResponse<Indication> srIndicationToDeleteContent =
                 this.findIndicationById(indicationId);
-        if(srIndicationToUpdateContent.getResponseCode() != ResponseCode.INSTITUTION_FOUND){
+        if(srIndicationToDeleteContent.getResponseCode() != ResponseCode.INDICATION_FOUND){
             throw new IndicationNotFoundException("The indication id does not match any " +
                     "indication in the system");
         }
-        Indication indicationToUpdateContent = srIndicationToUpdateContent.getAssociatedObject();
+        Indication indicationToDeleteContent = srIndicationToDeleteContent.getAssociatedObject();
 
         Optional<Content> optionalContent = this.findContentInContentIndicationList(contentId,
-                indicationToUpdateContent);
+                indicationToDeleteContent);
         if(!optionalContent.isPresent()){
             throw new ContentNotBelongingToException("The content is not found among the list " +
                     "of content of Indication");
