@@ -61,7 +61,7 @@ public class IndicationServiceImpl implements IndicationService {
     public ServerResponse<Indication> saveIndication(String staffId, String value,
                                                      String contentType)
             throws StaffNotFoundException {
-        ServerResponse<Indication> srInd = new ServerResponse<>();
+        ServerResponse<Indication> srInd = new ServerResponse<>(ResponseCode.INDICATION_NOT_CREATED);
         staffId = staffId.trim();
         value = value.trim();
         contentType = contentType.trim();
@@ -189,7 +189,7 @@ public class IndicationServiceImpl implements IndicationService {
     public ServerResponse<Indication> updateContentToIndication(String contentId, String value,
                                                                 String indicationId)
             throws IndicationNotFoundException, ContentNotBelongingToException {
-        ServerResponse<Indication> srInd = new ServerResponse<>();
+        ServerResponse<Indication> srInd = new ServerResponse<>(ResponseCode.CONTENT_NOT_UPDATED);
         contentId = contentId.trim();
         value = value.trim();
         indicationId = indicationId.trim();
@@ -212,9 +212,16 @@ public class IndicationServiceImpl implements IndicationService {
         contentToUpdate.setValue(value);
         contentRepository.save(contentToUpdate);
 
+        srIndicationToUpdateContent = this.findIndicationById(indicationId);
+        if(srIndicationToUpdateContent.getResponseCode() != ResponseCode.INDICATION_FOUND){
+            throw new IndicationNotFoundException("The indication id does not match any " +
+                    "indication in the system");
+        }
+        Indication indicationUpdateContent = srIndicationToUpdateContent.getAssociatedObject();
+
         srInd.setResponseCode(ResponseCode.CONTENT_UPDATED);
         srInd.setErrorMessage("The content has been successfully updated");
-        srInd.setAssociatedObject(indicationToUpdateContent);
+        srInd.setAssociatedObject(indicationUpdateContent);
         return srInd;
     }
 
@@ -222,7 +229,7 @@ public class IndicationServiceImpl implements IndicationService {
     public ServerResponse<Indication> removeContentToIndication(String contentId,
                                                                 String indicationId)
             throws ContentNotBelongingToException, IndicationNotFoundException{
-        ServerResponse<Indication> srInd = new ServerResponse<>();
+        ServerResponse<Indication> srInd = new ServerResponse<>(ResponseCode.CONTENT_NOT_DELETED);
         contentId = contentId.trim();
         indicationId = indicationId.trim();
 
@@ -242,6 +249,18 @@ public class IndicationServiceImpl implements IndicationService {
         }
         contentRepository.delete(optionalContent.get());
 
+        srIndicationToDeleteContent =
+                this.findIndicationById(indicationId);
+        if(srIndicationToDeleteContent.getResponseCode() != ResponseCode.INDICATION_FOUND){
+            throw new IndicationNotFoundException("The indication id does not match any " +
+                    "indication in the system");
+        }
+
+        Indication indicationDeleteContent = srIndicationToDeleteContent.getAssociatedObject();
+        srInd.setErrorMessage("The content in the indication has been removed successfully");
+        srInd.setResponseCode(ResponseCode.CONTENT_DELETED);
+        srInd.setAssociatedObject(indicationDeleteContent);
+
         return srInd;
     }
 
@@ -249,12 +268,52 @@ public class IndicationServiceImpl implements IndicationService {
     public ServerResponse<Indication> removeIndication(String indicationId, String staffId)
             throws IndicationNotFoundException, StaffNotFoundException,
             IndicationNotBelongingToStaffException {
-        return null;
+        ServerResponse<Indication> srIndication1 = this.findIndicationById(indicationId);
+        if(srIndication1.getResponseCode() != ResponseCode.INDICATION_FOUND){
+            throw new IndicationNotFoundException("The indication id precised does not match any indication " +
+                    "in the system");
+        }
+        ServerResponse<Staff> srStaff = staffService.findStaffById(staffId);
+        if(srStaff.getResponseCode() != ResponseCode.STAFF_FOUND){
+            throw new StaffNotFoundException("The staff id precised does not match any staff in the " +
+                    "system");
+        }
+        /***
+         * If we are here in the execution, this means that the srIndication1 content the
+         * indication that we want to delete
+         */
+        Indication concernedIndication = srIndication1.getAssociatedObject();
+        if(concernedIndication.getOwnerStaff().getId() != staffId){
+            throw new IndicationNotBelongingToStaffException("The precised indication does not " +
+                    "belonging to the precised staff in the system.");
+        }
+        /****
+         * If we are here, this means that the indication  can be deleted without problem
+         */
+
+        return this.removeIndication(indicationId);
     }
 
     @Override
     public ServerResponse<Indication> removeIndication(String indicationId)
             throws IndicationNotFoundException {
-        return null;
+        ServerResponse<Indication> srIndication = new ServerResponse<>(ResponseCode.INDICATION_NOT_DELETED);
+        ServerResponse<Indication> srIndication1 = this.findIndicationById(indicationId);
+        if(srIndication1.getResponseCode() != ResponseCode.INDICATION_FOUND){
+            throw new IndicationNotFoundException("The indication id precised does not match any indication " +
+                    "in the system");
+        }
+        /****
+         * We are sur that the indication is found in the system
+         */
+        Indication indicationToRemove = srIndication1.getAssociatedObject();
+
+        indicationRepository.delete(indicationToRemove);
+
+        srIndication.setResponseCode(ResponseCode.INDICATION_DELETED);
+        srIndication.setErrorMessage("The indication has been deleted sucessfully");
+        srIndication.setAssociatedObject(indicationToRemove);
+
+        return srIndication;
     }
 }

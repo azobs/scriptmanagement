@@ -16,12 +16,15 @@ import java.util.List;
 public class Answer {
     @Id
     String id;
+    String title;
+    EnumScope answerScope;
     @DBRef
     Question concernedQuestion;
     @DBRef
     Staff ownerStaff;
     @DBRef
     List<Content> listofContent = new ArrayList<>();
+
 
     public Answer(Question concernedQuestion, List<Content> listofContent) {
         this.concernedQuestion = concernedQuestion;

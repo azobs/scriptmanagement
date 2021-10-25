@@ -256,7 +256,7 @@ public class LevelServiceImpl implements LevelService {
         departmentName = departmentName.toLowerCase().trim();
         schoolName = schoolName.toLowerCase().trim();
 
-        ServerResponse<Level> srLevel = new ServerResponse<>();
+        ServerResponse<Level> srLevel = new ServerResponse<>(ResponseCode.LEVEL_NOT_CREATED);
 
         try{
             Option concernedOption = null;
@@ -322,7 +322,7 @@ public class LevelServiceImpl implements LevelService {
         departmentName = departmentName.toLowerCase().trim();
         schoolName = schoolName.toLowerCase().trim();
 
-        ServerResponse<Level> srLevel = new ServerResponse<>();
+        ServerResponse<Level> srLevel = new ServerResponse<>(ResponseCode.LEVEL_NOT_UPDATED);
         srLevel.setResponseCode(ResponseCode.LEVEL_NOT_UPDATED);
 
         Optional<Level> optionalLevel  = levelRepository.findById(levelId);
@@ -389,7 +389,7 @@ public class LevelServiceImpl implements LevelService {
             throws LevelNotFoundException, DuplicateLevelInOptionException {
         levelId = levelId.trim();
         levelName = levelName.toLowerCase().trim();
-        ServerResponse<Level> srLevel = new ServerResponse<>();
+        ServerResponse<Level> srLevel = new ServerResponse<>(ResponseCode.LEVEL_NOT_UPDATED);
         Optional<Level> optionalLevel = levelRepository.findById(levelId);
         if(!optionalLevel.isPresent()){
             throw new LevelNotFoundException("The levelId specified does not match any level in " +

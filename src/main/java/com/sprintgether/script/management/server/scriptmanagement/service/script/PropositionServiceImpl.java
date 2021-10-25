@@ -62,7 +62,7 @@ public class PropositionServiceImpl implements PropositionService {
     public ServerResponse<Proposition> saveProposition(String staffId, String value,
                                                        String contentType, boolean valid)
             throws StaffNotFoundException {
-        ServerResponse<Proposition> srProp = new ServerResponse<>();
+        ServerResponse<Proposition> srProp = new ServerResponse<>(ResponseCode.PROPOSITION_NOT_CREATED);
         staffId = staffId.trim();
         value = value.trim();
         contentType = contentType.trim();
@@ -142,7 +142,7 @@ public class PropositionServiceImpl implements PropositionService {
     @Override
     public ServerResponse<Proposition> updateProposition(String propositionId, boolean valid)
             throws PropositionNotFoundException {
-        ServerResponse<Proposition> srProp = new ServerResponse<>();
+        ServerResponse<Proposition> srProp = new ServerResponse<>(ResponseCode.PROPOSITION_NOT_UPDATED);
         propositionId = propositionId.trim();
         ServerResponse<Proposition> srProp1 = this.findPropositionById(propositionId);
         if(srProp1.getResponseCode() != ResponseCode.PROPOSITION_FOUND){
@@ -176,7 +176,7 @@ public class PropositionServiceImpl implements PropositionService {
     public ServerResponse<Proposition> addContentToProposition(String value, String contentType,
                                                                String propositionId)
             throws PropositionNotFoundException {
-        ServerResponse<Proposition> srProp = new ServerResponse<>();
+        ServerResponse<Proposition> srProp = new ServerResponse<>(ResponseCode.CONTENT_NOT_ADDED);
         value = value.trim();
         contentType = contentType.trim();
         propositionId = propositionId.trim();
@@ -304,6 +304,14 @@ public class PropositionServiceImpl implements PropositionService {
     public ServerResponse<Proposition> removeProposition(String propositionId, String staffId)
             throws PropositionNotFoundException, StaffNotFoundException,
             PropositionNotBelongingToStaffException {
-        return null;
+        ServerResponse<Proposition> srProp = new ServerResponse<>(ResponseCode.PROPOSITION_NOT_DELETED);
+        return srProp;
+    }
+
+    @Override
+    public ServerResponse<Proposition> removeProposition(String propositionId)
+            throws PropositionNotFoundException {
+        ServerResponse<Proposition> srProp = new ServerResponse<>(ResponseCode.PROPOSITION_NOT_DELETED);
+        return srProp;
     }
 }

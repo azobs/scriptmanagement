@@ -237,7 +237,7 @@ public class OptionServiceImpl implements OptionService {
         departmentId = departmentId.trim();
         departmentName = departmentName.toLowerCase().trim();
         schoolName = schoolName.toLowerCase().trim();
-        ServerResponse<Option> srOption = new ServerResponse<>();
+        ServerResponse<Option> srOption = new ServerResponse<>(ResponseCode.OPTION_NOT_CREATED);
 
         try{
             Department concernedDepartment = null;
@@ -293,7 +293,7 @@ public class OptionServiceImpl implements OptionService {
         departmentName = departmentName.toLowerCase().trim();
         schoolName =  schoolName.toLowerCase().trim();
 
-        ServerResponse<Option> srOption = new ServerResponse<>();
+        ServerResponse<Option> srOption = new ServerResponse<>(ResponseCode.OPTION_NOT_UPDATED);
         srOption.setResponseCode(ResponseCode.OPTION_NOT_UPDATED);
 
 
@@ -351,7 +351,7 @@ public class OptionServiceImpl implements OptionService {
             throws OptionNotFoundException, DuplicateOptionInDepartmentException {
         optionId = optionId.trim();
         optionName = optionName.toLowerCase().trim();
-        ServerResponse<Option> srOption = new ServerResponse<>();
+        ServerResponse<Option> srOption = new ServerResponse<>(ResponseCode.OPTION_NOT_UPDATED);
         Optional<Option> optionalOption = optionRepository.findById(optionId);
         if(!optionalOption.isPresent()){
             throw new OptionNotFoundException("The option Id does not match any option in the system");

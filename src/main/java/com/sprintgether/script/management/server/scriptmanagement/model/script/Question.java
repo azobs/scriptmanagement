@@ -17,8 +17,10 @@ import java.util.List;
 public class Question {
     @Id
     String id;
+    String title;
     EnumQuestionType questionType;
     EnumLevelofDifficulty levelofDifficulty;
+    EnumScope questionScope;
     /**********************
      * A question must be proposed by a staff. Any staff except class perfect can propose a question
      * for any course.
@@ -75,14 +77,19 @@ public class Question {
      */
     @DBRef
     List<Content> listofContent = new ArrayList<>();
+    /****************************************************************
+     * A question must have a multiple answer (a list of answer)
+     */
+    @DBRef
+    List<Answer> listofAnswer = new ArrayList<>();
 
     /****************************************************
      * A question can be related to a problem. In that fact
      * the question can be display if and only if the problem will be
      * This field can be null because all the question ne 
      */
-    @DBRef
-    Problem concernedProblem;
+    /*@DBRef
+    Problem concernedProblem;*/
 
 
 

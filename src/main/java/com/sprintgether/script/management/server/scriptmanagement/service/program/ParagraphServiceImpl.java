@@ -511,7 +511,7 @@ public class ParagraphServiceImpl implements ParagraphService {
                                                    String departmentName,
                                                    String schoolName)
             throws SubSectionNotFoundException, DuplicateParagraphInSubSectionException {
-        ServerResponse<Paragraph> srParagraph = new ServerResponse<>();
+        ServerResponse<Paragraph> srParagraph = new ServerResponse<>(ResponseCode.PARAGRAPH_NOT_CREATED);
 
         title = title.trim();
         paragraphType = paragraphType.trim();
@@ -627,7 +627,7 @@ public class ParagraphServiceImpl implements ParagraphService {
                                                      String departmentName,
                                                      String schoolName)
             throws ParagraphNotFoundException, DuplicateParagraphInSubSectionException {
-        ServerResponse<Paragraph> srParagraph = new ServerResponse<>();
+        ServerResponse<Paragraph> srParagraph = new ServerResponse<>(ResponseCode.PARAGRAPH_NOT_UPDATED);
 
         title = title.trim();
         paragraphType = paragraphType.trim();

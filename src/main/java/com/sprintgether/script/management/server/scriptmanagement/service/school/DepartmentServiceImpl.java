@@ -170,7 +170,7 @@ public class DepartmentServiceImpl implements DepartmentService{
         acronym = acronym.trim();
         description = description.trim();
         ownerSchoolName = ownerSchoolName.toLowerCase().trim();
-        ServerResponse<Department> srDepartment = new ServerResponse<>();
+        ServerResponse<Department> srDepartment = new ServerResponse<>(ResponseCode.DEPARTMENT_NOT_CREATED);
         /****
          * It is not possible to have a department without school
          */
@@ -214,7 +214,7 @@ public class DepartmentServiceImpl implements DepartmentService{
         acronym = acronym.trim();
         description = description.trim();
         ownerSchoolName = ownerSchoolName.toLowerCase().trim();
-        ServerResponse<Department> srDepartment = new ServerResponse<>();
+        ServerResponse<Department> srDepartment = new ServerResponse<>(ResponseCode.DEPARTMENT_NOT_UPDATED);
         srDepartment.setResponseCode(ResponseCode.DEPARTMENT_NOT_UPDATED);
 
         //////////////////////////////////
@@ -268,7 +268,7 @@ public class DepartmentServiceImpl implements DepartmentService{
             throws DepartmentNotFoundException, DuplicateDepartmentInSchoolException {
         departmentId = departmentId.trim();
         departmentName = departmentName.toLowerCase().trim();
-        ServerResponse<Department> srDepartment = new ServerResponse<>();
+        ServerResponse<Department> srDepartment = new ServerResponse<>(ResponseCode.DEPARTMENT_NOT_UPDATED);
         Optional<Department> optionalDepartment = departmentRepository.findById(departmentId);
         if(!optionalDepartment.isPresent()){
             throw new DepartmentNotFoundException("The specified department ID does not match any department in the system");

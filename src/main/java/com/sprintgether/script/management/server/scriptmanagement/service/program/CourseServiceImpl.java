@@ -461,7 +461,7 @@ public class CourseServiceImpl implements CourseService {
         departmentName = departmentName.toLowerCase().trim();
         schoolName = schoolName.toLowerCase().trim();
 
-        ServerResponse<Course> srCourse = new ServerResponse<>();
+        ServerResponse<Course> srCourse = new ServerResponse<>(ResponseCode.COURSE_NOT_CREATED);
 
 
         try{
@@ -556,7 +556,7 @@ public class CourseServiceImpl implements CourseService {
         departmentName = departmentName.toLowerCase().trim();
         schoolName = schoolName.toLowerCase().trim();
 
-        ServerResponse<Course> srCourse = new ServerResponse<>();
+        ServerResponse<Course> srCourse = new ServerResponse<>(ResponseCode.COURSE_NOT_UPDATED);
         srCourse.setResponseCode(ResponseCode.LEVEL_NOT_UPDATED);
 
         //////////////////////////////////////////////////////////////
@@ -631,7 +631,7 @@ public class CourseServiceImpl implements CourseService {
             throws CourseNotFoundException, DuplicateCourseInLevelException {
         courseId = courseId.trim();
         title = title.toLowerCase().trim();
-        ServerResponse<Course> srCourse = new ServerResponse<>();
+        ServerResponse<Course> srCourse = new ServerResponse<>(ResponseCode.COURSE_NOT_UPDATED);
 
         Optional<Course> optionalCourse = courseRepository.findById(courseId);
         if(!optionalCourse.isPresent()){
@@ -697,7 +697,7 @@ public class CourseServiceImpl implements CourseService {
         schoolName = schoolName.toLowerCase().trim();
         courseTitle = courseTitle.toLowerCase().trim();
 
-        ServerResponse<Course> srCourse = new ServerResponse<>();
+        ServerResponse<Course> srCourse = new ServerResponse<>(ResponseCode.COURSE_NOT_UPDATED);
 
         Course concernedCourse = null;
         ServerResponse<Course> srCourseFoundById = this.findCourseOfLevelById(courseId);
@@ -779,7 +779,7 @@ public class CourseServiceImpl implements CourseService {
         schoolName = schoolName.toLowerCase().trim();
         courseTitle = courseTitle.toLowerCase().trim();
 
-        ServerResponse<Course> srCourse = new ServerResponse<>();
+        ServerResponse<Course> srCourse = new ServerResponse<>(ResponseCode.COURSE_NOT_UPDATED);
 
         Course concernedCourse = null;
         ServerResponse<Course> srCourseFoundById = null;
@@ -862,7 +862,7 @@ public class CourseServiceImpl implements CourseService {
         departmentName = departmentName.toLowerCase().trim();
         schoolName = schoolName.toLowerCase().trim();
         courseTitle = courseTitle.toLowerCase().trim();
-        ServerResponse<CourseOutline> srCourseOutline = new ServerResponse<>();
+        ServerResponse<CourseOutline> srCourseOutline = new ServerResponse<>(ResponseCode.COURSEOUTLINE_NOT_UPDATED);
 
         Course concernedCourse = null;
         ServerResponse<Course> srCourseFoundById = null;

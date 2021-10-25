@@ -422,7 +422,7 @@ public class SectionServiceImpl implements SectionService {
                                                String departmentName,
                                                String schoolName)
             throws ChapterNotFoundException, DuplicateSectionInChapterException {
-        ServerResponse<Section> srSection = new ServerResponse<>();
+        ServerResponse<Section> srSection = new ServerResponse<>(ResponseCode.SECTION_NOT_CREATED);
         title = title.toLowerCase().trim();
         schoolName = schoolName.toLowerCase().trim();
         departmentName = departmentName.toLowerCase().trim();
@@ -518,7 +518,7 @@ public class SectionServiceImpl implements SectionService {
                                                  String departmentName,
                                                  String schoolName)
             throws SectionNotFoundException, DuplicateSectionInChapterException {
-        ServerResponse<Section> srSection = new ServerResponse<>();
+        ServerResponse<Section> srSection = new ServerResponse<>(ResponseCode.SECTION_NOT_UPDATED);
         sectionId = sectionId.trim();
         title = title.toLowerCase().trim();
         schoolName = schoolName.toLowerCase().trim();
@@ -612,7 +612,7 @@ public class SectionServiceImpl implements SectionService {
     @Override
     public ServerResponse<Section> updateSectionTitle(String sectionId, String newSectionTitle)
             throws SectionNotFoundException, DuplicateSectionInChapterException {
-        ServerResponse<Section> srSection = new ServerResponse<>();
+        ServerResponse<Section> srSection = new ServerResponse<>(ResponseCode.SECTION_NOT_UPDATED);
         sectionId = sectionId.trim();
         newSectionTitle = newSectionTitle.toLowerCase().trim();
 

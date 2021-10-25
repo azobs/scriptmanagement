@@ -1,10 +1,9 @@
 package com.sprintgether.script.management.server.scriptmanagement.service.script;
 
 import com.sprintgether.script.management.server.scriptmanagement.commonused.ServerResponse;
-import com.sprintgether.script.management.server.scriptmanagement.exception.script.ContentNotBelongingToException;
-import com.sprintgether.script.management.server.scriptmanagement.exception.script.PropositionNotBelongingToStaffException;
-import com.sprintgether.script.management.server.scriptmanagement.exception.script.PropositionNotFoundException;
+import com.sprintgether.script.management.server.scriptmanagement.exception.script.*;
 import com.sprintgether.script.management.server.scriptmanagement.exception.user.StaffNotFoundException;
+import com.sprintgether.script.management.server.scriptmanagement.model.script.Indication;
 import com.sprintgether.script.management.server.scriptmanagement.model.script.Proposition;
 
 public interface PropositionService {
@@ -24,6 +23,9 @@ public interface PropositionService {
             throws PropositionNotFoundException, StaffNotFoundException,
             PropositionNotBelongingToStaffException;
 
+    ServerResponse<Proposition> removeProposition(String propositionId)
+            throws PropositionNotFoundException;
+
     boolean isPropositionValid(String propositionId) throws PropositionNotFoundException;
 
     ServerResponse<Proposition> addContentToProposition(String value, String contentType,
@@ -37,4 +39,6 @@ public interface PropositionService {
     ServerResponse<Proposition> removeContentToProposition(String contentId,
                                                         String propositionId)
             throws PropositionNotFoundException, ContentNotBelongingToException;
+
+
 }

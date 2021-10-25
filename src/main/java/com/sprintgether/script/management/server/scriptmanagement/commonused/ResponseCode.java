@@ -146,40 +146,68 @@ public  class ResponseCode {
     public static final int INDICATION_FOUND = 214;
     public static final int INDICATION_NOT_CREATED = 215;
     public static final int INDICATION_CREATED = 217;
-    public static final int INDICATION_NOT_UPDATED = 218;
-    public static final int INDICATION_UPDATED = 219;
-    public static final int INDICATION_NOT_DELETED = 220;
-    public static final int INDICATION_DELETED = 221;
+    public static final int INDICATION_NOT_DELETED = 218;
+    public static final int INDICATION_DELETED = 219;
     //Concerning Proposition Objet
-    public static final int PROPOSITION_NOT_FOUND = 222;
-    public static final int PROPOSITION_FOUND = 223;
-    public static final int PROPOSITION_NOT_CREATED = 224;
-    public static final int PROPOSITION_CREATED = 225;
-    public static final int PROPOSITION_NOT_UPDATED = 226;
-    public static final int PROPOSITION_UPDATED = 227;
-    public static final int PROPOSITION_NOT_DELETED = 228;
-    public static final int PROPOSITION_DELETED = 229;
+    public static final int PROPOSITION_NOT_FOUND = 220;
+    public static final int PROPOSITION_FOUND = 221;
+    public static final int PROPOSITION_NOT_CREATED = 222;
+    public static final int PROPOSITION_CREATED = 223;
+    public static final int PROPOSITION_NOT_UPDATED = 224;
+    public static final int PROPOSITION_UPDATED = 225;
+    public static final int PROPOSITION_NOT_DELETED = 226;
+    public static final int PROPOSITION_DELETED = 227;
     //Concerning Problem Objet
-    public static final int PROBLEM_NOT_FOUND = 230;
-    public static final int PROBLEM_FOUND = 231;
-    public static final int PROBLEM_NOT_CREATED = 232;
-    public static final int PROBLEM_CREATED = 233;
-    public static final int PROBLEM_NOT_UPDATED = 234;
-    public static final int PROBLEM_UPDATED = 235;
-    public static final int PROBLEM_NOT_DELETED = 236;
-    public static final int PROBLEM_DELETED = 237;
+    public static final int PROBLEM_NOT_FOUND = 228;
+    public static final int PROBLEM_FOUND = 229;
+    public static final int PROBLEM_NOT_CREATED = 230;
+    public static final int PROBLEM_CREATED = 231;
+    public static final int PROBLEM_NOT_UPDATED = 232;
+    public static final int PROBLEM_UPDATED = 233;
+    public static final int PROBLEM_NOT_DELETED = 234;
+    public static final int PROBLEM_DELETED = 235;
+    public static final int QUESTION_NOT_ADDED_TO_PROBLEM = 236;
+    public static final int QUESTION_ADDED_TO_PROBLEM = 237;
+    public static final int QUESTION_NOT_REMOVED_TO_PROBLEM = 238;
+    public static final int QUESTION_REMOVED_TO_PROBLEM = 239;
     //Concerning Question Objet
-    public static final int QUESTION_NOT_FOUND = 238;
-    public static final int QUESTION_FOUND = 239;
-    public static final int QUESTION_NOT_CREATED = 240;
-    public static final int QUESTION_CREATED = 241;
-    public static final int QUESTION_NOT_UPDATED = 242;
-    public static final int QUESTION_UPDATED = 243;
-    public static final int QUESTION_NOT_DELETED = 244;
-    public static final int QUESTION_DELETED = 245;
-    public static final int INDICATIION_ADDED_TO_QUESTION = 246;
-    public static final int CONTENT_OF_INDICATION_UPDATED = 247;
-
+    public static final int QUESTION_NOT_FOUND = 240;
+    public static final int QUESTION_FOUND = 241;
+    public static final int QUESTION_NOT_CREATED = 242;
+    public static final int QUESTION_CREATED = 243;
+    public static final int QUESTION_NOT_UPDATED = 244;
+    public static final int QUESTION_UPDATED = 245;
+    public static final int QUESTION_NOT_DELETED = 246;
+    public static final int QUESTION_DELETED = 247;
+    public static final int INDICATION_ADDED_TO_QUESTION = 248;
+    public static final int INDICATION_OF_QUESTION_NOT_DELETED = 249;
+    public static final int INDICATION_OF_QUESTION_DELETED = 250;
+    public static final int INDICATION_OF_PROBLEM_DELETED = 251;
+    public static final int INDICATION_OF_PROBLEM_NOT_DELETED = 252;
+    public static final int CONTENT_OF_INDICATION_UPDATED = 253;
+    public static final int CONTENT_OF_INDICATION_NOT_UPDATED = 254;
+    public static final int PROPOSITION_NOT_ADDED_TO_QUESTION = 255;
+    public static final int PROPOSITION_ADDED_TO_QUESTION = 256;
+    public static final int PROPOSITION_OF_QUESTION_NOT_DELETED = 257;
+    public static final int PROPOSITION_OF_QUESTION_DELETED = 258;
+    public static final int CONTENT_OF_PROPOSITION_NOT_UPDATED = 259;
+    public static final int CONTENT_OF_PROPOSITION_UPDATED = 260;
+    //Concerning Paper Objet
+    public static final int PAPER_NOT_FOUND = 261;
+    public static final int PAPER_FOUND = 262;
+    public static final int PAPER_NOT_CREATED = 263;
+    public static final int PAPER_CREATED = 264;
+    public static final int PAPER_NOT_UPDATED = 265;
+    public static final int PAPER_UPDATED = 266;
+    public static final int INDICATION_OF_PAPER_NOT_DELETED = 267;
+    public static final int QUESTION_NOT_ADDED_TO_PAPER = 268;
+    public static final int QUESTION_ADDED_TO_PAPER = 269;
+    public static final int QUESTION_NOT_REMOVED_TO_PAPER = 270;
+    public static final int QUESTION_REMOVED_TO_PAPER = 271;
+    public static final int PROBLEM_NOT_ADDED_TO_PAPER = 272;
+    public static final int PROBLEM_ADDED_TO_PAPER = 273;
+    public static final int PROBLEM_NOT_REMOVED_TO_PAPER = 274;
+    public static final int PROBLEM_REMOVED_TO_PAPER = 275;
 
 
 
@@ -239,6 +267,10 @@ public  class ResponseCode {
     public static final int EXCEPTION_ENUM_CONTENT_TYPE = 643;
     public static final int EXCEPTION_ENUM_QUESTION_OR_LEVELOFDIFFICULTY_TYPE = 644;
     public static final int CONTENT_OF_INDICATION_EXCEPTION = 645;
+    public static final int CONTENT_OF_PROPOSITION_EXCEPTION = 646;
+    public static final int EXCEPTION_ENUM_CRITERIA = 647;
+    public static final int EXCEPTION_ENUM_PROBLEM_OR_LEVELOFDIFFICULTY_TYPE = 648;
+
 
     public static final int ERROR_IN_FORM_FILLED = 800;
 

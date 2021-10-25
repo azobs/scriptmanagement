@@ -17,8 +17,10 @@ import java.util.List;
 public class Problem {
     @Id
     String id;
+    String title;
     EnumProblemType problemType;
     EnumLevelofDifficulty levelofDifficulty;
+    EnumScope problemScope;
     /**********************
      * A question must be proposed by a staff. Any staff except class perfect can propose a question
      * for any course.
@@ -49,7 +51,9 @@ public class Problem {
      */
     List<Content> listofContent = new ArrayList<>();
     /*****
-     * A problem must have a list of question.
+     * A problem must have a list of question. But since id a question is for a problem, that question
+     * must keep a trace of the ownerproblem. means if we want the list of the question of a problem
+     * we must search in the question table all the question with the problem trace.
      */
     @DBRef
     List<Question> listofQuestion = new ArrayList<Question>();
@@ -63,7 +67,7 @@ public class Problem {
                    Staff ownerStaff, Course concernedCourse, Module concernedModule,
                    Chapter concernedChapter, Section concernedSection, SubSection concernedSubSection,
                    Paragraph concernedParagraph, List<Content> listofContent,
-                   List<Question> listofQuestion, List<Indication> listofIndication) {
+                   List<Indication> listofIndication) {
         this.problemType = problemType;
         this.levelofDifficulty = levelofDifficulty;
         this.ownerStaff = ownerStaff;
@@ -74,7 +78,6 @@ public class Problem {
         this.concernedSubSection = concernedSubSection;
         this.concernedParagraph = concernedParagraph;
         this.listofContent = listofContent;
-        this.listofQuestion = listofQuestion;
         this.listofIndication = listofIndication;
     }
 
@@ -89,7 +92,6 @@ public class Problem {
                 ", concernedSubSection=" + concernedSubSection.getTitle() +
                 ", concernedParagraph=" + concernedParagraph.getTitle() +
                 ", listofContent=" + listofContent +
-                ", listofQuestion=" + listofQuestion +
                 ", listofIndication=" + listofIndication +
                 '}';
     }

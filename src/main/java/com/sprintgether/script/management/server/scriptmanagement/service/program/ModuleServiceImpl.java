@@ -441,7 +441,7 @@ public class ModuleServiceImpl implements ModuleService {
         departmentName = departmentName.toLowerCase().trim();
         schoolName = schoolName.toLowerCase().trim();
 
-        ServerResponse<Module> srModule = new ServerResponse<>();
+        ServerResponse<Module> srModule = new ServerResponse<>(ResponseCode.MODULE_NOT_CREATED);
 
         try{
             CourseOutline associatedCourseOutline = null;
@@ -523,7 +523,7 @@ public class ModuleServiceImpl implements ModuleService {
         departmentName = departmentName.toLowerCase().trim();
         schoolName = schoolName.toLowerCase().trim();
 
-        ServerResponse<Module> srModule = new ServerResponse<>();
+        ServerResponse<Module> srModule = new ServerResponse<>(ResponseCode.MODULE_NOT_UPDATED);
         srModule.setResponseCode(ResponseCode.MODULE_NOT_UPDATED);
 
         Optional<Module> optionalModule = moduleRepository.findById(moduleId);
@@ -601,7 +601,7 @@ public class ModuleServiceImpl implements ModuleService {
         moduleId = moduleId.trim();
         newModuleTitle = newModuleTitle.toLowerCase().trim();
 
-        ServerResponse<Module> srModule = new ServerResponse<>();
+        ServerResponse<Module> srModule = new ServerResponse<>(ResponseCode.MODULE_NOT_UPDATED);
         Optional<Module> optionalModule = moduleRepository.findById(moduleId);
         if(!optionalModule.isPresent()){
            throw new ModuleNotFoundException("The module ID does not match any module in the system");
@@ -829,7 +829,7 @@ public class ModuleServiceImpl implements ModuleService {
                                                         String moduleTitle)
             throws ModuleNotFoundException, ContentNotBelongingToException {
 
-        ServerResponse<Module> srModule = new ServerResponse<>();
+        ServerResponse<Module> srModule = new ServerResponse<>(ResponseCode.CONTENT_NOT_UPDATED);
 
         contentId = contentId.trim();
         value = value.trim();

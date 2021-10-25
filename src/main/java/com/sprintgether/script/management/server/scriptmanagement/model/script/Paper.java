@@ -19,6 +19,8 @@ public class Paper {
     String id;
     String title;
     EnumPaperType paperType;
+    EnumLevelofDifficulty levelofDifficulty;
+    EnumScope paperScope;
     @DBRef
     Course concernedCourse;
     @DBRef

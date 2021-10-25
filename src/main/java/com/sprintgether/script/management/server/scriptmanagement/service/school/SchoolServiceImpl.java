@@ -133,7 +133,7 @@ public class SchoolServiceImpl implements SchoolService{
         logoSchool = logoSchool.trim();
         ownerInstitutionName = ownerInstitutionName.toLowerCase().trim();
         parentInstitutionName = parentInstitutionName.toLowerCase().trim();
-        ServerResponse<School> srSchool = new ServerResponse<>();
+        ServerResponse<School> srSchool = new ServerResponse<>(ResponseCode.SCHOOL_NOT_CREATED);
         /*****
          * We must retrieve the ownerInstitution (It can be null) and the parentInstitution (can be null)
          */
@@ -229,7 +229,7 @@ public class SchoolServiceImpl implements SchoolService{
             throws SchoolNotFoundException, DuplicateSchoolException {
         schoolId = schoolId.trim();
         schoolName = schoolName.toLowerCase().trim();
-        ServerResponse<School> srSchool = new ServerResponse<>();
+        ServerResponse<School> srSchool = new ServerResponse<>(ResponseCode.SCHOOL_NOT_UPDATED);
         Optional<School> optionalSchoolToUpdated = schoolRepository.findById(schoolId);
         if(!optionalSchoolToUpdated.isPresent()){
             throw new SchoolNotFoundException("The school id specified does not match any school in the system");

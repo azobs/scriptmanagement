@@ -18,4 +18,10 @@ public class ServerResponse<T> {
         this.responseCode = ResponseCode.INITIALISATION;
         this.associatedObject = null;
     }
+    public ServerResponse(int responseCode) {
+        this.errorMessage = "";
+        this.moreDetails = "";
+        this.responseCode = responseCode;
+        this.associatedObject = null;
+    }
 }

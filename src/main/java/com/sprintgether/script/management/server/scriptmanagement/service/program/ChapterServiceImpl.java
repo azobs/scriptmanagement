@@ -414,7 +414,7 @@ public class ChapterServiceImpl implements ChapterService {
                                                String departmentName,
                                                String schoolName)
             throws ModuleNotFoundException, DuplicateChapterInModuleException {
-        ServerResponse<Chapter> srChapter = new ServerResponse<>();
+        ServerResponse<Chapter> srChapter = new ServerResponse<>(ResponseCode.CHAPTER_NOT_CREATED);
 
         title = title.toLowerCase().trim();
         chapterType = chapterType.trim();
@@ -505,7 +505,7 @@ public class ChapterServiceImpl implements ChapterService {
                                                  String departmentName,
                                                  String schoolName)
             throws ChapterNotFoundException, DuplicateChapterInModuleException {
-        ServerResponse<Chapter> srChapter = new ServerResponse<>();
+        ServerResponse<Chapter> srChapter = new ServerResponse<>(ResponseCode.CHAPTER_NOT_UPDATED);
 
         title = title.toLowerCase().trim();
         chapterType = chapterType.trim();
@@ -591,7 +591,7 @@ public class ChapterServiceImpl implements ChapterService {
     @Override
     public ServerResponse<Chapter> updateChapterTitle(String chapterId, String newChapterTitle)
             throws ChapterNotFoundException, DuplicateChapterInModuleException {
-        ServerResponse<Chapter> srChapter = new ServerResponse<>();
+        ServerResponse<Chapter> srChapter = new ServerResponse<>(ResponseCode.CHAPTER_NOT_UPDATED);
         chapterId = chapterId.trim();
         newChapterTitle = newChapterTitle.toLowerCase().trim();
 

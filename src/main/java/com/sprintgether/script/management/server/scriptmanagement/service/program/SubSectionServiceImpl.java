@@ -457,7 +457,7 @@ public class SubSectionServiceImpl implements SubSectionService {
                                                      String departmentName,
                                                      String schoolName)
             throws SectionNotFoundException, DuplicateSubSectionInSectionException {
-        ServerResponse<SubSection> srSubSection = new ServerResponse<>();
+        ServerResponse<SubSection> srSubSection = new ServerResponse<>(ResponseCode.SUBSECTION_NOT_CREATED);
         title = title.toLowerCase().trim();
         schoolName = schoolName.toLowerCase().trim();
         departmentName = departmentName.toLowerCase().trim();
@@ -562,7 +562,7 @@ public class SubSectionServiceImpl implements SubSectionService {
                                                        String departmentName,
                                                        String schoolName)
             throws SubSectionNotFoundException, DuplicateSubSectionInSectionException {
-        ServerResponse<SubSection> srSubSection = new ServerResponse<>();
+        ServerResponse<SubSection> srSubSection = new ServerResponse<>(ResponseCode.SUBSECTION_NOT_UPDATED);
         title = title.toLowerCase().trim();
         schoolName = schoolName.toLowerCase().trim();
         departmentName = departmentName.toLowerCase().trim();
